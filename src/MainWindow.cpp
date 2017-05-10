@@ -35,9 +35,10 @@ MainWindow::MainWindow()
 	
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
-		.AddGlue()
-		.Add(fMainView)
-		.AddGlue()
+		.AddGroup(B_VERTICAL)
+			.SetInsets(0.0f)
+			.Add(fMainView)
+			.End()
 	.End();
 }
 
