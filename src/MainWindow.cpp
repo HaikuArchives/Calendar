@@ -3,10 +3,10 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
-#include <LayoutBuilder.h>
-#include <Application.h>
-
 #include "MainWindow.h"
+
+#include <Application.h>
+#include <LayoutBuilder.h>
 
 
 MainWindow::MainWindow()
