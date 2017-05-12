@@ -12,15 +12,21 @@
 #include <TranslationUtils.h>
 
 
-BBitmap* LoadVectorIcon(const char* name, int32 size)
+BBitmap* LoadVectorIcon(const char* name, int32 iconSize, int32 cropSize)
 {
 	BResources* res = BApplication::AppResources();
 	size_t length = 0;
 	const void* data = res->LoadResource(B_VECTOR_ICON_TYPE, name, &length);
-	BBitmap* dest = new BBitmap(BRect(0, 0, size, size), B_RGBA32);
+	BBitmap* temp = new BBitmap(BRect(0, 0, iconSize, iconSize), B_RGBA32);
+	BBitmap* dest = new BBitmap(BRect(0, 0, cropSize, cropSize), B_RGBA32);
 	if (data != NULL &&
-		BIconUtils::GetVectorIcon((uint8*)data, length, dest) == B_OK)
-		return dest;
+		BIconUtils::GetVectorIcon((uint8*)data, length, temp) == B_OK)
+			if (dest->ImportBits(temp, BPoint(0, 0),
+				BPoint(0, 0), cropSize, cropSize) == B_OK)
+
+				return dest;
+
+	delete temp;
 	delete dest;
 	return NULL;
 }
