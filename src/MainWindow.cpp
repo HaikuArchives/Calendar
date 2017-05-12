@@ -7,6 +7,7 @@
 
 #include <Application.h>
 #include <LayoutBuilder.h>
+#include "ResourceLoader.h"
 
 
 MainWindow::MainWindow()
@@ -33,8 +34,22 @@ MainWindow::MainWindow()
 	
 	fMenuBar->AddItem(fAppMenu);
 	
+	fToolBar = new BToolBar();
+	fToolBar->AddAction(new BMessage(kShowToday), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Today", NULL, true);
+	fToolBar->AddSeparator();
+	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Day View", NULL, true);
+	fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Month View", NULL, true);
+	fToolBar->AddSeparator();
+	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
+		"Add Event", NULL, true);
+	fToolBar->AddGlue();
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
+		.Add(fToolBar)
 		.AddGroup(B_VERTICAL)
 			.SetInsets(0.0f)
 			.Add(fMainView)
