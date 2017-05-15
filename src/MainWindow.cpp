@@ -36,15 +36,15 @@ MainWindow::MainWindow()
 	
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kShowToday), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Today", NULL, true);
+		"Today", "Today", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day View", NULL, true);
+		"Day View", "Day View", true);
 	fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Month View", NULL, true);
+		"Month View", "Month View", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
-		"Add Event", NULL, true);
+		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
