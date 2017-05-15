@@ -9,6 +9,6 @@
 #include <Cursor.h>
 #include <TranslatorFormats.h>
 
-BBitmap* LoadVectorIcon(const char* name, int32 iconSize = 32, int32 cropSize = 24);
+BBitmap* LoadVectorIcon(const char* name, int32 iconSize = 32, int32 cropSize = 22);
 
 #endif
