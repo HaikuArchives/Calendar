@@ -19,8 +19,7 @@ MainWindow::MainWindow()
 	CenterOnScreen();
 
 	fMainView = new BView("MainView", B_WILL_DRAW);
-	rgb_color bgcolor = ui_color(B_PANEL_BACKGROUND_COLOR);  
-	fMainView->SetViewColor(bgcolor);
+	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 	
 	fMenuBar = new BMenuBar("MenuBar");
 	fAppMenu = new BMenu("App");
