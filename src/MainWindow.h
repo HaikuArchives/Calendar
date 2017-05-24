@@ -5,9 +5,11 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
+
 #include <MenuBar.h>
 #include <MenuItem.h>
 #include <private/shared/ToolBar.h>
+#include <DateTime.h>
 #include <View.h>
 #include <Window.h>
 
@@ -27,6 +29,7 @@ private:
 	static const int kAddEvent	= 1004;
 	
 	BView*		fMainView;
+	BView*		fSidePanelView;
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
 	BToolBar*	fToolBar;

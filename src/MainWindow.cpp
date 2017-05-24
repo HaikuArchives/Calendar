@@ -7,6 +7,8 @@
 
 #include <Application.h>
 #include <LayoutBuilder.h>
+
+#include "DateHeaderView.h"
 #include "ResourceLoader.h"
 
 
@@ -19,14 +21,16 @@ MainWindow::MainWindow()
 	CenterOnScreen();
 
 	fMainView = new BView("MainView", B_WILL_DRAW);
-	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
-	
-	fMenuBar = new BMenuBar("MenuBar");
-	fAppMenu = new BMenu("App");
+	fMainView->SetViewColor(255, 255, 255);
 
+	fSidePanelView = new BView("SidePanelView", B_WILL_DRAW);
+	fSidePanelView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
+
+	fMenuBar = new BMenuBar("MenuBar");
+
+	fAppMenu = new BMenu("App");
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
-
 	fAppMenu->AddItem(item);
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
@@ -46,13 +50,20 @@ MainWindow::MainWindow()
 		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
+	DateHeaderView* dateHeader = new DateHeaderView();
+	BLayoutBuilder::Group<>(fSidePanelView, B_VERTICAL, 0.0f)
+		.SetInsets(15)
+			.Add(dateHeader)
+			.AddGlue()
+	.End();
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
 		.Add(fToolBar)
-		.AddGroup(B_VERTICAL)
-			.SetInsets(0.0f)
-			.Add(fMainView)
-			.End()
+		.AddGroup(B_HORIZONTAL, 0)
+			.Add(fMainView, 3)
+			.Add(fSidePanelView, 1)
+		.End()
 	.End();
 }
 
