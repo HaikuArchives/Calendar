@@ -50,10 +50,17 @@ MainWindow::MainWindow()
 		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
+	fCalendarView = new BCalendarView("calendar");
+	fCalendarView->SetWeekNumberHeaderVisible(false);
+	fCalendarView->SetSelectionMessage(B_OK);
+	fCalendarView->SetInvocationMessage(B_OK);
+
 	DateHeaderView* dateHeader = new DateHeaderView();
 	BLayoutBuilder::Group<>(fSidePanelView, B_VERTICAL, 0.0f)
 		.SetInsets(15)
 			.Add(dateHeader)
+			.AddStrut(20)
+			.Add(fCalendarView)
 			.AddGlue()
 	.End();
 

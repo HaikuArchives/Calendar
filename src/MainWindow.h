@@ -8,11 +8,13 @@
 
 #include <MenuBar.h>
 #include <MenuItem.h>
+#include <private/shared/CalendarView.h>
 #include <private/shared/ToolBar.h>
 #include <DateTime.h>
 #include <View.h>
 #include <Window.h>
 
+using BPrivate::BCalendarView;
 
 class MainWindow: public BWindow
 {
@@ -33,6 +35,7 @@ private:
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
 	BToolBar*	fToolBar;
+	BCalendarView*	fCalendarView;
 };
 
 #endif
