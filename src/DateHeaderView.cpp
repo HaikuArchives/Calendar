@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-
 #include "DateHeaderView.h"
 
 #include <DateFormat.h>
@@ -53,7 +52,7 @@ DateHeaderView::DateHeaderView()
 				fieldPositions[i+1] - fieldPositions[i]);
 	}
 	
-	monthYearString.AppendChars(monthString, monthString.CountChars()) ;
+	monthYearString.AppendChars(monthString, monthString.CountChars());
 	monthYearString += " ";
 	monthYearString.AppendChars(yearString, yearString.CountChars());
 	
