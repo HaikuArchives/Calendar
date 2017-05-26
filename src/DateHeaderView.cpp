@@ -37,19 +37,19 @@ DateHeaderView::DateHeaderView()
 		timeValue, B_FULL_DATE_FORMAT);
 	dateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
 		
-	for(int i = 0, j = 0; j < fieldCount; i = i + 2, ++j)  {
-		if (fields[j] == B_DATE_ELEMENT_WEEKDAY)
-			dateString.CopyCharsInto(dayOfWeekString, fieldPositions[i],
-				fieldPositions[i+1] - fieldPositions[i]); 
-		else if (fields[j] == B_DATE_ELEMENT_DAY)
-			dateString.CopyCharsInto(dayString, fieldPositions[i],
-				fieldPositions[i+1] - fieldPositions[i]);
-		else if (fields[j] == B_DATE_ELEMENT_MONTH)
-			dateString.CopyCharsInto(monthString, fieldPositions[i],
-				fieldPositions[i+1] - fieldPositions[i]); 
-		else if (fields[j] == B_DATE_ELEMENT_YEAR)
-			dateString.CopyCharsInto(yearString, fieldPositions[i],
-				fieldPositions[i+1] - fieldPositions[i]);
+	for(int i = 0; i < fieldCount; ++i)  {
+		if (fields[i] == B_DATE_ELEMENT_WEEKDAY)
+			dateString.CopyCharsInto(dayOfWeekString, fieldPositions[i * 2],
+				fieldPositions[i * 2 + 1] - fieldPositions[i * 2]);
+		else if (fields[i] == B_DATE_ELEMENT_DAY)
+			dateString.CopyCharsInto(dayString, fieldPositions[i * 2],
+				fieldPositions[i * 2 + 1] - fieldPositions[i * 2]);
+		else if (fields[i] == B_DATE_ELEMENT_MONTH)
+			dateString.CopyCharsInto(monthString, fieldPositions[i * 2],
+				fieldPositions[i * 2 + 1] - fieldPositions[i * 2]);
+		else if (fields[i] == B_DATE_ELEMENT_YEAR)
+			dateString.CopyCharsInto(yearString, fieldPositions[i * 2],
+				fieldPositions[i * 2 + 1] - fieldPositions[i * 2]);
 	}
 	
 	monthYearString.AppendChars(monthString, monthString.CountChars());
