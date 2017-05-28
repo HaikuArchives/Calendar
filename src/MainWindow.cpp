@@ -8,9 +8,8 @@
 #include <Application.h>
 #include <LayoutBuilder.h>
 
-#include "DateHeaderView.h"
 #include "ResourceLoader.h"
-
+#include "SidePanelView.h"
 
 MainWindow::MainWindow()
 	:
@@ -22,9 +21,6 @@ MainWindow::MainWindow()
 
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewColor(255, 255, 255);
-
-	fSidePanelView = new BView("SidePanelView", B_WILL_DRAW);
-	fSidePanelView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
 	fMenuBar = new BMenuBar("MenuBar");
 
@@ -50,25 +46,13 @@ MainWindow::MainWindow()
 		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
-	fCalendarView = new BCalendarView("calendar");
-	fCalendarView->SetWeekNumberHeaderVisible(false);
-	fCalendarView->SetSelectionMessage(B_OK);
-	fCalendarView->SetInvocationMessage(B_OK);
-
-	DateHeaderView* dateHeader = new DateHeaderView();
-	BLayoutBuilder::Group<>(fSidePanelView, B_VERTICAL, 0.0f)
-		.SetInsets(15)
-			.Add(dateHeader)
-			.AddStrut(20)
-			.Add(fCalendarView)
-			.AddGlue()
-	.End();
+	fSidePanelView = new SidePanelView();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
 		.Add(fToolBar)
 		.AddGroup(B_HORIZONTAL, 0)
-			.Add(fMainView, 3)
+			.Add(fMainView, 5)
 			.Add(fSidePanelView, 1)
 		.End()
 	.End();
@@ -91,7 +75,12 @@ MainWindow::MessageReceived(BMessage* message)
 		case kMenuAppQuit:
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
-		
+
+		case kMonthUpMessage:
+		case kMonthDownMessage:
+			fSidePanelView->MessageReceived(message);
+			break;
+
 		default:
 			BWindow::MessageReceived(message);
 			break;

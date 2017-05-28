@@ -5,19 +5,17 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-
+#include <DateTime.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
-#include <private/shared/CalendarView.h>
 #include <private/shared/ToolBar.h>
-#include <DateTime.h>
 #include <View.h>
 #include <Window.h>
 
-using BPrivate::BCalendarView;
+#include "SidePanelView.h"
 
-class MainWindow: public BWindow
-{
+
+class MainWindow: public BWindow {
 public:
 			MainWindow();
 	virtual void	MessageReceived(BMessage* message);
@@ -31,11 +29,11 @@ private:
 	static const int kAddEvent	= 1004;
 	
 	BView*		fMainView;
-	BView*		fSidePanelView;
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
 	BToolBar*	fToolBar;
 	BCalendarView*	fCalendarView;
+	SidePanelView*	fSidePanelView;
 };
 
 #endif
