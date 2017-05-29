@@ -32,6 +32,7 @@ SRCS = \
 	 src/App.cpp  \
 	 src/MainWindow.cpp  \
 	 src/DateHeaderView.cpp  \
+	 src/SidePanelView.cpp  \
 	 src/utils/ResourceLoader.cpp  \
 
 #	Specify the resource definition files to use. Full or relative paths can be
