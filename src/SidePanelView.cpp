@@ -6,6 +6,7 @@
  
 #include "SidePanelView.h"
 
+#include <DateFormat.h>
 #include <LayoutBuilder.h>
 
 
@@ -38,7 +39,7 @@ SidePanelView::SidePanelView()
 
 	float width, height;
 	fMonthLabel->GetPreferredSize(&width, &height);
-	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September"),
+	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September XXXX"),
 		height));
 	
 	fMonthUpButton->SetExplicitMinSize(BSize(height, height));
@@ -103,11 +104,16 @@ SidePanelView::UpdateDate(const BDate& date)
 
 	fCalendarView->SetDate(date);
 
-	BString text;
-	text << date.Year();
-	fYearLabel->SetText(text.String());
+	BString yearString;
+	BString monthYearString;
+	yearString << date.Year();
 
-	fMonthLabel->SetText(date.LongMonthName(date.Month()).String());
+	BDateFormat dateFormat;
+	dateFormat.GetMonthName(date.Month(), monthYearString);
+	monthYearString += " ";
+	monthYearString += yearString.String();
+
+	fMonthLabel->SetText(monthYearString);
 }
 
 
