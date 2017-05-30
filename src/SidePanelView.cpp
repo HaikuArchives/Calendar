@@ -31,9 +31,15 @@ SidePanelView::SidePanelView()
 	fMonthUpButton->SetFlat(true);
 	fMonthDownButton->SetFlat(true);
 	
+	BFont font;
+	fMonthLabel->GetFont(&font);
+	font.SetSize(font.Size() * 1.1);
+	fMonthLabel->SetFont(&font, B_FONT_ALL);
+
 	float width, height;
 	fMonthLabel->GetPreferredSize(&width, &height);
-	fMonthLabel->SetExplicitMinSize(BSize(be_plain_font->StringWidth("September"), height));
+	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September"),
+		height));
 	
 	fMonthUpButton->SetExplicitMinSize(BSize(height, height));
 	fMonthDownButton->SetExplicitMinSize(BSize(height, height));
