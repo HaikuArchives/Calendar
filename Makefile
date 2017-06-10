@@ -32,6 +32,7 @@ SRCS = \
 	 src/App.cpp  \
 	 src/MainWindow.cpp  \
 	 src/DateHeaderView.cpp  \
+	 src/PreferenceWindow.cpp  \
 	 src/SidePanelView.cpp  \
 	 src/utils/ResourceLoader.cpp  \
 

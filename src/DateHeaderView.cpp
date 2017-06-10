@@ -16,27 +16,27 @@ DateHeaderView::DateHeaderView()
 	fDayLabel = new BStringView("DayLabel", "");
 	fDayOfWeekLabel = new BStringView("DayOfWeekLabel", "");
 	fMonthYearLabel = new BStringView("MonthYearLabel", "");
-	
+
 	time_t timeValue = (time_t)time(NULL);
-	
+
 	BString dateString;
 	BString dayString;
 	BString dayOfWeekString;
 	BString monthString;
 	BString yearString;
 	BString monthYearString;
-	
+
 	BDateFormat dateFormat;
-	
+
 	int* fieldPositions;
 	int positionCount;
 	BDateElement* fields;
 	int fieldCount;
-	
+
 	dateFormat.Format(dateString, fieldPositions, positionCount,
 		timeValue, B_FULL_DATE_FORMAT);
 	dateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
-		
+
 	for(int i = 0; i < fieldCount; ++i)  {
 		if (fields[i] == B_DATE_ELEMENT_WEEKDAY)
 			dateString.CopyCharsInto(dayOfWeekString, fieldPositions[i * 2],
@@ -51,34 +51,34 @@ DateHeaderView::DateHeaderView()
 			dateString.CopyCharsInto(yearString, fieldPositions[i * 2],
 				fieldPositions[i * 2 + 1] - fieldPositions[i * 2]);
 	}
-	
+
 	monthYearString.AppendChars(monthString, monthString.CountChars());
 	monthYearString += " ";
 	monthYearString.AppendChars(yearString, yearString.CountChars());
-	
+
 	fDayOfWeekLabel->SetText(dayOfWeekString);
 	fDayLabel->SetText(dayString);
 	fMonthYearLabel->SetText(monthYearString);
-	
+
 	BFont font;
 	fDayLabel->GetFont(&font);
 	font.SetSize(font.Size() * 3.6);
 	fDayLabel->SetFont(&font, B_FONT_ALL);
-	
+
 	fDayOfWeekLabel->GetFont(&font);
 	font.SetSize(font.Size() * 1.2);
 	fDayOfWeekLabel->SetFont(&font, B_FONT_ALL);
-	
-	BLayoutBuilder::Group<>(this, B_HORIZONTAL)  
+
+	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
 			.AddGroup(B_VERTICAL)
 				.Add(fDayLabel)
 			.End()
 			.AddGroup(B_VERTICAL, 0)
 				.SetInsets(0, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)	
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 				.Add(fDayOfWeekLabel)
 				.Add(fMonthYearLabel)
 			.End()
 			.AddGlue()
-	.End();	
+	.End();
 }

@@ -12,11 +12,11 @@
 class DateHeaderView: public BView {
 public:
 							DateHeaderView();
-		
+
 private:
 		BStringView*		fDayLabel;
 		BStringView*		fDayOfWeekLabel;
 		BStringView*		fMonthYearLabel;
 };
-	
+
 #endif

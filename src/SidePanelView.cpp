@@ -3,35 +3,49 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
- 
+
 #include "SidePanelView.h"
 
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 
+#include "PreferenceWindow.h"
+
+
+enum StartOfWeek
+{
+	kLocaleStartOfWeek,
+	kWeekDayMonday,
+	kWeekDayTuesday,
+	kWeekDayWednesday,
+	kWeekDayThursday,
+	kWeekDayFriday,
+	kWeekDaySaturday,
+	kWeekDaySunday,
+};
 
 SidePanelView::SidePanelView()
 	:
 	BView("SidePanelView", B_WILL_DRAW)
 {
 	SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
-	
+
 	fCalendarView = new BCalendarView("calendar");
 	fCalendarView->SetWeekNumberHeaderVisible(false);
 	fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
 	fCalendarView->SetSelectionMessage(new BMessage(kInvokationMessage));
-	
+
 	fDateHeaderView = new DateHeaderView();
-	
+
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
-	
+
 	fMonthUpButton = new BButton("MonthuUp", ">", new BMessage(kMonthUpMessage));
 	fMonthDownButton = new BButton("MonthDown", "<", new BMessage(kMonthDownMessage));
-	
+
 	fMonthUpButton->SetFlat(true);
 	fMonthDownButton->SetFlat(true);
-	
+
 	BFont font;
 	fMonthLabel->GetFont(&font);
 	font.SetSize(font.Size() * 1.1);
@@ -41,10 +55,10 @@ SidePanelView::SidePanelView()
 	fMonthLabel->GetPreferredSize(&width, &height);
 	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September XXXX"),
 		height));
-	
+
 	fMonthUpButton->SetExplicitMinSize(BSize(height, height));
 	fMonthDownButton->SetExplicitMinSize(BSize(height, height));
-	
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(15)
 		.Add(fDateHeaderView)
@@ -60,7 +74,7 @@ SidePanelView::SidePanelView()
 		.Add(fCalendarView)
 		.AddGlue()
 	.End();
-	
+
 	UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 }
 
@@ -86,6 +100,26 @@ SidePanelView::MessageReceived(BMessage* message)
 			BDate date = fCalendarView->Date();
 			date.AddMonths(kMonthDownMessage == message->what ? -1 : 1);
 			UpdateDate(date);
+			break;
+		}
+
+		case kSetCalendarToCurrentDate:
+			UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
+			break;
+
+		case kSetStartOfWeekMessage:
+		{
+			int32 index;
+			message->FindInt32("weekday", &index);
+			SetStartOfWeek(index);
+			break;
+		}
+
+		case kShowWeekNumberMessage:
+		{
+			bool state;
+			message->FindBool("state", &state);
+			ShowWeekHeader(state);
 			break;
 		}
 
@@ -116,6 +150,30 @@ SidePanelView::UpdateDate(const BDate& date)
 	fMonthLabel->SetText(monthYearString);
 }
 
+
+void
+SidePanelView::SetStartOfWeek(int32 index)
+{
+	StartOfWeek startOfWeekDay = static_cast<StartOfWeek>(index);
+		//Preference menu index to start of week map
+
+	if (startOfWeekDay == kLocaleStartOfWeek) {
+		// Set to start of week based on the current locale preferences
+	}
+
+	else
+	{
+		BWeekday firstDay = static_cast<BWeekday>(index);
+		fCalendarView->SetStartOfWeek(firstDay);
+	}
+}
+
+
+void
+SidePanelView::ShowWeekHeader(bool state)
+{
+	fCalendarView->SetWeekNumberHeaderVisible(state);
+}
 
 
 

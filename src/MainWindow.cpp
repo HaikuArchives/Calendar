@@ -6,14 +6,16 @@
 #include "MainWindow.h"
 
 #include <Application.h>
+#include <DateFormat.h>
 #include <LayoutBuilder.h>
 
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
+
 MainWindow::MainWindow()
 	:
-	BWindow(BRect(), "Calendar", B_TITLED_WINDOW, 
+	BWindow(BRect(), "Calendar", B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	ResizeTo(640, 360);
@@ -28,13 +30,14 @@ MainWindow::MainWindow()
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
+	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuAppPref)));
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
-	
+
 	fMenuBar->AddItem(fAppMenu);
-	
+
 	fToolBar = new BToolBar();
-	fToolBar->AddAction(new BMessage(kShowToday), this, LoadVectorIcon("CALENDAR_ICON"),
+	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
 		"Today", "Today", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
@@ -63,7 +66,7 @@ bool
 MainWindow::QuitRequested()
 {
 	be_app->PostMessage(B_QUIT_REQUESTED);
-	return true;
+	return false;
 }
 
 
@@ -76,10 +79,31 @@ MainWindow::MessageReceived(BMessage* message)
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
 
+		case kSetCalendarToCurrentDate:
+			fSidePanelView->MessageReceived(message);
+
 		case kMonthUpMessage:
 		case kMonthDownMessage:
 			fSidePanelView->MessageReceived(message);
 			break;
+
+		case kMenuAppPref:
+		{
+			be_app->PostMessage(kMenuAppPref);
+			break;
+		}
+
+		case kSetStartOfWeekMessage:
+		{
+			fSidePanelView->MessageReceived(message);
+			break;
+		}
+
+		case kShowWeekNumberMessage:
+		{
+			fSidePanelView->MessageReceived(message);
+			break;
+		}
 
 		default:
 			BWindow::MessageReceived(message);

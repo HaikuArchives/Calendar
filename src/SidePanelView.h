@@ -20,23 +20,31 @@ enum {
 	kInvokationMessage,
 	kMonthDownMessage,
 	kMonthUpMessage,
+	kShowWeekNumberMessage,
+	kSetStartOfWeekMessage,
+	kSetCalendarToCurrentDate,
 };
 
 
 class SidePanelView: public BView {
 public:
-							SidePanelView();
-							
-		void				MessageReceived(BMessage* message);	
-		void 				UpdateDate(const BDate&);
-									
+					SidePanelView();
+
+		void			MessageReceived(BMessage* message);
+		void 			UpdateDate(const BDate&);
+		void 			SetStartOfWeek(int32);
+		void			ShowWeekHeader(bool);
+
 private:
+
+		static const int 	kShowToday = 1001;
+
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;
 		BCalendarView*		fCalendarView;
 		DateHeaderView*		fDateHeaderView;
-		BButton*			fMonthUpButton;
-		BButton*			fMonthDownButton;
+		BButton*		fMonthUpButton;
+		BButton*		fMonthDownButton;
 };
 
 

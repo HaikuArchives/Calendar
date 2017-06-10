@@ -9,16 +9,23 @@
 #include <Application.h>
 
 #include "MainWindow.h"
+#include "PreferenceWindow.h"
 
 
 class App: public BApplication
 {
 public:
-			App();
-	void		AboutRequested();
+				App();
+
+	void			AboutRequested();
+	bool			QuitRequested();
+	void			MessageReceived(BMessage* message);
+	MainWindow*		mainWindow();
+
 
 private:
-	MainWindow*	fMainWindow;
+	MainWindow*		fMainWindow;
+	PreferenceWindow*	fPreferenceWindow;
 };
 
 #endif
