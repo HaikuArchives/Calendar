@@ -5,6 +5,7 @@
 #ifndef _PREFWIN_H_
 #define _PREFWIN_H_
 
+#include <Box.h>
 #include <CheckBox.h>
 #include <DateFormat.h>
 #include <Menu.h>
@@ -38,6 +39,7 @@ private:
 		BStringView*		fStartOfWeekLabel;
 		BMenu*				fDayOfWeekMenu;
 		BMenuField*			fDayOfWeekMenuField;
+		BBox*				fWeekPreferencesBox;
 };
 
 #endif

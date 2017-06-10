@@ -58,6 +58,8 @@ App::MessageReceived(BMessage* message)
 			fPreferenceWindow->Lock();
 			if (fPreferenceWindow->IsHidden())
 				fPreferenceWindow->Show();
+			else
+				fPreferenceWindow->Activate();
 			fPreferenceWindow->Unlock();
 			break;
 		}

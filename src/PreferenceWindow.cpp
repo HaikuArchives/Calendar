@@ -16,7 +16,7 @@
 
 PreferenceWindow::PreferenceWindow()
 	:BWindow(BRect(), "Preferences", B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS)
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	CenterOnScreen();
 
@@ -45,7 +45,8 @@ PreferenceWindow::PreferenceWindow()
 	fPrefCategoryLabel = new BStringView("PrefCategory", "Week");
 	BFont font;
 	fPrefCategoryLabel->GetFont(&font);
-	font.SetSize(font.Size() * 1.4);
+	font.SetSize(font.Size() * 1.2);
+	font.SetFace(B_BOLD_FACE);
 	fPrefCategoryLabel->SetFont(&font, B_FONT_ALL);
 
 	fStartOfWeekLabel = new BStringView("StartOfWeek", "First Day Of Week");
@@ -54,20 +55,24 @@ PreferenceWindow::PreferenceWindow()
 		"Show Week Number in Calendar", new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
+	fWeekPreferencesBox = new BBox("Week");
 
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
-			.SetInsets(10, 20, 10, 10)
-			.Add(fPrefCategoryLabel)
-			.AddStrut(5)
+	BLayoutBuilder::Group<>(fWeekPreferencesBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+			.SetInsets(B_USE_ITEM_INSETS)
+			.AddStrut(B_USE_ITEM_SPACING)
 			.Add(fStartOfWeekLabel)
 			.Add(fDayOfWeekMenuField)
-			.AddStrut(5)
+			.AddStrut(B_USE_HALF_ITEM_SPACING)
 			.Add(fWeekNumberHeaderCB)
-			.AddGlue(5)
+	.End();
+	fWeekPreferencesBox->SetLabel(fPrefCategoryLabel);
+
+	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
+			.SetInsets(B_USE_SMALL_INSETS)
+			.Add(fWeekPreferencesBox)
 	.End();
 
-
-	BLayoutBuilder::Group<>(this, B_VERTICAL)
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 			.Add(fMainView)
 	.End();
 
