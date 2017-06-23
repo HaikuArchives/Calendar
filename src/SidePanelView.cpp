@@ -9,6 +9,8 @@
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 
+#include "MainView.h"
+#include "MainWindow.h"
 #include "PreferenceWindow.h"
 
 
@@ -75,14 +77,29 @@ SidePanelView::SidePanelView()
 		.AddGlue()
 	.End();
 
-	UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
+	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 }
 
 
 void
 SidePanelView::MessageReceived(BMessage* message)
 {
+	int32 change;
 	switch (message->what) {
+
+		case B_OBSERVER_NOTICE_CHANGE:
+			message->FindInt32(B_OBSERVE_WHAT_CHANGE, &change);
+			switch (change) {
+				case kSystemDateChangeMessage:
+					fDateHeaderView->MessageReceived(message);
+					break;
+
+				default:
+					BView::MessageReceived(message);
+					break;
+			}
+			break;
+
 		case kInvokationMessage:
 		{
 			int32 day, month, year;
@@ -90,7 +107,7 @@ SidePanelView::MessageReceived(BMessage* message)
 			message->FindInt32("month", &month);
 			message->FindInt32("year", &year);
 
-			UpdateDate(BDate(year, month, day));
+			_UpdateDate(BDate(year, month, day));
 			break;
 		}
 
@@ -99,19 +116,19 @@ SidePanelView::MessageReceived(BMessage* message)
 		{
 			BDate date = fCalendarView->Date();
 			date.AddMonths(kMonthDownMessage == message->what ? -1 : 1);
-			UpdateDate(date);
+			_UpdateDate(date);
 			break;
 		}
 
 		case kSetCalendarToCurrentDate:
-			UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
+			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
 
 		case kSetStartOfWeekMessage:
 		{
 			int32 index;
 			message->FindInt32("weekday", &index);
-			SetStartOfWeek(index);
+			_SetStartOfWeek(index);
 			break;
 		}
 
@@ -119,7 +136,7 @@ SidePanelView::MessageReceived(BMessage* message)
 		{
 			bool state;
 			message->FindBool("state", &state);
-			ShowWeekHeader(state);
+			_ShowWeekHeader(state);
 			break;
 		}
 
@@ -131,7 +148,7 @@ SidePanelView::MessageReceived(BMessage* message)
 
 
 void
-SidePanelView::UpdateDate(const BDate& date)
+SidePanelView::_UpdateDate(const BDate& date)
 {
 	if (!date.IsValid())
 		return;
@@ -152,29 +169,27 @@ SidePanelView::UpdateDate(const BDate& date)
 
 
 void
-SidePanelView::SetStartOfWeek(int32 index)
+SidePanelView::_SetStartOfWeek(int32 index)
 {
 	StartOfWeek startOfWeekDay = static_cast<StartOfWeek>(index);
 		//Preference menu index to start of week map
+	BWeekday firstDay;
 
 	if (startOfWeekDay == kLocaleStartOfWeek) {
-		// Set to start of week based on the current locale preferences
+		BDateFormat().GetStartOfWeek(&firstDay);
+		fCalendarView->SetStartOfWeek(firstDay);
 	}
 
 	else
 	{
-		BWeekday firstDay = static_cast<BWeekday>(index);
+		firstDay = static_cast<BWeekday>(index);
 		fCalendarView->SetStartOfWeek(firstDay);
 	}
 }
 
 
 void
-SidePanelView::ShowWeekHeader(bool state)
+SidePanelView::_ShowWeekHeader(bool state)
 {
 	fCalendarView->SetWeekNumberHeaderVisible(state);
 }
-
-
-
-

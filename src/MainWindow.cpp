@@ -9,6 +9,7 @@
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 
+#include "MainView.h"
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
@@ -18,11 +19,12 @@ MainWindow::MainWindow()
 	BWindow(BRect(), "Calendar", B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS)
 {
+	SetPulseRate(500000);
+
 	ResizeTo(640, 360);
 	CenterOnScreen();
 
-	fMainView = new BView("MainView", B_WILL_DRAW);
-	fMainView->SetViewColor(255, 255, 255);
+	fMainView = new MainView();
 
 	fMenuBar = new BMenuBar("MenuBar");
 
@@ -50,6 +52,8 @@ MainWindow::MainWindow()
 	fToolBar->AddGlue();
 
 	fSidePanelView = new SidePanelView();
+
+	fMainView->StartWatchingAll(fSidePanelView);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
@@ -81,6 +85,7 @@ MainWindow::MessageReceived(BMessage* message)
 
 		case kSetCalendarToCurrentDate:
 			fSidePanelView->MessageReceived(message);
+			break;
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:

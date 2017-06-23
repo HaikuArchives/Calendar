@@ -11,9 +11,12 @@
 
 class DateHeaderView: public BView {
 public:
-							DateHeaderView();
+					DateHeaderView();
+		void 			MessageReceived(BMessage* message);
 
 private:
+		void 			_UpdateDateHeader();
+
 		BStringView*		fDayLabel;
 		BStringView*		fDayOfWeekLabel;
 		BStringView*		fMonthYearLabel;

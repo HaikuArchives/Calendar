@@ -31,6 +31,7 @@ APP_MIME_SIG =
 SRCS = \
 	 src/App.cpp  \
 	 src/MainWindow.cpp  \
+	 src/MainView.cpp  \
 	 src/DateHeaderView.cpp  \
 	 src/PreferenceWindow.cpp  \
 	 src/SidePanelView.cpp  \

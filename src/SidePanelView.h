@@ -31,13 +31,13 @@ public:
 					SidePanelView();
 
 		void			MessageReceived(BMessage* message);
-		void 			UpdateDate(const BDate&);
-		void 			SetStartOfWeek(int32);
-		void			ShowWeekHeader(bool);
+
 
 private:
 
-		static const int 	kShowToday = 1001;
+		void 			_UpdateDate(const BDate&);
+		void 			_SetStartOfWeek(int32);
+		void			_ShowWeekHeader(bool);
 
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;
@@ -46,6 +46,5 @@ private:
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;
 };
-
 
 #endif

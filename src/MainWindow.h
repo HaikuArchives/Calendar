@@ -12,10 +12,12 @@
 #include <View.h>
 #include <Window.h>
 
+#include "MainView.h"
 #include "PreferenceWindow.h"
 #include "SidePanelView.h"
 
 static const uint32 kMenuAppPref = 'kmap';
+static const uint32 kShowToday = 'ksty';
 
 
 class MainWindow: public BWindow {
@@ -30,7 +32,7 @@ private:
 	static const int kMonthView	= 1003;
 	static const int kAddEvent	= 1004;
 
-	BView*		fMainView;
+	MainView*	fMainView;
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
 	BToolBar*	fToolBar;

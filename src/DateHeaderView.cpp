@@ -9,6 +9,7 @@
 #include <Font.h>
 #include <LayoutBuilder.h>
 
+#include "MainView.h"
 
 DateHeaderView::DateHeaderView()
 	:BView("DateHeaderView", B_WILL_DRAW)
@@ -17,6 +18,63 @@ DateHeaderView::DateHeaderView()
 	fDayOfWeekLabel = new BStringView("DayOfWeekLabel", "");
 	fMonthYearLabel = new BStringView("MonthYearLabel", "");
 
+	BFont font;
+	fDayLabel->GetFont(&font);
+	font.SetSize(font.Size() * 3.6);
+	fDayLabel->SetFont(&font, B_FONT_ALL);
+
+	fDayOfWeekLabel->GetFont(&font);
+	font.SetSize(font.Size() * 1.2);
+	fDayOfWeekLabel->SetFont(&font, B_FONT_ALL);
+
+	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
+			.AddGroup(B_VERTICAL)
+				.Add(fDayLabel)
+			.End()
+			.AddGroup(B_VERTICAL, 0)
+				.SetInsets(0, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING)
+				.Add(fDayOfWeekLabel)
+				.Add(fMonthYearLabel)
+			.End()
+			.AddGlue()
+	.End();
+
+	_UpdateDateHeader();
+}
+
+
+void
+DateHeaderView::MessageReceived(BMessage* message)
+{
+	int32 change;
+	switch (message->what) {
+
+		case B_OBSERVER_NOTICE_CHANGE:
+		{	message->FindInt32(B_OBSERVE_WHAT_CHANGE, &change);
+			switch (change) {
+				case kSystemDateChangeMessage:
+					_UpdateDateHeader();
+					break;
+
+				default:
+					BView::MessageReceived(message);
+					break;
+			}
+			break;
+		}
+
+		default:
+			BView::MessageReceived(message);
+			break;
+	}
+}
+
+
+void
+DateHeaderView::_UpdateDateHeader()
+{
 	time_t timeValue = (time_t)time(NULL);
 
 	BString dateString;
@@ -26,16 +84,14 @@ DateHeaderView::DateHeaderView()
 	BString yearString;
 	BString monthYearString;
 
-	BDateFormat dateFormat;
-
 	int* fieldPositions;
 	int positionCount;
 	BDateElement* fields;
 	int fieldCount;
 
-	dateFormat.Format(dateString, fieldPositions, positionCount,
+	BDateFormat().Format(dateString, fieldPositions, positionCount,
 		timeValue, B_FULL_DATE_FORMAT);
-	dateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
+	BDateFormat().GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
 
 	for(int i = 0; i < fieldCount; ++i)  {
 		if (fields[i] == B_DATE_ELEMENT_WEEKDAY)
@@ -59,26 +115,4 @@ DateHeaderView::DateHeaderView()
 	fDayOfWeekLabel->SetText(dayOfWeekString);
 	fDayLabel->SetText(dayString);
 	fMonthYearLabel->SetText(monthYearString);
-
-	BFont font;
-	fDayLabel->GetFont(&font);
-	font.SetSize(font.Size() * 3.6);
-	fDayLabel->SetFont(&font, B_FONT_ALL);
-
-	fDayOfWeekLabel->GetFont(&font);
-	font.SetSize(font.Size() * 1.2);
-	fDayOfWeekLabel->SetFont(&font, B_FONT_ALL);
-
-	BLayoutBuilder::Group<>(this, B_HORIZONTAL)
-			.AddGroup(B_VERTICAL)
-				.Add(fDayLabel)
-			.End()
-			.AddGroup(B_VERTICAL, 0)
-				.SetInsets(0, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-				.Add(fDayOfWeekLabel)
-				.Add(fMonthYearLabel)
-			.End()
-			.AddGlue()
-	.End();
 }
