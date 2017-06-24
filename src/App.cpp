@@ -5,7 +5,10 @@
 
 #include "App.h"
 
+#include <LocaleRoster.h>
 #include <private/interface/AboutWindow.h>
+
+#include <locale.h>
 
 const char* kAppName = "Calendar";
 const char* kSignature = "application/x-vnd.calendar";
@@ -64,6 +67,10 @@ App::MessageReceived(BMessage* message)
 			break;
 		}
 
+		case B_LOCALE_CHANGED:
+			fMainWindow->PostMessage(message);
+			break;
+
 		default: {
 			BApplication::MessageReceived(message);
 			break;
@@ -75,6 +82,8 @@ App::MessageReceived(BMessage* message)
 int
 main()
 {
+	setlocale(LC_ALL, "");
+
 	App app;
 	app.Run();
 	return 0;

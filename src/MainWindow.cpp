@@ -8,6 +8,7 @@
 #include <Application.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
+#include <LocaleRoster.h>
 
 #include "MainView.h"
 #include "ResourceLoader.h"
@@ -89,6 +90,10 @@ MainWindow::MessageReceived(BMessage* message)
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:
+			fSidePanelView->MessageReceived(message);
+			break;
+
+		case B_LOCALE_CHANGED:
 			fSidePanelView->MessageReceived(message);
 			break;
 

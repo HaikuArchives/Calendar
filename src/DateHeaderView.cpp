@@ -8,6 +8,7 @@
 #include <DateFormat.h>
 #include <Font.h>
 #include <LayoutBuilder.h>
+#include <LocaleRoster.h>
 
 #include "MainView.h"
 
@@ -64,6 +65,10 @@ DateHeaderView::MessageReceived(BMessage* message)
 			}
 			break;
 		}
+
+		case B_LOCALE_CHANGED:
+			_UpdateDateHeader();
+			break;
 
 		default:
 			BView::MessageReceived(message);

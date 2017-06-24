@@ -36,6 +36,7 @@ public:
 private:
 
 		void 			_UpdateDate(const BDate&);
+		void			_UpdateDateLabel();
 		void 			_SetStartOfWeek(int32);
 		void			_ShowWeekHeader(bool);
 

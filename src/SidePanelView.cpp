@@ -8,6 +8,7 @@
 
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
+#include <LocaleRoster.h>
 
 #include "MainView.h"
 #include "MainWindow.h"
@@ -120,6 +121,14 @@ SidePanelView::MessageReceived(BMessage* message)
 			break;
 		}
 
+		case B_LOCALE_CHANGED:
+		{
+			BLocaleRoster::Default()->Refresh();
+			fDateHeaderView->MessageReceived(message);
+			_UpdateDateLabel();
+			break;
+		}
+
 		case kSetCalendarToCurrentDate:
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
@@ -154,6 +163,14 @@ SidePanelView::_UpdateDate(const BDate& date)
 		return;
 
 	fCalendarView->SetDate(date);
+	_UpdateDateLabel();
+}
+
+
+void
+SidePanelView::_UpdateDateLabel()
+{
+	BDate date = fCalendarView->Date();
 
 	BString yearString;
 	BString monthYearString;
