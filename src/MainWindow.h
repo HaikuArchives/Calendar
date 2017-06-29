@@ -8,7 +8,7 @@
 #include <DateTime.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
-#include <private/shared/ToolBar.h>
+#include <ToolBar.h>
 #include <View.h>
 #include <Window.h>
 

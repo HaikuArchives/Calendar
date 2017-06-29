@@ -7,7 +7,7 @@
 
 #include <Button.h>
 #include <DateTime.h>
-#include <private/shared/CalendarView.h>
+#include <CalendarView.h>
 #include <StringView.h>
 #include <View.h>
 
