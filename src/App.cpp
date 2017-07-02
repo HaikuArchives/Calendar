@@ -57,6 +57,13 @@ App::mainWindow()
 }
 
 
+CategoryWindow*
+App::categoryWindow()
+{
+	return fCategoryWindow;
+}
+
+
 void
 App::MessageReceived(BMessage* message)
 {

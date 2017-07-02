@@ -12,6 +12,8 @@
 #include <View.h>
 #include <Window.h>
 
+#include "CategoryEditWindow.h"
+
 
 const uint32 kCategoryWindowQuitting = 'kcwq';
 
@@ -33,6 +35,7 @@ private:
 	BScrollView*		fCategoryScroll;
 	BButton*		fAddButton;
 	BButton*		fCancelButton;
+	CategoryEditWindow*	fCategoryEditWindow;
 
 };
 

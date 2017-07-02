@@ -22,6 +22,7 @@ public:
 	bool			QuitRequested();
 	void			MessageReceived(BMessage* message);
 	MainWindow*		mainWindow();
+	CategoryWindow*	categoryWindow();
 
 
 private:

@@ -12,8 +12,9 @@
 
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), "Category Manager", B_TITLED_WINDOW,
-		B_AUTO_UPDATE_SIZE_LIMITS)
+	BWindow(BRect(), "Category Manager",B_TITLED_WINDOW,
+		B_AUTO_UPDATE_SIZE_LIMITS),
+	fCategoryEditWindow(NULL)
 {
 
 	CenterOnScreen();
@@ -56,6 +57,21 @@ CategoryWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
 
+		case kAddPressed:
+		{
+			if (fCategoryEditWindow == NULL) {
+				fCategoryEditWindow = new CategoryEditWindow();
+				fCategoryEditWindow->Show();
+			}
+
+			fCategoryEditWindow->Activate();
+			break;
+		}
+
+		case kCategoryEditQuitting:
+			fCategoryEditWindow = NULL;
+			break;
+
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -66,6 +82,11 @@ CategoryWindow::MessageReceived(BMessage* message)
 bool
 CategoryWindow::QuitRequested()
 {
+	if (fCategoryEditWindow != NULL) {
+		fCategoryEditWindow->Activate();
+		return false;
+	}
+
 	be_app->PostMessage(kCategoryWindowQuitting);
 	return true;
 }
