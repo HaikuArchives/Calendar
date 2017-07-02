@@ -33,11 +33,16 @@ MainWindow::MainWindow()
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuAppPref)));
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
+	fEditMenu = new BMenu("Edit");
+	fEditMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
+	fEditMenu->AddSeparatorItem();
+	fEditMenu->AddItem(new BMenuItem("Category", new BMessage(kMenuEditCategory)));
+
 	fMenuBar->AddItem(fAppMenu);
+	fMenuBar->AddItem(fEditMenu);
 
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
@@ -84,6 +89,10 @@ MainWindow::MessageReceived(BMessage* message)
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
 
+		case kAddEvent:
+			be_app->PostMessage(message);
+			break;
+
 		case kSetCalendarToCurrentDate:
 			fSidePanelView->MessageReceived(message);
 			break;
@@ -97,9 +106,15 @@ MainWindow::MessageReceived(BMessage* message)
 			fSidePanelView->MessageReceived(message);
 			break;
 
-		case kMenuAppPref:
+		case kMenuEditPref:
 		{
-			be_app->PostMessage(kMenuAppPref);
+			be_app->PostMessage(message);
+			break;
+		}
+
+		case kMenuEditCategory:
+		{
+			be_app->PostMessage(message);
 			break;
 		}
 

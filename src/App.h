@@ -7,6 +7,8 @@
 
 #include <Application.h>
 
+#include "CategoryWindow.h"
+#include "EventWindow.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
 
@@ -24,7 +26,9 @@ public:
 
 private:
 	MainWindow*		fMainWindow;
+	EventWindow*		fEventWindow;
 	PreferenceWindow*	fPreferenceWindow;
+	CategoryWindow*		fCategoryWindow;
 };
 
 #endif

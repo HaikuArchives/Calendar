@@ -10,13 +10,19 @@
 
 #include <locale.h>
 
+#include "EventWindow.h"
+#include "CategoryWindow.h"
+
 const char* kAppName = "Calendar";
 const char* kSignature = "application/x-vnd.calendar";
 
 
 App::App()
 	:
-	BApplication(kSignature)
+	BApplication(kSignature),
+	fEventWindow(NULL),
+	fPreferenceWindow(NULL),
+	fCategoryWindow(NULL)
 {
 	fMainWindow = new MainWindow();
 	fPreferenceWindow = new PreferenceWindow();
@@ -56,7 +62,7 @@ App::MessageReceived(BMessage* message)
 {
 	switch(message->what)
 	{
-		case kMenuAppPref:
+		case kMenuEditPref:
 		{
 			fPreferenceWindow->Lock();
 			if (fPreferenceWindow->IsHidden())
@@ -66,6 +72,36 @@ App::MessageReceived(BMessage* message)
 			fPreferenceWindow->Unlock();
 			break;
 		}
+
+		case kMenuEditCategory:
+		{
+			if (fCategoryWindow == NULL) {
+				fCategoryWindow = new CategoryWindow();
+				fCategoryWindow->Show();
+			}
+
+			fCategoryWindow->Activate();
+			break;
+		}
+
+		case kAddEvent:
+		{
+			if (fEventWindow == NULL) {
+				fEventWindow = new EventWindow();
+				fEventWindow->Show();
+			}
+
+			fEventWindow->Activate();
+			break;
+		}
+
+		case kEventWindowQuitting:
+			fEventWindow = NULL;
+			break;
+
+		case kCategoryWindowQuitting:
+			fCategoryWindow = NULL;
+			break;
 
 		case B_LOCALE_CHANGED:
 			fMainWindow->PostMessage(message);

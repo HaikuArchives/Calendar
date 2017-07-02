@@ -17,6 +17,9 @@
 #include <Window.h>
 
 
+const uint32 kEventWindowQuitting = 'kewq';
+
+
 class EventWindow: public BWindow {
 public:
 			EventWindow();
@@ -31,33 +34,33 @@ private:
 	static const uint32	kOptEveryMonth	= 1004;
 	static const uint32	kOptEveryYear	= 1005;
 
-    BTextControl*	fTextName;
-    BTextControl*	fTextPlace;
+	BTextControl*		fTextName;
+	BTextControl*		fTextPlace;
 
 	BTextView*		fTextDescription;
 	BView*			fMainView;
 
-    BMenu*			fCategoryMenu;
-    BMenu*			fStartDateEdit;
-    BMenu*			fEndDateEdit;
+	BMenu*			fCategoryMenu;
+	BMenu*			fStartDateEdit;
+	BMenu*			fEndDateEdit;
 
 	BMenuField*		fCategoryMenuField;
 	BMenuField*		fStartDateField;
 	BMenuField*		fEndDateField;
 
-	BStringView*	fNameLabel;
-	BStringView*	fPlaceLabel;
-	BStringView*	fDescriptionLabel;
-	BStringView*	fCategoryLabel;
-    BStringView*	fAllDayLabel;
-	BStringView*	fStartLabel;
-	BStringView*	fEndLabel;
-	BStringView*	fRecurrenceLabel;
+	BStringView*		fNameLabel;
+	BStringView*		fPlaceLabel;
+	BStringView*		fDescriptionLabel;
+	BStringView*		fCategoryLabel;
+	BStringView*		fAllDayLabel;
+	BStringView*		fStartLabel;
+	BStringView*		fEndLabel;
+	BStringView*		fRecurrenceLabel;
 
-    BButton*		fDeleteButton;
-    BRadioButton*	fEveryMonth;
-    BRadioButton*	fEveryYear;
-    BCheckBox*		fAllDayCheckBox;
+	BButton*		fDeleteButton;
+	BRadioButton*		fEveryMonth;
+	BRadioButton*		fEveryYear;
+	BCheckBox*		fAllDayCheckBox;
 
 };
 

@@ -13,6 +13,9 @@
 #include <Window.h>
 
 
+const uint32 kCategoryWindowQuitting = 'kcwq';
+
+
 class CategoryWindow: public BWindow {
 public:
 			CategoryWindow();
@@ -21,13 +24,13 @@ public:
 	virtual bool	QuitRequested();
 
 private:
-	static const uint32 kAddPressed			= 1000;
-	static const uint32 kCancelPressed		= 1001;
+	static const uint32 kAddPressed		= 1000;
+	static const uint32 kCancelPressed	= 1001;
 	static const uint32 kCategorySelected	= 1002;
 
 	BView*			fMainView;
 	BListView*		fCategoryList;
-	BScrollView*	fCategoryScroll;
+	BScrollView*		fCategoryScroll;
 	BButton*		fAddButton;
 	BButton*		fCancelButton;
 

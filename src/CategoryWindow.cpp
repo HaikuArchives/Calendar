@@ -5,6 +5,8 @@
 
 #include "CategoryWindow.h"
 
+
+#include <Application.h>
 #include <LayoutBuilder.h>
 
 
@@ -64,5 +66,6 @@ CategoryWindow::MessageReceived(BMessage* message)
 bool
 CategoryWindow::QuitRequested()
 {
+	be_app->PostMessage(kCategoryWindowQuitting);
 	return true;
 }

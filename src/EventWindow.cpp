@@ -38,14 +38,14 @@ EventWindow::EventWindow()
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 
-    fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
-    fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
+	fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
+	fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
 
 	fNameLabel = new BStringView("NameLabel", "Name");
 	fPlaceLabel = new BStringView("PlaceLabel", "Place");
 	fDescriptionLabel = new BStringView("DescriptionLabel", "Description");
 	fCategoryLabel = new BStringView("CategoryLabel", "Category");
-    fAllDayLabel = new BStringView("AllDayLabel", "All Day");
+	fAllDayLabel = new BStringView("AllDayLabel", "All Day");
 	fStartLabel = new BStringView("StartLabel", "Start");
 	fEndLabel = new BStringView("EndLabel", "End");
 	fRecurrenceLabel = new BStringView("RecurrenceLabel", "Recurrence");
@@ -127,5 +127,6 @@ EventWindow::MessageReceived(BMessage* message)
 bool
 EventWindow::QuitRequested()
 {
+	be_app->PostMessage(kEventWindowQuitting);
 	return true;
 }
