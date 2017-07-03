@@ -7,13 +7,18 @@
 
 
 #include <Button.h>
+#include <ColorControl.h>
 #include <StringView.h>
 #include <TextControl.h>
 #include <View.h>
 #include <Window.h>
 
+#include "ColorPreview.h"
+
 
 const uint32 kCategoryEditQuitting = 'kceq';
+const uint32 kColorDropped ='kcld';
+const uint32 kUpdateColor = 'kucl';
 
 
 class CategoryEditWindow: public BWindow {
@@ -25,13 +30,20 @@ public:
 
 private:
 
+	void				_SetCurrentColor(rgb_color color);
+
 	static const uint32 kSavePressed = 1000;
 	static const uint32 kDeletePressed = 1001;
 
-	BView*				fMainView;
+	BView*			fMainView;
 	BTextControl*		fCategoryText;
-	BButton*			fSaveButton;
-	BButton*			fDeleteButton;
+	BColorControl*		fPicker;
+	ColorPreview*		fColorPreview;
+	BStringView*		fCategoryLabel;
+	BButton*		fSaveButton;
+	BButton*		fDeleteButton;
+
+
 };
 
 
