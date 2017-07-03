@@ -43,8 +43,8 @@ SidePanelView::SidePanelView()
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
 
-	fMonthUpButton = new BButton("MonthuUp", ">", new BMessage(kMonthUpMessage));
-	fMonthDownButton = new BButton("MonthDown", "<", new BMessage(kMonthDownMessage));
+	fMonthUpButton = new BButton("MonthuUp", "►", new BMessage(kMonthUpMessage));
+	fMonthDownButton = new BButton("MonthDown", "◄", new BMessage(kMonthDownMessage));
 
 	fMonthUpButton->SetFlat(true);
 	fMonthDownButton->SetFlat(true);
@@ -59,8 +59,8 @@ SidePanelView::SidePanelView()
 	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September XXXX"),
 		height));
 
-	fMonthUpButton->SetExplicitMinSize(BSize(height, height));
-	fMonthDownButton->SetExplicitMinSize(BSize(height, height));
+	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
+	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(15)

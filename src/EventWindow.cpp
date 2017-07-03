@@ -27,28 +27,44 @@ EventWindow::EventWindow()
 
 	fTextName = new BTextControl("EventName", NULL, NULL, NULL);
 	fTextPlace = new BTextControl("EventPlace", NULL, NULL, NULL);
+	fTextStartDate = new BTextControl("StartDate", NULL, NULL, NULL);
+	fTextEndDate = new BTextControl("EndDate", NULL, NULL, NULL);
+	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
+	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 
 	fTextDescription = new BTextView("TextDescription", B_WILL_DRAW);
 	fTextDescription->MakeEditable();
-
-	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
-	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
-	BButton* SaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
+	fTextDescription->SetExplicitMinSize(BSize(B_SIZE_UNSET, 100));
 
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+	fStartTimeCheckBox = new BCheckBox("AM", B_OK);
+	fEndTimeCheckBox = new BCheckBox("PM", B_OK);
 
 	fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
 	fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
 
-	fNameLabel = new BStringView("NameLabel", "Name");
-	fPlaceLabel = new BStringView("PlaceLabel", "Place");
-	fDescriptionLabel = new BStringView("DescriptionLabel", "Description");
-	fCategoryLabel = new BStringView("CategoryLabel", "Category");
-	fAllDayLabel = new BStringView("AllDayLabel", "All Day");
-	fStartLabel = new BStringView("StartLabel", "Start");
-	fEndLabel = new BStringView("EndLabel", "End");
-	fRecurrenceLabel = new BStringView("RecurrenceLabel", "Recurrence");
+	fNameLabel = new BStringView("NameLabel", "Name:");
+	fPlaceLabel = new BStringView("PlaceLabel", "Place:");
+	fDescriptionLabel = new BStringView("DescriptionLabel", "Description:");
+	fCategoryLabel = new BStringView("CategoryLabel", "Category:");
+	fAllDayLabel = new BStringView("AllDayLabel", "All Day:");
+	fEndDateLabel = new BStringView("EndDateLabel", "End Date:");
+	fStartDateLabel = new BStringView("StartDateLabel", "Start Date:");
+	fRecurrenceLabel = new BStringView("RecurrenceLabel", "Recurrence:");
+	fStartTimeLabel = new BStringView("StartTimeLabel", "Start Time:");
+	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
+
+	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
+	fStartCalButton = new BButton("StartCalButton", "▼", B_OK);
+	fEndCalButton = new BButton("EndCalButton", "▼", B_OK);
+	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
+	BButton* SaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
+
+	float width, height;
+	fStartDateLabel->GetPreferredSize(&width, &height);
+	fStartCalButton->SetExplicitMinSize(BSize(height, height));
+	fEndCalButton->SetExplicitMinSize(BSize(height, height));
 
 	fCategoryMenu = new BMenu("CategoryMenu");
 	fCategoryMenu->AddItem(new BMenuItem("Default", B_OK));
@@ -63,8 +79,6 @@ EventWindow::EventWindow()
 	fEndDateEdit = new BMenu("End Date");
 
 	fCategoryMenuField = new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
-	fStartDateField = new BMenuField("StarDateField", NULL, fStartDateEdit);
-	fEndDateField = new BMenuField("EndDateField", NULL,  fEndDateEdit);
 
 	BBox* fRecurrenceBox = new BBox("RecurrenceBox");
 
@@ -74,6 +88,42 @@ EventWindow::EventWindow()
 		.Add(fEveryMonth)
 		.Add(fEveryYear)
 	.End();
+
+	fTextStartDate->SetEnabled(false);
+	fTextEndDate->SetEnabled(false);
+	fTextStartTime->SetEnabled(false);
+	fTextEndTime->SetEnabled(false);
+
+	BBox* startDateBox = new BBox("Start Date and Time");
+	BLayoutBuilder::Group<>(startDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+			.SetInsets(B_USE_ITEM_INSETS)
+			.AddStrut(B_USE_ITEM_SPACING)
+			.AddGrid()
+				.Add(fStartDateLabel, 0, 0)
+				.Add(fTextStartDate, 1, 0)
+				.Add(fStartCalButton, 2, 0)
+				.Add(fStartTimeLabel, 0, 1)
+				.Add(fTextStartTime, 1, 1)
+				.Add(fStartTimeCheckBox, 2, 1)
+			.End()
+	.End();
+	startDateBox->SetLabel("Start Date and Time");
+
+	BBox* endDateBox = new BBox("Start Date and Time");
+	BLayoutBuilder::Group<>(endDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+			.SetInsets(B_USE_ITEM_INSETS)
+			.AddStrut(B_USE_ITEM_SPACING)
+			.AddGrid()
+				.Add(fEndDateLabel, 0, 0)
+				.Add(fTextEndDate, 1, 0)
+				.Add(fEndCalButton, 2, 0)
+				.Add(fEndTimeLabel, 0, 1)
+				.Add(fTextEndTime, 1, 1)
+				.Add(fEndTimeCheckBox, 2, 1)
+			.End()
+	.End();
+	endDateBox->SetLabel("End Date and Time");
+
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
 		.AddGrid()
@@ -91,12 +141,9 @@ EventWindow::EventWindow()
 			.Add(fCategoryMenuField, 1, 0)
 			.Add(fAllDayLabel, 0, 1)
 			.Add(fAllDayCheckBox, 1 ,1)
-			.Add(fStartLabel, 0, 2)
-			.Add(fStartDateField, 1 ,2)
-			.Add(fEndLabel, 0, 3)
-			.Add(fEndDateField, 1 ,3)
 		.End()
-		.AddStrut(B_USE_ITEM_SPACING)
+		.Add(startDateBox)
+		.Add(endDateBox)
 		.Add(fRecurrenceBox)
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
 			.Add(CancelButton)

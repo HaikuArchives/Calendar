@@ -36,6 +36,10 @@ private:
 
 	BTextControl*		fTextName;
 	BTextControl*		fTextPlace;
+	BTextControl*		fTextStartDate;
+	BTextControl*		fTextEndDate;
+	BTextControl*		fTextStartTime;
+	BTextControl*		fTextEndTime;
 
 	BTextView*		fTextDescription;
 	BView*			fMainView;
@@ -45,22 +49,28 @@ private:
 	BMenu*			fEndDateEdit;
 
 	BMenuField*		fCategoryMenuField;
-	BMenuField*		fStartDateField;
-	BMenuField*		fEndDateField;
 
 	BStringView*		fNameLabel;
 	BStringView*		fPlaceLabel;
 	BStringView*		fDescriptionLabel;
 	BStringView*		fCategoryLabel;
 	BStringView*		fAllDayLabel;
-	BStringView*		fStartLabel;
-	BStringView*		fEndLabel;
 	BStringView*		fRecurrenceLabel;
+	BStringView*		fStartDateLabel;
+	BStringView*		fStartTimeLabel;
+	BStringView*		fEndDateLabel;
+	BStringView*		fEndTimeLabel;
 
 	BButton*		fDeleteButton;
+	BButton*		fStartCalButton;
+	BButton*		fEndCalButton;
+
 	BRadioButton*		fEveryMonth;
 	BRadioButton*		fEveryYear;
+
 	BCheckBox*		fAllDayCheckBox;
+	BCheckBox*		fStartTimeCheckBox;
+	BCheckBox*		fEndTimeCheckBox;
 
 };
 
