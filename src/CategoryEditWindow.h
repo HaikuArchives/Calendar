@@ -8,7 +8,6 @@
 
 #include <Button.h>
 #include <ColorControl.h>
-#include <StringView.h>
 #include <TextControl.h>
 #include <View.h>
 #include <Window.h>
@@ -39,7 +38,6 @@ private:
 	BTextControl*		fCategoryText;
 	BColorControl*		fPicker;
 	ColorPreview*		fColorPreview;
-	BStringView*		fCategoryLabel;
 	BButton*		fSaveButton;
 	BButton*		fDeleteButton;
 

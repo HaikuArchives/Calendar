@@ -21,7 +21,6 @@ CategoryEditWindow::CategoryEditWindow()
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fCategoryText = new BTextControl("CategoryText", NULL,
 		"New Category", NULL);
-	fCategoryLabel = new BStringView("CategoryLabel", "Category Name");
 	fSaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
 
