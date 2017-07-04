@@ -37,6 +37,7 @@ SRCS = \
 	 src/CategoryWindow.cpp  \
 	 src/ColorPreview.cpp  \
 	 src/CategoryEditWindow.cpp  \
+	 src/CalendarMenuWindow.cpp  \
 	 src/PreferenceWindow.cpp  \
 	 src/SidePanelView.cpp  \
 	 src/utils/ResourceLoader.cpp  \

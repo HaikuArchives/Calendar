@@ -11,9 +11,11 @@
 #include <LayoutItem.h>
 #include <LayoutBuilder.h>
 #include <MenuItem.h>
+#include <Screen.h>
 
 #include "App.h"
 #include "MainWindow.h"
+
 
 EventWindow::EventWindow()
 	:
@@ -56,8 +58,8 @@ EventWindow::EventWindow()
 	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
 
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
-	fStartCalButton = new BButton("StartCalButton", "▼", B_OK);
-	fEndCalButton = new BButton("EndCalButton", "▼", B_OK);
+	fStartCalButton = new BButton("StartCalButton", "▼", new BMessage(kShowStartDateCalendar));
+	fEndCalButton = new BButton("EndCalButton", "▼", new BMessage(kShowEndDateCalendar));
 	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
 	BButton* SaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
 
@@ -94,8 +96,8 @@ EventWindow::EventWindow()
 	fTextStartTime->SetEnabled(false);
 	fTextEndTime->SetEnabled(false);
 
-	BBox* startDateBox = new BBox("Start Date and Time");
-	BLayoutBuilder::Group<>(startDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+	fStartDateBox = new BBox("Start Date and Time");
+	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 			.SetInsets(B_USE_ITEM_INSETS)
 			.AddStrut(B_USE_ITEM_SPACING)
 			.AddGrid()
@@ -107,10 +109,10 @@ EventWindow::EventWindow()
 				.Add(fStartTimeCheckBox, 2, 1)
 			.End()
 	.End();
-	startDateBox->SetLabel("Start Date and Time");
+	fStartDateBox->SetLabel("Start Date and Time");
 
-	BBox* endDateBox = new BBox("Start Date and Time");
-	BLayoutBuilder::Group<>(endDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+	fEndDateBox = new BBox("Start Date and Time");
+	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 			.SetInsets(B_USE_ITEM_INSETS)
 			.AddStrut(B_USE_ITEM_SPACING)
 			.AddGrid()
@@ -122,7 +124,7 @@ EventWindow::EventWindow()
 				.Add(fEndTimeCheckBox, 2, 1)
 			.End()
 	.End();
-	endDateBox->SetLabel("End Date and Time");
+	fEndDateBox->SetLabel("End Date and Time");
 
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
@@ -142,8 +144,8 @@ EventWindow::EventWindow()
 			.Add(fAllDayLabel, 0, 1)
 			.Add(fAllDayCheckBox, 1 ,1)
 		.End()
-		.Add(startDateBox)
-		.Add(endDateBox)
+		.Add(fStartDateBox)
+		.Add(fEndDateBox)
 		.Add(fRecurrenceBox)
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
 			.Add(CancelButton)
@@ -164,6 +166,28 @@ EventWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
 
+		case kShowStartDateCalendar:
+		{
+			BPoint where;
+			BPoint boxPosition = fStartDateBox->Frame().LeftTop();
+			BPoint buttonPosition = fStartCalButton->Frame().LeftBottom();
+			where = boxPosition + buttonPosition;
+			where += BPoint(10.0, 8.0);
+			ShowCalendar(where);
+			break;
+		}
+
+		case kShowEndDateCalendar:
+		{
+			BPoint where;
+			BPoint boxPosition = fEndDateBox->Frame().LeftTop();
+			BPoint buttonPosition = fEndCalButton->Frame().LeftBottom();
+			where = boxPosition + buttonPosition;
+			where += BPoint(10.0, 8.0);
+			ShowCalendar(where);
+			break;
+		}
+
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -176,4 +200,25 @@ EventWindow::QuitRequested()
 {
 	be_app->PostMessage(kEventWindowQuitting);
 	return true;
+}
+
+
+void
+EventWindow::ShowCalendar(BPoint where)
+{
+	if (fCalendarWindow.IsValid()) {
+		BMessage activate(B_SET_PROPERTY);
+		activate.AddSpecifier("Active");
+		activate.AddBool("data", true);
+
+		if (fCalendarWindow.SendMessage(&activate) == B_OK)
+			return;
+	}
+
+	ConvertToScreen(&where);
+
+	CalendarMenuWindow* window = new CalendarMenuWindow(where);
+	fCalendarWindow = BMessenger(window);
+
+	window->Show();
 }
