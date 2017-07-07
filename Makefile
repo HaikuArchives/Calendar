@@ -41,6 +41,7 @@ SRCS = \
 	 src/PreferenceWindow.cpp  \
 	 src/SidePanelView.cpp  \
 	 src/utils/ResourceLoader.cpp  \
+	 src/model/Event.cpp
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
