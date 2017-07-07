@@ -18,7 +18,8 @@
 MainWindow::MainWindow()
 	:
 	BWindow(BRect(), "Calendar", B_TITLED_WINDOW,
-		B_AUTO_UPDATE_SIZE_LIMITS)
+		B_AUTO_UPDATE_SIZE_LIMITS),
+	fEventWindow(NULL)
 {
 	SetPulseRate(500000);
 
@@ -61,6 +62,9 @@ MainWindow::MainWindow()
 
 	fMainView->StartWatchingAll(fSidePanelView);
 
+
+	fEventList = new BList();
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
 		.Add(fToolBar)
@@ -90,7 +94,23 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kAddEvent:
-			be_app->PostMessage(message);
+		{
+			if (fEventWindow == NULL) {
+				Event* event = NULL;
+				BDate date;
+				fSidePanelView->GetSelectedDate(date);
+				fEventWindow = new EventWindow();
+				fEventWindow->SetEvent(event, -1, fEventList);
+				fEventWindow->SetEventDate(date);
+				fEventWindow->Show();
+			}
+
+			fEventWindow->Activate();
+			break;
+		}
+
+		case kEventWindowQuitting:
+			fEventWindow = NULL;
 			break;
 
 		case kSetCalendarToCurrentDate:

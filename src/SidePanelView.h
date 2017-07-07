@@ -31,7 +31,7 @@ public:
 					SidePanelView();
 
 		void			MessageReceived(BMessage* message);
-
+		void			GetSelectedDate(BDate& date);
 
 private:
 

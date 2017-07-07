@@ -6,12 +6,14 @@
 #define MAIN_WINDOW_H
 
 #include <DateTime.h>
+#include <List.h>
 #include <MenuBar.h>
 #include <MenuItem.h>
 #include <ToolBar.h>
 #include <View.h>
 #include <Window.h>
 
+#include "EventWindow.h"
 #include "MainView.h"
 #include "PreferenceWindow.h"
 #include "SidePanelView.h"
@@ -34,11 +36,13 @@ private:
 	static const int kMonthView	= 1003;
 
 	MainView*	fMainView;
+	EventWindow*	fEventWindow;
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
 	BMenu*		fEditMenu;
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
+	BList*		fEventList;
 
 };
 

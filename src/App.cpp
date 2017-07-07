@@ -20,7 +20,6 @@ const char* kSignature = "application/x-vnd.calendar";
 App::App()
 	:
 	BApplication(kSignature),
-	fEventWindow(NULL),
 	fPreferenceWindow(NULL),
 	fCategoryWindow(NULL)
 {
@@ -91,20 +90,6 @@ App::MessageReceived(BMessage* message)
 			break;
 		}
 
-		case kAddEvent:
-		{
-			if (fEventWindow == NULL) {
-				fEventWindow = new EventWindow();
-				fEventWindow->Show();
-			}
-
-			fEventWindow->Activate();
-			break;
-		}
-
-		case kEventWindowQuitting:
-			fEventWindow = NULL;
-			break;
 
 		case kCategoryWindowQuitting:
 			fCategoryWindow = NULL;

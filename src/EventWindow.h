@@ -8,6 +8,8 @@
 #include <Button.h>
 #include <Box.h>
 #include <CheckBox.h>
+#include <DateTime.h>
+#include <List.h>
 #include <Menu.h>
 #include <MenuField.h>
 #include <Messenger.h>
@@ -19,19 +21,34 @@
 #include <Window.h>
 
 #include "CalendarMenuWindow.h"
+#include "Event.h"
+
 
 const uint32 kEventWindowQuitting = 'kewq';
-const uint32 kShowStartDateCalendar = 'ksdc';
-const uint32 kShowEndDateCalendar = 'kedc';
+const uint32 kShowPopUpCalendar = 'kspc';
 
 
 class EventWindow: public BWindow {
 public:
 			EventWindow();
-	virtual void	MessageReceived(BMessage* message);
-	virtual bool	QuitRequested();
+
+	virtual void		MessageReceived(BMessage* message);
+	virtual bool		QuitRequested();
+
+	void			SetEvent(Event* event, int eventIndex,
+					BList* eventList);
+	void			SetEventDate(BDate& date);
+	Event*			GetEvent();
 
 	void			ShowCalendar(BPoint where);
+	void 			DisableControls();
+	void			OnCheckBoxToggle();
+	void			OnSaveClick();
+	void			OnDeleteClick();
+	void			CloseWindow();
+
+	BString			GetLocaleDateString(time_t timeValue);
+	BString			GetLocaleTimeString(time_t timeValue);
 
 private:
 	static const uint32	kDeletePressed	= 1000;
@@ -79,10 +96,17 @@ private:
 	BCheckBox*		fStartTimeCheckBox;
 	BCheckBox*		fEndTimeCheckBox;
 
-	BBox*	fStartDateBox;
-	BBox*	fEndDateBox;
+	BBox*			fStartDateBox;
+	BBox*			fEndDateBox;
 
-	BMessenger	fCalendarWindow;
+	BMessenger		fCalendarWindow;
+
+	BDateTime		fStartDateTime;
+	BDateTime		fEndDateTime;
+
+	Event*			fEvent;
+	BList*			fEventList;
+	int			fEventIndex;
 
 };
 

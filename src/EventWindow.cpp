@@ -6,21 +6,28 @@
 #include "EventWindow.h"
 
 #include <Application.h>
+#include <Alert.h>
 #include <Box.h>
+#include <DateFormat.h>
+#include <File.h>
 #include <GroupLayout.h>
 #include <LayoutItem.h>
 #include <LayoutBuilder.h>
 #include <MenuItem.h>
 #include <Screen.h>
+#include <TimeFormat.h>
 
 #include "App.h"
+#include "Event.h"
 #include "MainWindow.h"
 
 
 EventWindow::EventWindow()
 	:
 	BWindow(BRect(), "Event Manager", B_TITLED_WINDOW,
-			B_AUTO_UPDATE_SIZE_LIMITS)
+			B_AUTO_UPDATE_SIZE_LIMITS),
+	fStartDateTime(),
+	fEndDateTime()
 {
 	CenterOnScreen();
 
@@ -41,7 +48,7 @@ EventWindow::EventWindow()
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 	fStartTimeCheckBox = new BCheckBox("AM", B_OK);
-	fEndTimeCheckBox = new BCheckBox("PM", B_OK);
+	fEndTimeCheckBox = new BCheckBox("AM", B_OK);
 
 	fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
 	fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
@@ -58,10 +65,16 @@ EventWindow::EventWindow()
 	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
 
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
-	fStartCalButton = new BButton("StartCalButton", "▼", new BMessage(kShowStartDateCalendar));
-	fEndCalButton = new BButton("EndCalButton", "▼", new BMessage(kShowEndDateCalendar));
 	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
 	BButton* SaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
+
+	BMessage* message = new BMessage(kShowPopUpCalendar);
+	message->AddInt8("which",0);
+	fStartCalButton = new BButton("StartCalButton", "▼", message);
+	message = new BMessage(kShowPopUpCalendar);
+	message->AddInt8("which",1);
+	fEndCalButton = new BButton("EndCalButton", "▼", message);
+
 
 	float width, height;
 	fStartDateLabel->GetPreferredSize(&width, &height);
@@ -91,38 +104,33 @@ EventWindow::EventWindow()
 		.Add(fEveryYear)
 	.End();
 
-	fTextStartDate->SetEnabled(false);
-	fTextEndDate->SetEnabled(false);
-	fTextStartTime->SetEnabled(false);
-	fTextEndTime->SetEnabled(false);
-
 	fStartDateBox = new BBox("Start Date and Time");
 	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
-			.SetInsets(B_USE_ITEM_INSETS)
-			.AddStrut(B_USE_ITEM_SPACING)
-			.AddGrid()
-				.Add(fStartDateLabel, 0, 0)
-				.Add(fTextStartDate, 1, 0)
-				.Add(fStartCalButton, 2, 0)
-				.Add(fStartTimeLabel, 0, 1)
-				.Add(fTextStartTime, 1, 1)
-				.Add(fStartTimeCheckBox, 2, 1)
-			.End()
+		.SetInsets(B_USE_ITEM_INSETS)
+		.AddStrut(B_USE_ITEM_SPACING)
+		.AddGrid()
+			.Add(fStartDateLabel, 0, 0)
+			.Add(fTextStartDate, 1, 0)
+			.Add(fStartCalButton, 2, 0)
+			.Add(fStartTimeLabel, 0, 1)
+			.Add(fTextStartTime, 1, 1)
+			.Add(fStartTimeCheckBox, 2, 1)
+		.End()
 	.End();
 	fStartDateBox->SetLabel("Start Date and Time");
 
 	fEndDateBox = new BBox("Start Date and Time");
 	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
-			.SetInsets(B_USE_ITEM_INSETS)
-			.AddStrut(B_USE_ITEM_SPACING)
-			.AddGrid()
-				.Add(fEndDateLabel, 0, 0)
-				.Add(fTextEndDate, 1, 0)
-				.Add(fEndCalButton, 2, 0)
-				.Add(fEndTimeLabel, 0, 1)
-				.Add(fTextEndTime, 1, 1)
-				.Add(fEndTimeCheckBox, 2, 1)
-			.End()
+		.SetInsets(B_USE_ITEM_INSETS)
+		.AddStrut(B_USE_ITEM_SPACING)
+		.AddGrid()
+			.Add(fEndDateLabel, 0, 0)
+			.Add(fTextEndDate, 1, 0)
+			.Add(fEndCalButton, 2, 0)
+			.Add(fEndTimeLabel, 0, 1)
+			.Add(fTextEndTime, 1, 1)
+			.Add(fEndTimeCheckBox, 2, 1)
+		.End()
 	.End();
 	fEndDateBox->SetLabel("End Date and Time");
 
@@ -158,6 +166,7 @@ EventWindow::EventWindow()
 		.Add(fMainView)
 	.End();
 
+	DisableControls();
 }
 
 
@@ -166,25 +175,51 @@ EventWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
 
-		case kShowStartDateCalendar:
-		{
-			BPoint where;
-			BPoint boxPosition = fStartDateBox->Frame().LeftTop();
-			BPoint buttonPosition = fStartCalButton->Frame().LeftBottom();
-			where = boxPosition + buttonPosition;
-			where += BPoint(10.0, 8.0);
-			ShowCalendar(where);
+		case kAllDayPressed:
+			OnCheckBoxToggle();
 			break;
-		}
 
-		case kShowEndDateCalendar:
+		case kCancelPressed:
+			PostMessage(B_QUIT_REQUESTED);
+			break;
+
+		case kDeletePressed:
+			break;
+
+		case kSavePressed:
+			OnSaveClick();
+			break;
+
+		case kShowPopUpCalendar:
 		{
-			BPoint where;
-			BPoint boxPosition = fEndDateBox->Frame().LeftTop();
-			BPoint buttonPosition = fEndCalButton->Frame().LeftBottom();
-			where = boxPosition + buttonPosition;
-			where += BPoint(10.0, 8.0);
-			ShowCalendar(where);
+			int8 which;
+			message->FindInt8("which", &which);
+			switch(which) {
+				case 0:
+				{
+					BPoint where;
+					BPoint boxPosition = fStartDateBox->Frame().LeftTop();
+					BPoint buttonPosition = fStartCalButton->Frame().LeftBottom();
+					where = boxPosition + buttonPosition;
+					where += BPoint(10.0, 8.0);
+					ShowCalendar(where);
+					break;
+				}
+
+				case 1:
+				{
+					BPoint where;
+					BPoint boxPosition = fEndDateBox->Frame().LeftTop();
+					BPoint buttonPosition = fEndCalButton->Frame().LeftBottom();
+					where = boxPosition + buttonPosition;
+					where += BPoint(10.0, 8.0);
+					ShowCalendar(where);
+					break;
+				}
+
+				default:
+					break;
+			}
 			break;
 		}
 
@@ -195,10 +230,106 @@ EventWindow::MessageReceived(BMessage* message)
 }
 
 
+void
+EventWindow::SetEvent(Event* event, int eventIndex,
+		BList* eventList)
+{
+	fEvent = event;
+	fEventList = eventList;
+	fEventIndex = eventIndex;
+
+	if (event != NULL) {
+		fTextName->SetText(event->GetName());
+		fTextPlace->SetText(event->GetPlace());
+		fTextDescription->SetText(event->GetDescription());
+
+		fStartDateTime = event->GetStartDateTime();
+		fEndDateTime = event->GetEndDateTime();
+
+		fTextStartDate->SetText(GetLocaleDateString(fStartDateTime.Time_t()));
+		fTextEndDate->SetText(GetLocaleDateString(fEndDateTime.Time_t()));
+
+		if (event->IsAllDay()) {
+			fAllDayCheckBox->SetValue(B_CONTROL_ON);
+			fTextStartTime->SetText("");
+			fTextEndTime->SetText("");
+		}
+
+		else
+		{
+			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+		}
+
+		fDeleteButton->SetEnabled(true);
+
+	}
+
+}
+
+
+void
+EventWindow::SetEventDate(BDate& date)
+{
+	BTime time;
+	// Use a dummy start time for now(6:10 A.M)
+	time.SetTime(6, 10, 0);
+	fStartDateTime.SetTime(time);
+	fStartDateTime.SetDate(date);
+
+	// Use a dummy end time for now(7:10 A.M)
+	time.AddHours(1);
+	fEndDateTime.SetTime(time);
+	fEndDateTime.SetDate(date);
+
+	fTextStartDate->SetText(GetLocaleDateString(fStartDateTime.Time_t()));
+	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+	fTextEndDate->SetText(GetLocaleDateString(fEndDateTime.Time_t()));
+	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+}
+
+
+void
+EventWindow::DisableControls()
+{
+	fTextStartDate->SetEnabled(false);
+	fTextEndDate->SetEnabled(false);
+	fTextStartTime->SetEnabled(false);
+	fTextEndTime->SetEnabled(false);
+	fEveryMonth->SetEnabled(false);
+	fEveryYear->SetEnabled(false);
+	fStartTimeCheckBox->SetEnabled(false);
+	fEndTimeCheckBox->SetEnabled(false);
+	fCategoryMenuField->SetEnabled(false);
+	fDeleteButton->SetEnabled(false);
+}
+
+
+BString
+EventWindow::GetLocaleDateString(time_t timeValue)
+{
+	BString dateString;
+	BDateFormat().Format(dateString, timeValue,
+		B_SHORT_DATE_FORMAT);
+	return dateString;
+}
+
+
+BString
+EventWindow::GetLocaleTimeString(time_t timeValue)
+{
+	BString timeString;
+	BTimeFormat().Format(timeString, timeValue,
+		B_SHORT_TIME_FORMAT);
+	return timeString;
+}
+
+
 bool
 EventWindow::QuitRequested()
 {
-	be_app->PostMessage(kEventWindowQuitting);
+	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
 	return true;
 }
 
@@ -221,4 +352,88 @@ EventWindow::ShowCalendar(BPoint where)
 	fCalendarWindow = BMessenger(window);
 
 	window->Show();
+}
+
+
+void
+EventWindow::OnSaveClick()
+{
+	if (BString(fTextName->Text()).CountChars() < 3) {
+
+		BAlert* alert  = new BAlert("Error",
+			"The name must have a length greater than 2",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+		alert->SetShortcut(0, B_ESCAPE);
+		alert->Go();
+		return;
+	}
+
+	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
+		if (fStartDateTime > fEndDateTime) {
+			BAlert* alert  = new BAlert("Error",
+				"TInvalid range of time selected",
+				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+			alert->SetShortcut(0, B_ESCAPE);
+			alert->Go();
+			return;
+		}
+	}
+
+	Event* newEvent = new Event(fTextName->Text(), fTextPlace->Text(),
+		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
+		fStartDateTime, fEndDateTime);
+
+	if (fEvent!=NULL) {
+		fEventList->RemoveItem(fEventIndex);
+		fEventList->AddItem(newEvent, fEventIndex);
+		CloseWindow();
+	}
+
+	else if (fEvent == NULL)
+	{
+		fEventList->AddItem(newEvent);
+		delete newEvent;
+		CloseWindow();
+	}
+}
+
+
+void
+EventWindow::OnDeleteClick()
+{
+	fEventList->RemoveItem(fEventIndex);
+	CloseWindow();
+}
+
+
+void
+EventWindow::CloseWindow()
+{
+	PostMessage(B_QUIT_REQUESTED);
+}
+
+
+void
+EventWindow::OnCheckBoxToggle()
+{
+
+	if (fAllDayCheckBox->Value() == B_CONTROL_ON) {
+		fTextStartTime->SetText("");
+		fTextEndTime->SetText("");
+	}
+
+	else
+	{
+		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+	}
+}
+
+
+Event*
+EventWindow::GetEvent()
+{
+	return fEvent;
 }

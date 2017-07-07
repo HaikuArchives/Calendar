@@ -168,6 +168,13 @@ SidePanelView::_UpdateDate(const BDate& date)
 
 
 void
+SidePanelView::GetSelectedDate(BDate& date)
+{
+	date = fCalendarView->Date();
+}
+
+
+void
 SidePanelView::_UpdateDateLabel()
 {
 	BDate date = fCalendarView->Date();
