@@ -58,12 +58,15 @@ MainWindow::MainWindow()
 		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
+	fEventList = new BList();
 	fSidePanelView = new SidePanelView();
+	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME), fEventList);
 
 	fMainView->StartWatchingAll(fSidePanelView);
 
-
-	fEventList = new BList();
+	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
+		.Add(fDayView)
+	.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)

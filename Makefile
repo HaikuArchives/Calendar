@@ -32,6 +32,7 @@ SRCS = \
 	 src/App.cpp  \
 	 src/MainWindow.cpp  \
 	 src/MainView.cpp  \
+	 src/DayView.cpp  \
 	 src/DateHeaderView.cpp  \
 	 src/EventWindow.cpp  \
 	 src/CategoryWindow.cpp  \

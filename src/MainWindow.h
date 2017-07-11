@@ -13,6 +13,7 @@
 #include <View.h>
 #include <Window.h>
 
+#include "DayView.h"
 #include "EventWindow.h"
 #include "MainView.h"
 #include "PreferenceWindow.h"
@@ -42,6 +43,7 @@ private:
 	BMenu*		fEditMenu;
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
+	DayView*	fDayView;
 	BList*		fEventList;
 
 };
