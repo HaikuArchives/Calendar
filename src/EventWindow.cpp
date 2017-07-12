@@ -386,15 +386,13 @@ EventWindow::OnSaveClick()
 		fStartDateTime, fEndDateTime);
 
 	if (fEvent!=NULL) {
-		fEventList->RemoveItem(fEventIndex);
-		fEventList->AddItem(newEvent, fEventIndex);
+		fEventList->ReplaceItem(newEvent, fEventIndex);
 		CloseWindow();
 	}
 
 	else if (fEvent == NULL)
 	{
 		fEventList->AddItem(newEvent);
-		delete newEvent;
 		CloseWindow();
 	}
 }

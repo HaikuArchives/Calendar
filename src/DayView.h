@@ -24,7 +24,8 @@ public:
 
 		void			AddDayEvents();
 		void			CheckForEventThisDay();
-		int32			CompareFunc(const void*, const void*);
+		void			Update(const BDate& date, BList* eventList);
+		static	int		CompareFunc(const void* a, const void* b);
 
 		BString			GetLocalisedTimeString(time_t time);
 

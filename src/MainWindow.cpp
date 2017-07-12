@@ -113,12 +113,33 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 
 		case kEventWindowQuitting:
+		{
 			fEventWindow = NULL;
+			LockLooper();
+			BDate date;
+			fSidePanelView->GetSelectedDate(date);
+			fDayView->Update(date, fEventList);
+			fDayView->Invalidate();
+			UnlockLooper();
 			break;
+		}
 
 		case kSetCalendarToCurrentDate:
 			fSidePanelView->MessageReceived(message);
 			break;
+
+		case kInvokationMessage:
+		{
+			int32 day, month, year;
+			message->FindInt32("day", &day);
+			message->FindInt32("month", &month);
+			message->FindInt32("year", &year);
+			LockLooper();
+			fDayView->Update(BDate(year, month, day), fEventList);
+			fDayView->Invalidate();
+			UnlockLooper();
+			break;
+		}
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:

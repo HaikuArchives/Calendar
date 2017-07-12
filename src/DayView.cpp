@@ -9,7 +9,6 @@
 #include <TimeFormat.h>
 
 
-
 DayView::DayView(const BDate& date, BList* eventList)
 	:
 	BView("DayView", B_WILL_DRAW)
@@ -26,15 +25,33 @@ DayView::DayView(const BDate& date, BList* eventList)
 
 	fEventListView->SetInvocationMessage(new BMessage(kSelectionMessage));
 
+	BFont font;
+	fEventListView->GetFont(&font);
+	font.SetSize(font.Size() + 4);
+	fEventListView->SetFont(&font);
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fEventScroll)
 	.End();
+
 
 	CheckForEventThisDay();
 	AddDayEvents();
 
 }
 
+
+void
+DayView::Update(const BDate& date, BList* eventList)
+{
+	fDate = date;
+	fEventList = eventList;
+
+	fDayEventList->MakeEmpty();
+	fEventListView->MakeEmpty();
+	CheckForEventThisDay();
+	AddDayEvents();
+}
 
 void
 DayView::MessageReceived(BMessage* message)
@@ -51,13 +68,20 @@ DayView::MessageReceived(BMessage* message)
 }
 
 
-int32
+int
 DayView::CompareFunc(const void* a, const void* b)
 {
-	/*if (((Event**)(a))->GetStartDateTime() < ((Event**)(b))->GetStartDateTime())
+
+	if ((*(Event**) a)->IsAllDay() && !(*(Event**) b)->IsAllDay())
 		return -1;
+	else if ((*(Event**) b)->IsAllDay() && !(*(Event**) a)->IsAllDay())
+		return 1;
+	else if ((*(Event**) a)->GetStartDateTime() < (*(Event**) b)->GetStartDateTime())
+		return -1;
+	else if ((*(Event**) a)->GetStartDateTime() > (*(Event**) b)->GetStartDateTime())
+		return 1;
 	else
-		return 1;*/
+		return 0;
 }
 
 
@@ -69,16 +93,16 @@ DayView::AddDayEvents()
 	BString eventString;
 
 	for (int32 i = 0; i < fDayEventList->CountItems(); i++) {
-		event = (Event*)fDayEventList->ItemAt(i);
+		event = ((Event*)fDayEventList->ItemAt(i));
 		eventString = "";
 		if (event->IsAllDay()) {
-			eventString << "All Day" <<event->GetName();
+			eventString << "All Day" << " - " << event->GetName();
 		}
 		else
 		{
 			eventString << GetLocalisedTimeString(event->GetStartDateTime().Time_t())\
-				<<"-" <<GetLocalisedTimeString(event->GetEndDateTime().Time_t()) \
-				<<"-"<<event->GetName();
+				<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t()) \
+				<<" - "<< event->GetName();
 		}
 
 		item = new BStringItem(eventString.String());
@@ -99,7 +123,7 @@ DayView::CheckForEventThisDay()
 			fDayEventList->AddItem(event);
 	}
 
-	//fDayEventList->SortItems((int (*)(const void *, const void *))CompareFunc);
+	fDayEventList->SortItems((int (*)(const void * , const void *))CompareFunc);
 }
 
 
