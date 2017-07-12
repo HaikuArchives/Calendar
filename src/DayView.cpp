@@ -23,7 +23,7 @@ DayView::DayView(const BDate& date, BList* eventList)
 		B_WILL_DRAW, false, true);
 	//fEventScroll->SetExplicitMinSize(BSize(260, 260));
 
-	fEventListView->SetInvocationMessage(new BMessage(kSelectionMessage));
+	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
 
 	BFont font;
 	fEventListView->GetFont(&font);
@@ -42,6 +42,13 @@ DayView::DayView(const BDate& date, BList* eventList)
 
 
 void
+DayView::AttachedToWindow()
+{
+	fEventListView->SetTarget(this);
+}
+
+
+void
 DayView::Update(const BDate& date, BList* eventList)
 {
 	fDate = date;
@@ -53,13 +60,25 @@ DayView::Update(const BDate& date, BList* eventList)
 	AddDayEvents();
 }
 
+
 void
 DayView::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
 
-		case kSelectionMessage:
+		case kInvokationMessage:
+		{
+			int32 selection = fEventListView->CurrentSelection();
+
+			if (selection >= 0) {
+				Event* event = ((Event*)fDayEventList->ItemAt(selection));
+				int32 eventIndex = GetIndexOf(event);
+				BMessage msg(kModifyEventMessage);
+				msg.AddInt32("index", eventIndex);
+				Window()->PostMessage(&msg);
+			}
 			break;
+		}
 
 		default:
 			BView::MessageReceived(message);

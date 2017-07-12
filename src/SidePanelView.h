@@ -17,7 +17,7 @@ using BPrivate::BCalendarView;
 
 
 enum {
-	kInvokationMessage,
+	kSelectionMessage,
 	kMonthDownMessage,
 	kMonthUpMessage,
 	kShowWeekNumberMessage,

@@ -35,8 +35,8 @@ SidePanelView::SidePanelView()
 
 	fCalendarView = new BCalendarView("calendar");
 	fCalendarView->SetWeekNumberHeaderVisible(false);
-	fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
-	fCalendarView->SetSelectionMessage(new BMessage(kInvokationMessage));
+	//fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
+	fCalendarView->SetSelectionMessage(new BMessage(kSelectionMessage));
 
 	fDateHeaderView = new DateHeaderView();
 
@@ -101,7 +101,7 @@ SidePanelView::MessageReceived(BMessage* message)
 			}
 			break;
 
-		case kInvokationMessage:
+		case kSelectionMessage:
 		{
 			int32 day, month, year;
 			message->FindInt32("day", &day);

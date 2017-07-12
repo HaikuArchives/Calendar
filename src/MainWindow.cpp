@@ -97,30 +97,20 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kAddEvent:
-		{
-			if (fEventWindow == NULL) {
-				Event* event = NULL;
-				BDate date;
-				fSidePanelView->GetSelectedDate(date);
-				fEventWindow = new EventWindow();
-				fEventWindow->SetEvent(event, -1, fEventList);
-				fEventWindow->SetEventDate(date);
-				fEventWindow->Show();
-			}
-
-			fEventWindow->Activate();
+		{	_LaunchEventManager(-1);
 			break;
+		}
+
+		case kModifyEventMessage:
+		{	int32 index;
+			message->FindInt32("index", &index);
+			_LaunchEventManager(index);
 		}
 
 		case kEventWindowQuitting:
 		{
 			fEventWindow = NULL;
-			LockLooper();
-			BDate date;
-			fSidePanelView->GetSelectedDate(date);
-			fDayView->Update(date, fEventList);
-			fDayView->Invalidate();
-			UnlockLooper();
+			_UpdateDayView();
 			break;
 		}
 
@@ -128,23 +118,16 @@ MainWindow::MessageReceived(BMessage* message)
 			fSidePanelView->MessageReceived(message);
 			break;
 
-		case kInvokationMessage:
-		{
-			int32 day, month, year;
-			message->FindInt32("day", &day);
-			message->FindInt32("month", &month);
-			message->FindInt32("year", &year);
-			LockLooper();
-			fDayView->Update(BDate(year, month, day), fEventList);
-			fDayView->Invalidate();
-			UnlockLooper();
+		case kSelectionMessage:
+			_UpdateDayView();
 			break;
-		}
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:
-			fSidePanelView->MessageReceived(message);
+		{	fSidePanelView->MessageReceived(message);
+			_UpdateDayView();
 			break;
+		}
 
 		case B_LOCALE_CHANGED:
 			fSidePanelView->MessageReceived(message);
@@ -178,4 +161,44 @@ MainWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+MainWindow::_LaunchEventManager(int32 index)
+{
+	if (fEventWindow == NULL) {
+		if (index == -1) {
+			Event* event = NULL;
+			BDate date;
+			fSidePanelView->GetSelectedDate(date);
+			fEventWindow = new EventWindow();
+			fEventWindow->SetEvent(event, index, fEventList);
+			fEventWindow->SetEventDate(date);
+		}
+
+		else
+		{
+			Event* event = ((Event*)fEventList->ItemAt(index));
+			fEventWindow = new EventWindow();
+			fEventWindow->SetEvent(event, index, fEventList);
+		}
+
+		fEventWindow->Show();
+	}
+
+	fEventWindow->Activate();
+
+}
+
+
+void
+MainWindow::_UpdateDayView()
+{
+	BDate date;
+	fSidePanelView->GetSelectedDate(date);
+	LockLooper();
+	fDayView->Update(date, fEventList);
+	fDayView->Invalidate();
+	UnlockLooper();
 }

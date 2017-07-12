@@ -184,6 +184,7 @@ EventWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kDeletePressed:
+			OnDeleteClick();
 			break;
 
 		case kSavePressed:
@@ -386,7 +387,7 @@ EventWindow::OnSaveClick()
 		fStartDateTime, fEndDateTime);
 
 	if (fEvent!=NULL) {
-		fEventList->ReplaceItem(newEvent, fEventIndex);
+		fEventList->ReplaceItem(fEventIndex, newEvent);
 		CloseWindow();
 	}
 

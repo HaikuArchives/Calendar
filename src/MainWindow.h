@@ -32,6 +32,9 @@ public:
 	virtual bool	QuitRequested();
 
 private:
+	void			_LaunchEventManager(int32 index);
+	void			_UpdateDayView();
+
 	static const int kMenuAppQuit	= 1000;
 	static const int kDayView 	= 1002;
 	static const int kMonthView	= 1003;
@@ -45,6 +48,8 @@ private:
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
 	BList*		fEventList;
+
+
 
 };
 

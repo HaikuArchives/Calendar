@@ -14,13 +14,14 @@
 #include "Event.h"
 
 
-const uint32 kSelectionMessage = 'ksem';
+const uint32 kModifyEventMessage = 'ksem';
 
 
 class DayView: public BView {
 public:
 						DayView(const BDate& date, BList* eventList);
 		void			MessageReceived(BMessage* message);
+		void			AttachedToWindow();
 
 		void			AddDayEvents();
 		void			CheckForEventThisDay();
@@ -32,6 +33,9 @@ public:
 		int32			GetIndexOf(Event* event);
 
 private:
+
+		static const uint32 kInvokationMessage = 1000;
+
 		BList*			fEventList;
 		BList*			fDayEventList;
 		BListView*		fEventListView;
