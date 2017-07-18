@@ -34,10 +34,12 @@ DayView::DayView(const BDate& date, BList* eventList)
 		.Add(fEventScroll)
 	.End();
 
-
-	CheckForEventThisDay();
-	AddDayEvents();
-
+	if (CheckForEventThisDay()) {
+		SortEvents();
+		AddDayEvents();
+	}
+	else
+		ShowPlaceHolderText();
 }
 
 
@@ -57,7 +59,13 @@ DayView::Update(const BDate& date, BList* eventList)
 	fDayEventList->MakeEmpty();
 	fEventListView->MakeEmpty();
 	CheckForEventThisDay();
-	AddDayEvents();
+
+	if (CheckForEventThisDay()) {
+		SortEvents();
+		AddDayEvents();
+	}
+	else
+		ShowPlaceHolderText();
 }
 
 
@@ -131,6 +139,13 @@ DayView::AddDayEvents()
 
 
 void
+DayView::SortEvents()
+{
+	fDayEventList->SortItems((int (*)(const void * , const void *))CompareFunc);
+}
+
+
+bool
 DayView::CheckForEventThisDay()
 {
 	Event* event;
@@ -142,7 +157,21 @@ DayView::CheckForEventThisDay()
 			fDayEventList->AddItem(event);
 	}
 
-	fDayEventList->SortItems((int (*)(const void * , const void *))CompareFunc);
+	if (fDayEventList->IsEmpty())
+		return false;
+
+	return true;
+}
+
+
+void
+DayView::ShowPlaceHolderText()
+{
+	BString placeHolderString;
+	BStringItem* item;
+	placeHolderString << "No events to display";
+	item = new BStringItem(placeHolderString.String());
+	fEventListView->AddItem(item);
 }
 
 

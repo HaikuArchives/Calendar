@@ -19,12 +19,16 @@ const uint32 kModifyEventMessage = 'ksem';
 
 class DayView: public BView {
 public:
-						DayView(const BDate& date, BList* eventList);
+					DayView(const BDate& date, BList* eventList);
 		void			MessageReceived(BMessage* message);
 		void			AttachedToWindow();
 
 		void			AddDayEvents();
-		void			CheckForEventThisDay();
+		bool			CheckForEventThisDay();
+		void			SortEvents();
+
+		void			ShowPlaceHolderText();
+
 		void			Update(const BDate& date, BList* eventList);
 		static	int		CompareFunc(const void* a, const void* b);
 
@@ -39,7 +43,7 @@ private:
 		BList*			fEventList;
 		BList*			fDayEventList;
 		BListView*		fEventListView;
-		BScrollView*	fEventScroll;
+		BScrollView*		fEventScroll;
 		BDate			fDate;
 
 };
