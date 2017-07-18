@@ -78,7 +78,8 @@ DayView::MessageReceived(BMessage* message)
 		{
 			int32 selection = fEventListView->CurrentSelection();
 
-			if (selection >= 0) {
+			if (selection >= 0 && !fDayEventList->IsEmpty()) {
+
 				Event* event = ((Event*)fDayEventList->ItemAt(selection));
 				int32 eventIndex = GetIndexOf(event);
 				BMessage msg(kModifyEventMessage);
