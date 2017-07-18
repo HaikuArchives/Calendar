@@ -5,7 +5,6 @@
 
 
 #include "SidePanelView.h"
-
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
@@ -167,10 +166,10 @@ SidePanelView::_UpdateDate(const BDate& date)
 }
 
 
-void
-SidePanelView::GetSelectedDate(BDate& date)
+BDate
+SidePanelView::GetSelectedDate() const
 {
-	date = fCalendarView->Date();
+	return fCalendarView->Date();
 }
 
 

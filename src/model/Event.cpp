@@ -31,7 +31,7 @@ Event::Event(Event& event)
 }
 
 
-BDateTime&
+BDateTime
 Event::GetStartDateTime()
 {
 	return fStart;
@@ -45,7 +45,7 @@ Event::SetStartDateTime(BDateTime& start)
 }
 
 
-BDateTime&
+BDateTime
 Event::GetEndDateTime()
 {
 	return fEnd;

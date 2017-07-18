@@ -4,7 +4,6 @@
  */
 
 #include "MainWindow.h"
-
 #include <Application.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
@@ -170,10 +169,9 @@ MainWindow::_LaunchEventManager(int32 index)
 	if (fEventWindow == NULL) {
 		if (index == -1) {
 			Event* event = NULL;
-			BDate date;
-			fSidePanelView->GetSelectedDate(date);
 			fEventWindow = new EventWindow();
 			fEventWindow->SetEvent(event, index, fEventList);
+			BDate date = _GetSelectedCalendarDate();
 			fEventWindow->SetEventDate(date);
 		}
 
@@ -195,10 +193,16 @@ MainWindow::_LaunchEventManager(int32 index)
 void
 MainWindow::_UpdateDayView()
 {
-	BDate date;
-	fSidePanelView->GetSelectedDate(date);
 	LockLooper();
+	BDate date = _GetSelectedCalendarDate();
 	fDayView->Update(date, fEventList);
 	fDayView->Invalidate();
 	UnlockLooper();
+}
+
+
+BDate
+MainWindow::_GetSelectedCalendarDate() const
+{
+	return fSidePanelView->GetSelectedDate();
 }

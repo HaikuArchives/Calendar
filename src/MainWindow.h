@@ -34,6 +34,7 @@ public:
 private:
 	void			_LaunchEventManager(int32 index);
 	void			_UpdateDayView();
+	BDate			_GetSelectedCalendarDate() const;
 
 	static const int kMenuAppQuit	= 1000;
 	static const int kDayView 	= 1002;

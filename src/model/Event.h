@@ -17,10 +17,10 @@ public:
 				BDateTime start, BDateTime end);
 			Event(Event& event);
 
-	BDateTime&	GetStartDateTime();
+	BDateTime	GetStartDateTime();
 	void		SetStartDateTime(BDateTime& start);
 
-	BDateTime&	GetEndDateTime();
+	BDateTime	GetEndDateTime();
 	void		SetEndDateTime(BDateTime& end);
 
 	const char*	GetName();
