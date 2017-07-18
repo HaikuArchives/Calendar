@@ -104,6 +104,7 @@ MainWindow::MessageReceived(BMessage* message)
 		{	int32 index;
 			message->FindInt32("index", &index);
 			_LaunchEventManager(index);
+			break;
 		}
 
 		case kEventWindowQuitting:
