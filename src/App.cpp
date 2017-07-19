@@ -6,7 +6,7 @@
 #include "App.h"
 
 #include <LocaleRoster.h>
-#include <private/interface/AboutWindow.h>
+#include <AboutWindow.h>
 
 #include <locale.h>
 
