@@ -10,6 +10,7 @@
 #include <LocaleRoster.h>
 
 #include "MainView.h"
+#include "PreferenceWindow.h"
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
@@ -18,7 +19,8 @@ MainWindow::MainWindow()
 	:
 	BWindow(BRect(), "Calendar", B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
-	fEventWindow(NULL)
+	fEventWindow(NULL),
+	fPreferences(NULL)
 {
 	SetPulseRate(500000);
 
@@ -96,9 +98,8 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kAddEvent:
-		{	_LaunchEventManager(-1);
+			_LaunchEventManager(-1);
 			break;
-		}
 
 		case kModifyEventMessage:
 		{	int32 index;
@@ -133,29 +134,17 @@ MainWindow::MessageReceived(BMessage* message)
 			fSidePanelView->MessageReceived(message);
 			break;
 
+		case kAppPreferencesChanged:
+			_SyncWithPreferences();
+			break;
+
 		case kMenuEditPref:
-		{
 			be_app->PostMessage(message);
 			break;
-		}
 
 		case kMenuEditCategory:
-		{
 			be_app->PostMessage(message);
 			break;
-		}
-
-		case kSetStartOfWeekMessage:
-		{
-			fSidePanelView->MessageReceived(message);
-			break;
-		}
-
-		case kShowWeekNumberMessage:
-		{
-			fSidePanelView->MessageReceived(message);
-			break;
-		}
 
 		default:
 			BWindow::MessageReceived(message);
@@ -188,6 +177,28 @@ MainWindow::_LaunchEventManager(int32 index)
 
 	fEventWindow->Activate();
 
+}
+
+
+void
+MainWindow::SetPreferences(Preferences* preferences)
+{
+	fPreferences = preferences;
+	_SyncWithPreferences();
+}
+
+
+void
+MainWindow::_SyncWithPreferences()
+{
+	if (fPreferences != NULL) {
+		if(fPreferences->fHeaderVisible == true)
+			fSidePanelView->ShowWeekHeader(true);
+		else
+			fSidePanelView->ShowWeekHeader(false);
+
+		fSidePanelView->SetStartOfWeek(fPreferences->fStartOfWeekOffset);
+	}
 }
 
 

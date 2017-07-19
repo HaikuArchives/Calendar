@@ -32,13 +32,13 @@ public:
 
 		void			MessageReceived(BMessage* message);
 		BDate			GetSelectedDate() const;
+		void	 		SetStartOfWeek(int32);
+		void			ShowWeekHeader(bool);
 
 private:
 
 		void 			_UpdateDate(const BDate&);
 		void			_UpdateDateLabel();
-		void 			_SetStartOfWeek(int32);
-		void			_ShowWeekHeader(bool);
 
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;

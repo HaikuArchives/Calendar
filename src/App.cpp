@@ -21,11 +21,32 @@ App::App()
 	:
 	BApplication(kSignature),
 	fPreferenceWindow(NULL),
-	fCategoryWindow(NULL)
+	fCategoryWindow(NULL),
+	fPreferences(NULL)
 {
+	BPath settingsPath;
+	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
+	settingsPath.Append(kAppName);
+	BDirectory preferencesDir(settingsPath.Path());
+	if(preferencesDir.InitCheck() == B_ENTRY_NOT_FOUND) {
+		preferencesDir.CreateDirectory(settingsPath.Path(), &preferencesDir);
+	}
+
+	fPreferencesFile.SetTo(&preferencesDir, "settings");
+	fPreferences = new Preferences();
+	fPreferences->Load(fPreferencesFile.Path());
+	fPreferences->fSettingsPath = settingsPath;
+
 	fMainWindow = new MainWindow();
-	fPreferenceWindow = new PreferenceWindow();
+	fMainWindow->SetPreferences(fPreferences);
 	fMainWindow->Show();
+}
+
+
+App::~App()
+{
+	fPreferences->Save(fPreferencesFile.Path());
+	delete fPreferences;
 }
 
 
@@ -66,16 +87,16 @@ App::categoryWindow()
 void
 App::MessageReceived(BMessage* message)
 {
-	switch(message->what)
-	{
+	switch(message->what) {
+
 		case kMenuEditPref:
 		{
-			fPreferenceWindow->Lock();
-			if (fPreferenceWindow->IsHidden())
+			if (fPreferenceWindow == NULL) {
+				fPreferenceWindow = new PreferenceWindow(fPreferences);
 				fPreferenceWindow->Show();
-			else
-				fPreferenceWindow->Activate();
-			fPreferenceWindow->Unlock();
+			}
+
+			fPreferenceWindow->Activate();
 			break;
 		}
 
@@ -90,9 +111,16 @@ App::MessageReceived(BMessage* message)
 			break;
 		}
 
-
 		case kCategoryWindowQuitting:
 			fCategoryWindow = NULL;
+			break;
+
+		case kPreferenceWindowQuitting:
+			fPreferenceWindow = NULL;
+			break;
+
+		case kAppPreferencesChanged:
+			fMainWindow->PostMessage(message);
 			break;
 
 		case B_LOCALE_CHANGED:

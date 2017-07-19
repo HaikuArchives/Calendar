@@ -54,8 +54,8 @@ Preferences::Load(const char* filename)
 	BMessage storage;
 	if(result == B_OK)
 		storage.Unflatten(file);
-	fStartOfWeekOffset = storage.GetInt8("startOfWeekOffset", 0);
-	fHeaderVisible = storage.GetBool("headerVisible", true);
+	fStartOfWeekOffset = storage.GetInt32("startOfWeekOffset", 0);
+	fHeaderVisible = storage.GetBool("headerVisible", false);
 
 	delete file;
 }
@@ -103,7 +103,7 @@ Preferences::Save(const char* filename)
 	}
 
 	BMessage storage;
-	storage.AddInt8("startOfWeekOffset", fStartOfWeekOffset);
+	storage.AddInt32("startOfWeekOffset", fStartOfWeekOffset);
 	storage.AddBool("headerVisible", fHeaderVisible);
 
 	storage.Flatten(file);
@@ -117,5 +117,5 @@ Preferences::operator =(Preferences p)
 {
 	fSettingsPath = p.fSettingsPath;
 	fStartOfWeekOffset = p.fStartOfWeekOffset;
-	fHeaderVisible = p.fStartOfWeekOffset;
+	fHeaderVisible = p.fHeaderVisible;
 }

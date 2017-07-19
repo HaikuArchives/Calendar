@@ -41,6 +41,7 @@ SRCS = \
 	 src/CalendarMenuWindow.cpp  \
 	 src/PreferenceWindow.cpp  \
 	 src/SidePanelView.cpp  \
+	 src/Preferences.cpp  \
 	 src/utils/ResourceLoader.cpp  \
 	 src/model/Event.cpp
 

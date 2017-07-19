@@ -23,7 +23,7 @@ public:
 
 	BPath			fSettingsPath;
 
-	int8			fStartOfWeekOffset;
+	int32			fStartOfWeekOffset;
 	bool			fHeaderVisible;
 };
 

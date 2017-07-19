@@ -14,12 +14,90 @@
 #include "SidePanelView.h"
 
 
-PreferenceWindow::PreferenceWindow()
+PreferenceWindow::PreferenceWindow(Preferences* preferences)
 	:BWindow(BRect(), "Preferences", B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
 {
+	fCurrentPreferences = preferences;
+
+	fStartPreferences = new Preferences();
+	*fStartPreferences = *fCurrentPreferences;
+
+	fTempPreferences = new Preferences();
+	*fTempPreferences = *fCurrentPreferences;
+
+	_InitInterface();
 	CenterOnScreen();
 
+	_SyncPreferences(fCurrentPreferences);
+}
+
+
+PreferenceWindow::~PreferenceWindow()
+{
+	delete fStartPreferences;
+	delete fTempPreferences;
+}
+
+
+void
+PreferenceWindow::MessageReceived(BMessage* message)
+{
+	switch(message->what) {
+
+		case kStartOfWeekChangeMessage:
+		{
+			BMenuItem* item = fDayOfWeekMenu->FindMarked();
+			int32 index = fDayOfWeekMenu->IndexOf(item);
+			fTempPreferences->fStartOfWeekOffset = index;
+			_PreferencesModified();
+			break;
+		}
+
+		case kShowWeekChangeMessage:
+		{
+			bool state = fWeekNumberHeaderCB->Value() == B_CONTROL_ON;
+			fTempPreferences->fHeaderVisible = state;
+			_PreferencesModified();
+			break;
+		}
+
+		case kApplyPreferencesMessage:
+		{
+			*fCurrentPreferences = *fTempPreferences;
+			fApplyButton->SetEnabled(false);
+			BMessage changed(kAppPreferencesChanged);
+			be_app->PostMessage(&changed);
+			break;
+		}
+
+		case kRevertPreferencesMessage:
+		{
+			*fTempPreferences = *fStartPreferences;
+			fRevertButton->SetEnabled(false);
+			fApplyButton->SetEnabled(true);
+			_SyncPreferences(fTempPreferences);
+			 break;
+		}
+
+		default:
+			BWindow::MessageReceived(message);
+			break;
+	}
+}
+
+
+bool
+PreferenceWindow::QuitRequested()
+{
+	be_app->PostMessage(kPreferenceWindowQuitting);
+	return true;
+}
+
+
+void
+PreferenceWindow::_InitInterface()
+{
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
@@ -41,7 +119,6 @@ PreferenceWindow::PreferenceWindow()
 
 	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", NULL, fDayOfWeekMenu);
 
-
 	fPrefCategoryLabel = new BStringView("PrefCategory", "Week");
 	BFont font;
 	fPrefCategoryLabel->GetFont(&font);
@@ -54,6 +131,12 @@ PreferenceWindow::PreferenceWindow()
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
 		"Show Week Number in Calendar", new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
+
+	fApplyButton = new BButton("Apply", new BMessage(kApplyPreferencesMessage));
+	fRevertButton = new BButton("Revert", new BMessage(kRevertPreferencesMessage));
+
+	fApplyButton->SetEnabled(false);
+	fRevertButton->SetEnabled(false);
 
 	fWeekPreferencesBox = new BBox("Week");
 
@@ -70,80 +153,37 @@ PreferenceWindow::PreferenceWindow()
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
 			.SetInsets(B_USE_SMALL_INSETS)
 			.Add(fWeekPreferencesBox)
+			.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
+				.Add(fRevertButton)
+				.AddGlue()
+				.Add(fApplyButton)
+			.End()
 	.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 			.Add(fMainView)
 	.End();
-
 }
 
 
 void
-PreferenceWindow::MessageReceived(BMessage* message)
+PreferenceWindow::_SyncPreferences(Preferences* preferences)
 {
-	switch(message->what) {
-
-		case kStartOfWeekChangeMessage:
-		{	BMenuItem* item = fDayOfWeekMenu->FindMarked();
-			int32 index = fDayOfWeekMenu->IndexOf(item);
-			BMessage msg(kSetStartOfWeekMessage);
-			msg.AddInt32("weekday", index);
-			((App*)be_app)->mainWindow()->PostMessage(&msg);
-			break;
-		}
-
-		case kShowWeekChangeMessage:
-		{
-			bool state = fWeekNumberHeaderCB->Value()==B_CONTROL_ON;
-			BMessage msg(kShowWeekNumberMessage);
-			msg.AddBool("state", state);
-			((App*)be_app)->mainWindow()->PostMessage(&msg);
-			break;
-
-		}
-
-		default:
-			BWindow::MessageReceived(message);
-			break;
+	if(preferences->fHeaderVisible == true) {
+		fWeekNumberHeaderCB->SetValue(B_CONTROL_ON);
+	} else {
+		fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 	}
-}
 
-
-bool
-PreferenceWindow::QuitRequested()
-{
-	Hide();
-	return false;
-}
-
-
-void
-PreferenceWindow::SetWeekHeader(bool state)
-{
-	fWeekNumberHeaderCB->SetValue(state ? B_CONTROL_ON : B_CONTROL_OFF);
-}
-
-
-bool
-PreferenceWindow::IsWeekHeaderEnabled()
-{
-	return fWeekNumberHeaderCB->Value() == B_CONTROL_ON;
-}
-
-
-void
-PreferenceWindow::SetStartOfWeek(int index)
-{
-	BMenuItem* item = fDayOfWeekMenu->ItemAt(index);
+	BMenuItem* item = fDayOfWeekMenu->ItemAt(preferences->fStartOfWeekOffset);
 	item->SetMarked(true);
 }
 
 
-int
-PreferenceWindow::GetStartOfWeek()
+void
+PreferenceWindow::_PreferencesModified()
 {
-	BMenuItem* item = fDayOfWeekMenu->FindMarked();
-	int index = fDayOfWeekMenu->IndexOf(item);
-	return index;
+	fApplyButton->SetEnabled(true);
+	fRevertButton->SetEnabled(true);
 }
+

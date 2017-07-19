@@ -132,26 +132,37 @@ SidePanelView::MessageReceived(BMessage* message)
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
 
-		case kSetStartOfWeekMessage:
-		{
-			int32 index;
-			message->FindInt32("weekday", &index);
-			_SetStartOfWeek(index);
-			break;
-		}
-
-		case kShowWeekNumberMessage:
-		{
-			bool state;
-			message->FindBool("state", &state);
-			_ShowWeekHeader(state);
-			break;
-		}
-
 		default:
 			BView::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+SidePanelView::SetStartOfWeek(int32 index)
+{
+	StartOfWeek startOfWeekDay = static_cast<StartOfWeek>(index);
+		//Preference menu index to start of week map
+	BWeekday firstDay;
+
+	if (startOfWeekDay == kLocaleStartOfWeek) {
+		BDateFormat().GetStartOfWeek(&firstDay);
+		fCalendarView->SetStartOfWeek(firstDay);
+	}
+
+	else
+	{
+		firstDay = static_cast<BWeekday>(index);
+		fCalendarView->SetStartOfWeek(firstDay);
+	}
+}
+
+
+void
+SidePanelView::ShowWeekHeader(bool state)
+{
+	fCalendarView->SetWeekNumberHeaderVisible(state);
 }
 
 
@@ -188,31 +199,4 @@ SidePanelView::_UpdateDateLabel()
 	monthYearString += yearString.String();
 
 	fMonthLabel->SetText(monthYearString);
-}
-
-
-void
-SidePanelView::_SetStartOfWeek(int32 index)
-{
-	StartOfWeek startOfWeekDay = static_cast<StartOfWeek>(index);
-		//Preference menu index to start of week map
-	BWeekday firstDay;
-
-	if (startOfWeekDay == kLocaleStartOfWeek) {
-		BDateFormat().GetStartOfWeek(&firstDay);
-		fCalendarView->SetStartOfWeek(firstDay);
-	}
-
-	else
-	{
-		firstDay = static_cast<BWeekday>(index);
-		fCalendarView->SetStartOfWeek(firstDay);
-	}
-}
-
-
-void
-SidePanelView::_ShowWeekHeader(bool state)
-{
-	fCalendarView->SetWeekNumberHeaderVisible(state);
 }

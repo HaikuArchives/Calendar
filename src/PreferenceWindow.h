@@ -14,32 +14,44 @@
 #include <View.h>
 #include <Window.h>
 
+#include "Preferences.h"
+
+
+const uint32 kPreferenceWindowQuitting	= 'kpwq';
+const uint32 kAppPreferencesChanged	= 'kpcd';
+
 
 class PreferenceWindow : public BWindow {
 public:
-							PreferenceWindow();
+						PreferenceWindow(Preferences* preferences);
+						~PreferenceWindow();
 
 		void				MessageReceived(BMessage *message);
 		bool				QuitRequested();
 
-
-		bool				IsWeekHeaderEnabled();
-		void				SetWeekHeader(bool);
-		int					GetStartOfWeek();
-		void				SetStartOfWeek(int);
-
 private:
+		void				_InitInterface();
+		void				_SyncPreferences(Preferences* preferences);
+		void				_PreferencesModified();
 
-		static const int	kStartOfWeekChangeMessage 	= 1000;
-		static const int 	kShowWeekChangeMessage		= 1001;
+		static const int		kStartOfWeekChangeMessage 	= 1000;
+		static const int 		kShowWeekChangeMessage		= 1001;
+		static const int		kApplyPreferencesMessage	= 1002;
+		static const int		kRevertPreferencesMessage	= 1003;
 
 		BView*				fMainView;
 		BCheckBox*			fWeekNumberHeaderCB;
-		BStringView*		fPrefCategoryLabel;
-		BStringView*		fStartOfWeekLabel;
+		BStringView*			fPrefCategoryLabel;
+		BStringView*			fStartOfWeekLabel;
 		BMenu*				fDayOfWeekMenu;
 		BMenuField*			fDayOfWeekMenuField;
 		BBox*				fWeekPreferencesBox;
+		BButton*			fApplyButton;
+		BButton*			fRevertButton;
+
+		Preferences*			fStartPreferences;
+		Preferences*			fCurrentPreferences;
+		Preferences*			fTempPreferences;
 };
 
 #endif

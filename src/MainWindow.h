@@ -16,6 +16,7 @@
 #include "DayView.h"
 #include "EventWindow.h"
 #include "MainView.h"
+#include "Preferences.h"
 #include "PreferenceWindow.h"
 #include "SidePanelView.h"
 
@@ -31,8 +32,11 @@ public:
 	virtual void	MessageReceived(BMessage* message);
 	virtual bool	QuitRequested();
 
+	void			SetPreferences(Preferences* preferences);
+
 private:
 	void			_LaunchEventManager(int32 index);
+	void			_SyncWithPreferences();
 	void			_UpdateDayView();
 	BDate			_GetSelectedCalendarDate() const;
 
@@ -49,9 +53,7 @@ private:
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
 	BList*		fEventList;
-
-
-
+	Preferences*	fPreferences;
 };
 
 #endif
