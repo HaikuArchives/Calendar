@@ -8,7 +8,7 @@
 #include <Box.h>
 #include <CheckBox.h>
 #include <DateFormat.h>
-#include <Menu.h>
+#include <PopUpMenu.h>
 #include <MenuField.h>
 #include <StringView.h>
 #include <View.h>
@@ -43,7 +43,7 @@ private:
 		BCheckBox*			fWeekNumberHeaderCB;
 		BStringView*			fPrefCategoryLabel;
 		BStringView*			fStartOfWeekLabel;
-		BMenu*				fDayOfWeekMenu;
+		BPopUpMenu*			fDayOfWeekMenu;
 		BMenuField*			fDayOfWeekMenuField;
 		BBox*				fWeekPreferencesBox;
 		BButton*			fApplyButton;

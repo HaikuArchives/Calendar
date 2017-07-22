@@ -101,22 +101,14 @@ PreferenceWindow::_InitInterface()
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fDayOfWeekMenu = new BMenu("DayOfWeekMenu");
+	fDayOfWeekMenu = new BPopUpMenu("DayOfWeekMenu");
 
-	fDayOfWeekMenu->AddItem(new BMenuItem("Locale Based", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Monday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Tuesday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Wednesday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Thursday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Friday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Saturday", new BMessage(kStartOfWeekChangeMessage)));
-	fDayOfWeekMenu->AddItem(new BMenuItem("Sunday", new BMessage(kStartOfWeekChangeMessage)));
-
-	fDayOfWeekMenu->SetRadioMode(true);
-	fDayOfWeekMenu->SetLabelFromMarked(true);
-	fDayOfWeekMenu->SetRadioMode(true);
+	const char* startOfWeekItems[] = {"Locale Based", "Monday",
+	"Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", NULL};
+	for (int i = 0; startOfWeekItems[i]; ++i)
+		fDayOfWeekMenu->AddItem(new BMenuItem(startOfWeekItems[i],
+			new BMessage(kStartOfWeekChangeMessage)));
 	fDayOfWeekMenu->ItemAt(0)->SetMarked(true);
-
 	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", NULL, fDayOfWeekMenu);
 
 	fPrefCategoryLabel = new BStringView("PrefCategory", "Week");
