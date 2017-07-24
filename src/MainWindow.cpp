@@ -208,7 +208,6 @@ MainWindow::_UpdateDayView()
 	LockLooper();
 	BDate date = _GetSelectedCalendarDate();
 	fDayView->Update(date, fEventList);
-	fDayView->Invalidate();
 	UnlockLooper();
 }
 

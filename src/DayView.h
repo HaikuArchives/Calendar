@@ -7,11 +7,11 @@
 
 #include <DateTime.h>
 #include <List.h>
-#include <ListView.h>
 #include <ScrollView.h>
 #include <View.h>
 
 #include "Event.h"
+#include "EventListView.h"
 
 
 const uint32 kModifyEventMessage = 'ksem';
@@ -27,8 +27,6 @@ public:
 		bool			CheckForEventThisDay();
 		void			SortEvents();
 
-		void			ShowPlaceHolderText();
-
 		void			Update(const BDate& date, BList* eventList);
 		static	int		CompareFunc(const void* a, const void* b);
 
@@ -42,7 +40,7 @@ private:
 
 		BList*			fEventList;
 		BList*			fDayEventList;
-		BListView*		fEventListView;
+		EventListView*		fEventListView;
 		BScrollView*		fEventScroll;
 		BDate			fDate;
 

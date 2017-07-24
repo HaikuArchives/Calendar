@@ -8,6 +8,8 @@
 #include <LayoutBuilder.h>
 #include <TimeFormat.h>
 
+#include "EventListItem.h"
+
 
 DayView::DayView(const BDate& date, BList* eventList)
 	:
@@ -16,19 +18,13 @@ DayView::DayView(const BDate& date, BList* eventList)
 	fDate = date;
 	fEventList = eventList;
 
-	fEventListView = new BListView("EventList", B_SINGLE_SELECTION_LIST,
-		B_WILL_DRAW);
+	fEventListView = new EventListView();
+	fEventListView->SetViewColor(B_TRANSPARENT_COLOR);
+	//fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
 
 	fEventScroll = new BScrollView("EventScroll", fEventListView,
 		B_WILL_DRAW, false, true);
-	//fEventScroll->SetExplicitMinSize(BSize(260, 260));
-
-	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
-
-	BFont font;
-	fEventListView->GetFont(&font);
-	font.SetSize(font.Size() + 4);
-	fEventListView->SetFont(&font);
+	fEventScroll->SetExplicitMinSize(BSize(260, 260));
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fEventScroll)
@@ -38,8 +34,6 @@ DayView::DayView(const BDate& date, BList* eventList)
 		SortEvents();
 		AddDayEvents();
 	}
-	else
-		ShowPlaceHolderText();
 }
 
 
@@ -58,14 +52,13 @@ DayView::Update(const BDate& date, BList* eventList)
 
 	fDayEventList->MakeEmpty();
 	fEventListView->MakeEmpty();
-	CheckForEventThisDay();
 
 	if (CheckForEventThisDay()) {
 		SortEvents();
 		AddDayEvents();
 	}
-	else
-		ShowPlaceHolderText();
+
+	fEventListView->Invalidate();
 }
 
 
@@ -117,23 +110,19 @@ void
 DayView::AddDayEvents()
 {
 	Event* event;
-	BStringItem* item;
-	BString eventString;
+	EventListItem* item;
+	BString timeString;
+	BString nameString;
 
 	for (int32 i = 0; i < fDayEventList->CountItems(); i++) {
 		event = ((Event*)fDayEventList->ItemAt(i));
-		eventString = "";
-		if (event->IsAllDay()) {
-			eventString << "All Day" << " - " << event->GetName();
-		}
-		else
-		{
-			eventString << GetLocalisedTimeString(event->GetStartDateTime().Time_t())\
-				<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t()) \
-				<<" - "<< event->GetName();
-		}
+		nameString = "";
+		timeString = "";
+		timeString << GetLocalisedTimeString(event->GetStartDateTime().Time_t()) \
+			<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t());
+		nameString << event->GetName();
 
-		item = new BStringItem(eventString.String());
+		item = new EventListItem(nameString, timeString);
 		fEventListView->AddItem(item);
 	}
 }
@@ -162,17 +151,6 @@ DayView::CheckForEventThisDay()
 		return false;
 
 	return true;
-}
-
-
-void
-DayView::ShowPlaceHolderText()
-{
-	BString placeHolderString;
-	BStringItem* item;
-	placeHolderString << "No events to display";
-	item = new BStringItem(placeHolderString.String());
-	fEventListView->AddItem(item);
 }
 
 
