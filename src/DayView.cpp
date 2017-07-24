@@ -84,8 +84,12 @@ DayView::MessageReceived(BMessage* message)
 		{
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection >= 0) {
-				fEventList->RemoveItem(selection);
+				Event* event = ((Event*)fDayEventList->ItemAt(selection));
+				int32 eventIndex = GetIndexOf(event);
+				fEventList->RemoveItem(eventIndex);
+				Window()->LockLooper();
 				Update(fDate, fEventList);
+				Window()->UnlockLooper();
 			}
 			break;
 		}

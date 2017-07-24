@@ -122,12 +122,16 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kSelectionMessage:
+		{
+			fSidePanelView->MessageReceived(message);
 			_UpdateDayView();
 			break;
+		}
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:
-		{	fSidePanelView->MessageReceived(message);
+		{
+			fSidePanelView->MessageReceived(message);
 			_UpdateDayView();
 			break;
 		}
