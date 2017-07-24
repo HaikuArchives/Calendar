@@ -23,6 +23,7 @@ enum {
 	kShowWeekNumberMessage,
 	kSetStartOfWeekMessage,
 	kSetCalendarToCurrentDate,
+	kSelectedDateChanged,
 };
 
 

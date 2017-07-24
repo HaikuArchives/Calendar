@@ -118,13 +118,18 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 
 		case kSetCalendarToCurrentDate:
+		{
 			fSidePanelView->MessageReceived(message);
+			break;
+		}
+
+		case kSelectedDateChanged:
+			_UpdateDayView();
 			break;
 
 		case kSelectionMessage:
 		{
 			fSidePanelView->MessageReceived(message);
-			_UpdateDayView();
 			break;
 		}
 
@@ -132,7 +137,6 @@ MainWindow::MessageReceived(BMessage* message)
 		case kMonthDownMessage:
 		{
 			fSidePanelView->MessageReceived(message);
-			_UpdateDayView();
 			break;
 		}
 
