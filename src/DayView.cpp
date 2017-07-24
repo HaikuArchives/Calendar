@@ -118,8 +118,12 @@ DayView::AddDayEvents()
 		event = ((Event*)fDayEventList->ItemAt(i));
 		nameString = "";
 		timeString = "";
-		timeString << GetLocalisedTimeString(event->GetStartDateTime().Time_t()) \
-			<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t());
+		if (event->IsAllDay())
+			timeString = "All Day";
+		else
+			timeString << GetLocalisedTimeString(event->GetStartDateTime().Time_t()) \
+				<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t());
+
 		nameString << event->GetName();
 
 		item = new EventListItem(nameString, timeString);
