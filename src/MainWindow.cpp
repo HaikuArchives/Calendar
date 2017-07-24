@@ -14,6 +14,8 @@
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
+#include "EventListView.h"
+
 
 MainWindow::MainWindow()
 	:

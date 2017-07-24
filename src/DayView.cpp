@@ -67,17 +67,25 @@ DayView::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
 
-		case kInvokationMessage:
+		case kEventModify:
 		{
 			int32 selection = fEventListView->CurrentSelection();
-
-			if (selection >= 0 && !fDayEventList->IsEmpty()) {
-
+			if (selection >= 0) {
 				Event* event = ((Event*)fDayEventList->ItemAt(selection));
 				int32 eventIndex = GetIndexOf(event);
 				BMessage msg(kModifyEventMessage);
 				msg.AddInt32("index", eventIndex);
 				Window()->PostMessage(&msg);
+			}
+			break;
+		}
+
+		case kEventDelete:
+		{
+			int32 selection = fEventListView->CurrentSelection();
+			if (selection >= 0) {
+				fEventList->RemoveItem(selection);
+				Update(fDate, fEventList);
 			}
 			break;
 		}

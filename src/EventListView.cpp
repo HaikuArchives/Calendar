@@ -75,7 +75,6 @@ EventListView::Draw(BRect rect)
 		BRect itemFrame = ItemFrame(CountItems() - 1);
 		bounds.top = itemFrame.bottom;
 		FillRect(bounds);
-		cout<<"\n"<<"test3"<<"\n";
 	}
 	BListView::Draw(rect);
 }
@@ -101,6 +100,26 @@ EventListView::MessageReceived(BMessage* message)
 		case kPopClosed:
 		{
 			fShowingPopUpMenu = false;
+			break;
+		}
+
+		case kModifyInvoked:
+		{
+			fShowingPopUpMenu = false;
+			BView* view = Window()->FindView("DayView");
+			BMessenger msgr(view);
+			BMessage msg(kEventModify);
+			msgr.SendMessage(&msg);
+			break;
+		}
+
+		case kDeleteInvoked:
+		{
+			fShowingPopUpMenu = false;
+			BView* view = Window()->FindView("DayView");
+			BMessenger msgr(view);
+			BMessage msg(kEventDelete);
+			msgr.SendMessage(&msg);
 			break;
 		}
 
@@ -169,10 +188,10 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 
 	BMenuItem* item;
 	item = new BMenuItem("Modify",
-			new BMessage(kEventModify), 'E');
+			new BMessage(kModifyInvoked), 'E');
 	menu->AddItem(item);
 	item = new BMenuItem("Delete",
-			new BMessage(kEventDelete), 'D');
+			new BMessage(kDeleteInvoked), 'D');
 	menu->AddItem(item);
 
 	menu->SetTargetForItems(this);

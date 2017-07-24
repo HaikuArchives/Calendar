@@ -29,6 +29,9 @@ public:
 	void			MouseUp(BPoint position);
 
 private:
+	static const int32 kModifyInvoked	= 1000;
+	static const int32 kDeleteInvoked	= 1001;
+
 	void			_ShowPopUpMenu(BPoint screen);
 
 	bool			fShowingPopUpMenu;
