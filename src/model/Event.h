@@ -14,7 +14,8 @@ public:
 
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
-				BDateTime start, BDateTime end);
+				BDateTime start, BDateTime end,
+				const char* id = NULL);
 			Event(Event& event);
 
 	BDateTime	GetStartDateTime();
@@ -22,6 +23,9 @@ public:
 
 	BDateTime	GetEndDateTime();
 	void		SetEndDateTime(BDateTime& end);
+
+
+	const char*	GetId();
 
 	const char*	GetName();
 	const char*	GetPlace();
@@ -34,11 +38,14 @@ public:
 	bool		IsAllDay();
 	void		SetAllDay(bool allday);
 
+	bool 		Equals(Event& e);
+
 private:
 
 	BString		fName;
 	BString		fDescription;
 	BString		fPlace;
+	BString		fId;
 
 	BDateTime	fStart;
 	BDateTime	fEnd;

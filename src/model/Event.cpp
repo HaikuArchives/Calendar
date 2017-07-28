@@ -6,10 +6,13 @@
 
 #include "Event.h"
 
+#include <Uuid.h>
 
-Event::Event(const char* name, const char* place,
-	const char* description, bool allday,
-	BDateTime start, BDateTime end)
+
+Event::Event(const char* name,
+	const char* place, const char* description,
+	bool allday, BDateTime start, BDateTime end,
+	const char* id = NULL)
 {
 	fName = name;
 	fPlace = place;
@@ -17,6 +20,13 @@ Event::Event(const char* name, const char* place,
 	fAllDay = allday;
 	fStart = start;
 	fEnd = end;
+
+	if (id == NULL) {
+		fId = BUuid().SetToRandom().ToString();
+	}
+	else
+		fId = id;
+
 }
 
 
@@ -24,6 +34,7 @@ Event::Event(Event& event)
 {
 	fName = event.GetName();
 	fPlace = event.GetPlace();
+	fId = event.GetId();
 	fDescription = event.GetDescription();
 	fAllDay = event.IsAllDay();
 	fStart = event.GetStartDateTime();
@@ -57,6 +68,13 @@ Event::SetEndDateTime(BDateTime& end)
 {
 
 	fEnd = end;
+}
+
+
+const char*
+Event::GetId()
+{
+	return fId.String();
 }
 
 
@@ -112,5 +130,12 @@ bool
 Event::IsAllDay()
 {
 	return fAllDay;
+}
+
+
+bool
+Event::Equals(Event &e)
+{
+    return (fId == e.GetId());
 }
 

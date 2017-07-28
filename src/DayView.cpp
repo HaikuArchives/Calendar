@@ -177,12 +177,7 @@ DayView::GetIndexOf(Event* event)
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		e = ((Event*)fEventList->ItemAt(i));
-		if (e->GetStartDateTime() == event->GetStartDateTime()
-			&& e->GetEndDateTime() == event->GetEndDateTime()
-			&& e->IsAllDay() == event->IsAllDay()
-			&& BString(e->GetName()) == BString(event->GetName())
-			&& BString(e->GetPlace()) == BString(event->GetPlace())
-			&& BString(e->GetDescription()) == BString(event->GetDescription()))
+		if (e->Equals(*event))
 				return i;
 	}
 
