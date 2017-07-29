@@ -137,8 +137,9 @@ DayView::AddDayEvents()
 				<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t());
 
 		nameString << event->GetName();
+		rgb_color color = event->GetCategory()->GetColor();
 
-		item = new EventListItem(nameString, timeString);
+		item = new EventListItem(nameString, timeString, color);
 		fEventListView->AddItem(item);
 	}
 }

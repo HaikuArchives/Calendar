@@ -10,15 +10,13 @@
 #include "EventListItem.h"
 
 
-const rgb_color EventListItem::fDefaultColor = {86, 86, 197};
-
-
-EventListItem::EventListItem(BString name, BString timeText)
+EventListItem::EventListItem(BString name, BString timeText, rgb_color color)
 	:
 	BListItem()
 {
 	fName = name;
 	fTimeText = timeText;
+	fColor = color;
 }
 
 
@@ -57,8 +55,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 
 	view->SetHighColor(ui_color(B_CONTROL_BORDER_COLOR));
 	view->StrokeRect(categoryRect);
-	view->SetHighColor(fDefaultColor);
-		//Currently assign all events a default category(color)
+	view->SetHighColor(fColor);
 	view->FillRect(categoryRect);
 	offset = categoryRect.Width() + offset + spacing + 2;
 

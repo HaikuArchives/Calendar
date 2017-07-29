@@ -17,7 +17,8 @@
 
 class EventListItem: public BListItem {
 public:
-				EventListItem(BString name, BString timeText);
+				EventListItem(BString name, BString timeText,
+					rgb_color color);
 				~EventListItem();
 
 	virtual void		DrawItem(BView*, BRect, bool);
@@ -25,10 +26,10 @@ public:
 
 private:
 	static const int 	fItemHeight	= 32;
-	static const rgb_color 	fDefaultColor;
 
 	BString			fName;
 	BString			fTimeText;
+	rgb_color		fColor;
 };
 
 #endif // EVENTLLISTITEM_H
