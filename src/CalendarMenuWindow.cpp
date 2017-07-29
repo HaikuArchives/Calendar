@@ -1,4 +1,5 @@
 /*
+ * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
  * Copyright 2008 Karsten Heimrich, host.haiku@gmx.de. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
@@ -18,17 +19,10 @@
 #include <String.h>
 #include <StringView.h>
 
+#include "EventWindow.h"
+
 
 using BPrivate::BCalendarView;
-
-enum {
-	kInvokationMessage,
-	kDateSelectMessage,
-	kMonthDownMessage,
-	kMonthUpMessage,
-	kYearDownMessage,
-	kYearUpMessage
-};
 
 
 //	#pragma mark - FlatButton
@@ -76,13 +70,14 @@ FlatButton::Draw(BRect updateRect)
 //	#pragma mark - CalendarMenuWindow
 
 
-CalendarMenuWindow::CalendarMenuWindow(BPoint where)
+CalendarMenuWindow::CalendarMenuWindow(BPoint where, BMessage& message)
 	:
 	BWindow(BRect(0.0, 0.0, 100.0, 130.0), "", B_BORDERED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS | B_ASYNCHRONOUS_CONTROLS | B_CLOSE_ON_ESCAPE
 		| B_NOT_MINIMIZABLE | B_NOT_ZOOMABLE),
 	fYearLabel(NULL),
 	fMonthLabel(NULL),
+	fMessage(message),
 	fCalendarView(NULL),
 	fSuppressFirstClose(true)
 {
@@ -172,8 +167,25 @@ CalendarMenuWindow::MessageReceived(BMessage* message)
 			message->FindInt32("day", &day);
 			message->FindInt32("month", &month);
 			message->FindInt32("year", &year);
+			BDate date = BDate(year, month, day);
+			_UpdateDate(date);
 
-			_UpdateDate(BDate(year, month, day));
+			EventWindow* parent;
+			int8 which;
+
+			fMessage.FindPointer("parent", (void**)(&parent));
+			fMessage.FindInt8("which", &which);
+
+			if(parent->Lock()) {
+				if (which == 0)
+					parent->SetStartDate(date);
+				else
+					parent->SetEndDate(date);
+
+				parent->Unlock();
+			}
+
+			PostMessage(B_QUIT_REQUESTED);
 			break;
 		}
 

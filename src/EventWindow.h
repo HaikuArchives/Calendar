@@ -39,19 +39,23 @@ public:
 	void			SetEvent(Event* event, int eventIndex,
 					BList* eventList);
 	void			SetEventDate(BDate& date);
+	void			SetStartDate(BDate& date);
+	void			SetEndDate(BDate& date);
+
 	Event*			GetEvent();
 
-	void			ShowCalendar(BPoint where);
 	void 			DisableControls();
 	void			OnCheckBoxToggle();
 	void			OnSaveClick();
 	void			OnDeleteClick();
 	void			CloseWindow();
 
-	BString			GetLocaleDateString(time_t timeValue);
+	BString			GetDateString(time_t timeValue);
 	BString			GetLocaleTimeString(time_t timeValue);
 
 private:
+	void			_ShowPopUpCalendar(int8 which);
+
 	static const uint32	kDeletePressed	= 1000;
 	static const uint32	kCancelPressed	= 1001;
 	static const uint32	kSavePressed	= 1002;
@@ -108,7 +112,7 @@ private:
 	Event*			fEvent;
 	BList*			fEventList;
 	BList*			fCategoryList;
-	int				fEventIndex;
+	int			fEventIndex;
 
 };
 

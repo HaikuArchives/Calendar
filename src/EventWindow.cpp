@@ -201,32 +201,7 @@ EventWindow::MessageReceived(BMessage* message)
 		{
 			int8 which;
 			message->FindInt8("which", &which);
-			switch(which) {
-				case 0:
-				{
-					BPoint where;
-					BPoint boxPosition = fStartDateBox->Frame().LeftTop();
-					BPoint buttonPosition = fStartCalButton->Frame().LeftBottom();
-					where = boxPosition + buttonPosition;
-					where += BPoint(10.0, 8.0);
-					ShowCalendar(where);
-					break;
-				}
-
-				case 1:
-				{
-					BPoint where;
-					BPoint boxPosition = fEndDateBox->Frame().LeftTop();
-					BPoint buttonPosition = fEndCalButton->Frame().LeftBottom();
-					where = boxPosition + buttonPosition;
-					where += BPoint(10.0, 8.0);
-					ShowCalendar(where);
-					break;
-				}
-
-				default:
-					break;
-			}
+			_ShowPopUpCalendar(which);
 			break;
 		}
 
@@ -253,8 +228,8 @@ EventWindow::SetEvent(Event* event, int eventIndex,
 		fStartDateTime = event->GetStartDateTime();
 		fEndDateTime = event->GetEndDateTime();
 
-		fTextStartDate->SetText(GetLocaleDateString(fStartDateTime.Time_t()));
-		fTextEndDate->SetText(GetLocaleDateString(fEndDateTime.Time_t()));
+		fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+		fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
 
 		Category* category;
 
@@ -300,10 +275,32 @@ EventWindow::SetEventDate(BDate& date)
 	fEndDateTime.SetTime(time);
 	fEndDateTime.SetDate(date);
 
-	fTextStartDate->SetText(GetLocaleDateString(fStartDateTime.Time_t()));
+	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
 	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
-	fTextEndDate->SetText(GetLocaleDateString(fEndDateTime.Time_t()));
+	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
 	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+}
+
+
+void
+EventWindow::SetStartDate(BDate& date)
+{
+	if (!date.IsValid())
+		return;
+
+	fStartDateTime.SetDate(date);
+	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+}
+
+
+void
+EventWindow::SetEndDate(BDate& date)
+{
+	if (!date.IsValid())
+		return;
+
+	fEndDateTime.SetDate(date);
+	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
 }
 
 
@@ -323,7 +320,7 @@ EventWindow::DisableControls()
 
 
 BString
-EventWindow::GetLocaleDateString(time_t timeValue)
+EventWindow::GetDateString(time_t timeValue)
 {
 	BString dateString;
 	BDateFormat().Format(dateString, timeValue,
@@ -347,27 +344,6 @@ EventWindow::QuitRequested()
 {
 	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
 	return true;
-}
-
-
-void
-EventWindow::ShowCalendar(BPoint where)
-{
-	if (fCalendarWindow.IsValid()) {
-		BMessage activate(B_SET_PROPERTY);
-		activate.AddSpecifier("Active");
-		activate.AddBool("data", true);
-
-		if (fCalendarWindow.SendMessage(&activate) == B_OK)
-			return;
-	}
-
-	ConvertToScreen(&where);
-
-	CalendarMenuWindow* window = new CalendarMenuWindow(where);
-	fCalendarWindow = BMessenger(window);
-
-	window->Show();
 }
 
 
@@ -456,4 +432,49 @@ Event*
 EventWindow::GetEvent()
 {
 	return fEvent;
+}
+
+
+void
+EventWindow::_ShowPopUpCalendar(int8 which)
+{
+	BPoint where;
+	BPoint boxPosition;
+	BPoint buttonPosition;
+
+	//TODO: This is bad. Improve how coordinates for pop up calendar
+	//window is calculated. Better implement a DateTimeEdit control.
+
+	if(which ==0) {
+		boxPosition = fStartDateBox->Frame().RightTop();
+		buttonPosition = fStartCalButton->Frame().LeftBottom();
+	}
+	else
+	{
+		boxPosition = fEndDateBox->Frame().RightTop();
+		buttonPosition = fEndCalButton->Frame().LeftBottom();
+	}
+	where.x = boxPosition.x - buttonPosition.x;
+	where.y = boxPosition.y + buttonPosition.y;
+	where += BPoint(-42.0, 8.0);
+
+	if (fCalendarWindow.IsValid()) {
+		BMessage activate(B_SET_PROPERTY);
+		activate.AddSpecifier("Active");
+		activate.AddBool("data", true);
+
+		if (fCalendarWindow.SendMessage(&activate) == B_OK)
+			return;
+	}
+
+	ConvertToScreen(&where);
+
+	BMessage message;
+	message.AddPointer("parent", this);
+	message.AddInt8("which", which);
+
+	CalendarMenuWindow* window = new CalendarMenuWindow(where, message);
+	fCalendarWindow = BMessenger(window);
+
+	window->Show();
 }
