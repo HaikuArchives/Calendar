@@ -5,16 +5,17 @@
 
 #include "Category.h"
 
+#include <stdio.h>
 
-Category::Category(uint32 id, BString name, BString color)
+
+Category::Category(uint32 id, BString name, rgb_color color)
 {
 		fName = name;
         fColor = color;
 		if (id == 0) {
 			BString hashString;
-			hashString.Append(name);
-			hashString.Append(color);
-			hashString+=color;
+			hashString.SetToFormat("%.6Xs", (color.red << 16)|
+				(color.green << 8)|color.blue, name);
 			fId = hashString.HashValue();
 		}
 		else
@@ -37,7 +38,7 @@ Category::GetName()
 }
 
 
-BString
+rgb_color
 Category::GetColor()
 {
 	return fColor;

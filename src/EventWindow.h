@@ -21,6 +21,7 @@
 #include <Window.h>
 
 #include "CalendarMenuWindow.h"
+#include "Category.h"
 #include "Event.h"
 
 
@@ -106,7 +107,8 @@ private:
 
 	Event*			fEvent;
 	BList*			fEventList;
-	int			fEventIndex;
+	BList*			fCategoryList;
+	int				fEventIndex;
 
 };
 

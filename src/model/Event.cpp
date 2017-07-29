@@ -12,7 +12,7 @@
 Event::Event(const char* name,
 	const char* place, const char* description,
 	bool allday, BDateTime start, BDateTime end,
-	const char* id = NULL)
+	Category* category, const char* id = NULL)
 {
 	fName = name;
 	fPlace = place;
@@ -20,6 +20,8 @@ Event::Event(const char* name,
 	fAllDay = allday;
 	fStart = start;
 	fEnd = end;
+
+	fCategory = new Category(*category);
 
 	if (id == NULL) {
 		fId = BUuid().SetToRandom().ToString();
@@ -35,6 +37,7 @@ Event::Event(Event& event)
 	fName = event.GetName();
 	fPlace = event.GetPlace();
 	fId = event.GetId();
+	fCategory = event.GetCategory();
 	fDescription = event.GetDescription();
 	fAllDay = event.IsAllDay();
 	fStart = event.GetStartDateTime();
@@ -75,6 +78,13 @@ const char*
 Event::GetId()
 {
 	return fId.String();
+}
+
+
+Category*
+Event::GetCategory()
+{
+	return fCategory;
 }
 
 

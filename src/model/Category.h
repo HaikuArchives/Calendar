@@ -5,15 +5,16 @@
 #ifndef CATEGORY_H
 #define CATEGORY_H
 
+#include <GraphicsDefs.h>
 #include <String.h>
 
 class Category {
 public:
-		Category(uint32 id, BString name, BString color);
-		Category(Category &category);
+		Category(uint32 id, BString name, rgb_color color);
+		Category(Category& category);
 
 		BString GetName();
-		BString GetColor();
+		rgb_color GetColor();
 		uint32 GetId();
 
 		bool Equals(Category &c);
@@ -21,7 +22,7 @@ public:
 private:
 		uint32			fId;
 		BString 		fName;
-		BString 		fColor;
+		rgb_color 		fColor;
 
 };
 

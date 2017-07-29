@@ -8,6 +8,7 @@
 #include <DateTime.h>
 #include <String.h>
 
+#include "Category.h"
 
 class Event {
 public:
@@ -15,7 +16,7 @@ public:
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
 				BDateTime start, BDateTime end,
-				const char* id = NULL);
+				Category* category, const char* id = NULL);
 			Event(Event& event);
 
 	BDateTime	GetStartDateTime();
@@ -26,6 +27,7 @@ public:
 
 
 	const char*	GetId();
+	Category*	GetCategory();
 
 	const char*	GetName();
 	const char*	GetPlace();
@@ -51,6 +53,8 @@ private:
 	BDateTime	fEnd;
 
 	bool		fAllDay;
+
+	Category*	fCategory;
 
 };
 

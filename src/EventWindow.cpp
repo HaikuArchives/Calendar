@@ -11,6 +11,7 @@
 #include <DateFormat.h>
 #include <File.h>
 #include <GroupLayout.h>
+#include <GraphicsDefs.h>
 #include <LayoutItem.h>
 #include <LayoutBuilder.h>
 #include <MenuItem.h>
@@ -81,13 +82,18 @@ EventWindow::EventWindow()
 	fStartCalButton->SetExplicitMinSize(BSize(height, height));
 	fEndCalButton->SetExplicitMinSize(BSize(height, height));
 
-	fCategoryMenu = new BMenu("CategoryMenu");
-	fCategoryMenu->AddItem(new BMenuItem("Default", B_OK));
-	fCategoryMenu->AddItem(new BMenuItem("Category", B_OK));
+	fCategoryList = new BList();
+	fCategoryList->AddItem(new Category(0, "Default", (rgb_color){86, 86, 197}));
+	fCategoryList->AddItem(new Category(0, "Birthdays", (rgb_color){194, 86, 86}));
 
+	fCategoryMenu = new BMenu("CategoryMenu");
+	Category* category;
+	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+		category = ((Category*)fCategoryList->ItemAt(i));
+		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),  B_OK));
+	}
 	fCategoryMenu->SetRadioMode(true);
 	fCategoryMenu->SetLabelFromMarked(true);
-	fCategoryMenu->SetRadioMode(true);
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
 	fStartDateEdit = new BMenu("Start Date");
@@ -250,6 +256,16 @@ EventWindow::SetEvent(Event* event, int eventIndex,
 		fTextStartDate->SetText(GetLocaleDateString(fStartDateTime.Time_t()));
 		fTextEndDate->SetText(GetLocaleDateString(fEndDateTime.Time_t()));
 
+		Category* category;
+
+		for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+			category = ((Category*)fCategoryList->ItemAt(i));
+			if (category->Equals(*event->GetCategory())) {
+				fCategoryMenu->ItemAt(i)->SetMarked(true);
+				break;
+			}
+		}
+
 		if (event->IsAllDay()) {
 			fAllDayCheckBox->SetValue(B_CONTROL_ON);
 			fTextStartTime->SetText("");
@@ -302,7 +318,6 @@ EventWindow::DisableControls()
 	fEveryYear->SetEnabled(false);
 	fStartTimeCheckBox->SetEnabled(false);
 	fEndTimeCheckBox->SetEnabled(false);
-	fCategoryMenuField->SetEnabled(false);
 	fDeleteButton->SetEnabled(false);
 }
 
@@ -382,9 +397,15 @@ EventWindow::OnSaveClick()
 		}
 	}
 
+	Category* category = NULL;
+	BMenuItem* item = fCategoryMenu->FindMarked();
+	int32 index = fCategoryMenu->IndexOf(item);
+	Category* c = ((Category*)fCategoryList->ItemAt(index));
+	category = new Category(*c);
+
 	Event* newEvent = new Event(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		fStartDateTime, fEndDateTime);
+		fStartDateTime, fEndDateTime, category);
 
 	if (fEvent!=NULL) {
 		fEventList->ReplaceItem(fEventIndex, newEvent);

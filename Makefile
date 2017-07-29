@@ -45,7 +45,8 @@ SRCS = \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
 	 src/utils/ResourceLoader.cpp  \
-	 src/model/Event.cpp
+	 src/model/Event.cpp \
+	 src/model/Category.cpp
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
