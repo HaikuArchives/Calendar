@@ -47,6 +47,8 @@ private:
 		DateHeaderView*		fDateHeaderView;
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;
+
+		BDateFormat		fDateFormat;
 };
 
 #endif

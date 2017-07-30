@@ -147,7 +147,7 @@ SidePanelView::SetStartOfWeek(int32 index)
 	BWeekday firstDay;
 
 	if (startOfWeekDay == kLocaleStartOfWeek) {
-		BDateFormat().GetStartOfWeek(&firstDay);
+		fDateFormat.GetStartOfWeek(&firstDay);
 		fCalendarView->SetStartOfWeek(firstDay);
 	}
 
@@ -195,8 +195,7 @@ SidePanelView::_UpdateDateLabel()
 	BString monthYearString;
 	yearString << date.Year();
 
-	BDateFormat dateFormat;
-	dateFormat.GetMonthName(date.Month(), monthYearString);
+	fDateFormat.GetMonthName(date.Month(), monthYearString);
 	monthYearString += " ";
 	monthYearString += yearString.String();
 

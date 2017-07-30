@@ -94,9 +94,9 @@ DateHeaderView::_UpdateDateHeader()
 	BDateElement* fields;
 	int fieldCount;
 
-	BDateFormat().Format(dateString, fieldPositions, positionCount,
+	fDateFormat.Format(dateString, fieldPositions, positionCount,
 		timeValue, B_FULL_DATE_FORMAT);
-	BDateFormat().GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
+	fDateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
 
 	for(int i = 0; i < fieldCount; ++i)  {
 		if (fields[i] == B_DATE_ELEMENT_WEEKDAY)

@@ -8,6 +8,7 @@
 #include <Button.h>
 #include <Box.h>
 #include <CheckBox.h>
+#include <DateFormat.h>
 #include <DateTime.h>
 #include <List.h>
 #include <Menu.h>
@@ -17,6 +18,7 @@
 #include <RadioButton.h>
 #include <StringView.h>
 #include <TextControl.h>
+#include <TimeFormat.h>
 #include <View.h>
 #include <Window.h>
 
@@ -108,6 +110,9 @@ private:
 
 	BDateTime		fStartDateTime;
 	BDateTime		fEndDateTime;
+
+	BDateFormat		fDateFormat;
+	BTimeFormat		fTimeFormat;
 
 	Event*			fEvent;
 	BList*			fEventList;

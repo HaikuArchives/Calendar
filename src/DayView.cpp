@@ -123,23 +123,32 @@ DayView::AddDayEvents()
 {
 	Event* event;
 	EventListItem* item;
-	BString timeString;
-	BString nameString;
+	BString startTime;
+	BString endTime;
+	BString eventName;
+	BString timePeriod;
 
 	for (int32 i = 0; i < fDayEventList->CountItems(); i++) {
 		event = ((Event*)fDayEventList->ItemAt(i));
-		nameString = "";
-		timeString = "";
+		eventName = "";
+		startTime = "";
+		endTime = "";
+		timePeriod = "";
 		if (event->IsAllDay())
-			timeString = "All Day";
+			timePeriod = "All Day";
 		else
-			timeString << GetLocalisedTimeString(event->GetStartDateTime().Time_t()) \
-				<<" - " << GetLocalisedTimeString(event->GetEndDateTime().Time_t());
+		{
+			fTimeFormat.Format(startTime, event->GetStartDateTime().Time_t(),
+				B_SHORT_TIME_FORMAT);
+			fTimeFormat.Format(endTime, event->GetEndDateTime().Time_t(),
+				B_SHORT_TIME_FORMAT);
+			timePeriod << startTime << " - " << endTime;
+		}
 
-		nameString << event->GetName();
+		eventName << event->GetName();
 		rgb_color color = event->GetCategory()->GetColor();
 
-		item = new EventListItem(nameString, timeString, color);
+		item = new EventListItem(eventName, timePeriod , color);
 		fEventListView->AddItem(item);
 	}
 }
@@ -183,14 +192,4 @@ DayView::GetIndexOf(Event* event)
 	}
 
 	return -1;
-}
-
-
-BString
-DayView::GetLocalisedTimeString(time_t time)
-{
-	BString timeString;
-	BTimeFormat().Format(timeString, time,
-		B_SHORT_TIME_FORMAT);
-	return timeString;
 }

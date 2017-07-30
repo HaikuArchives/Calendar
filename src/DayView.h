@@ -6,6 +6,7 @@
 #define DAYVIEW_H
 
 #include <DateTime.h>
+#include <TimeFormat.h>
 #include <List.h>
 #include <ScrollView.h>
 #include <View.h>
@@ -30,8 +31,6 @@ public:
 		void			Update(const BDate& date, BList* eventList);
 		static	int		CompareFunc(const void* a, const void* b);
 
-		BString			GetLocalisedTimeString(time_t time);
-
 		int32			GetIndexOf(Event* event);
 
 private:
@@ -43,6 +42,7 @@ private:
 		EventListView*		fEventListView;
 		BScrollView*		fEventScroll;
 		BDate			fDate;
+		BTimeFormat		fTimeFormat;
 
 };
 
