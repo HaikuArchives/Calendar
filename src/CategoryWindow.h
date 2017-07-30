@@ -20,22 +20,24 @@ const uint32 kCategoryWindowQuitting = 'kcwq';
 
 class CategoryWindow: public BWindow {
 public:
-			CategoryWindow();
+				CategoryWindow();
 
-	virtual void	MessageReceived(BMessage* message);
-	virtual bool	QuitRequested();
+	virtual void		MessageReceived(BMessage* message);
+	virtual bool		QuitRequested();
 
 private:
-	static const uint32 kAddPressed		= 1000;
-	static const uint32 kCancelPressed	= 1001;
-	static const uint32 kCategorySelected	= 1002;
+	static const uint32	kAddPressed		= 1000;
+	static const uint32	kCancelPressed		= 1001;
+	static const uint32	kCategorySelected	= 1002;
 
 	BView*			fMainView;
-	BListView*		fCategoryList;
+	BListView*		fCategoryListView;
 	BScrollView*		fCategoryScroll;
 	BButton*		fAddButton;
 	BButton*		fCancelButton;
 	CategoryEditWindow*	fCategoryEditWindow;
+
+	BList*			fCategoryList;
 
 };
 

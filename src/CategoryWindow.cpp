@@ -9,6 +9,8 @@
 #include <Application.h>
 #include <LayoutBuilder.h>
 
+#include "CategoryListItem.h"
+
 
 CategoryWindow::CategoryWindow()
 	:
@@ -22,14 +24,16 @@ CategoryWindow::CategoryWindow()
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fCategoryList = new BListView("CategoryList", B_SINGLE_SELECTION_LIST,
+	fCategoryListView = new BListView("CategoryListView", B_SINGLE_SELECTION_LIST,
 		B_WILL_DRAW);
 
-	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryList,
+	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryListView,
 		B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
 
-	fCategoryList->SetInvocationMessage(new BMessage(kCategorySelected));
+	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
+	fCategoryListView->AddItem(new CategoryListItem("Default", (rgb_color){86, 86, 197}));
+	fCategoryListView->AddItem(new CategoryListItem("Birthdays", (rgb_color){194, 86, 86}));
 
 	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
 	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));

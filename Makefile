@@ -44,6 +44,7 @@ SRCS = \
 	 src/Preferences.cpp  \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
+	 src/CategoryListItem.cpp \
 	 src/utils/ResourceLoader.cpp  \
 	 src/model/Event.cpp \
 	 src/model/Category.cpp
