@@ -4,17 +4,28 @@
  */
 
 #include "MainWindow.h"
+
 #include <Application.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
+#include <List.h>
 #include <LocaleRoster.h>
+#include <Menu.h>
+#include <MenuItem.h>
+#include <MenuBar.h>
+#include <ToolBar.h>
 
+#include "DayView.h"
+#include "EventListView.h"
+#include "EventWindow.h"
 #include "MainView.h"
+#include "Preferences.h"
 #include "PreferenceWindow.h"
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
-#include "EventListView.h"
+
+using BPrivate::BToolBar;
 
 
 MainWindow::MainWindow()

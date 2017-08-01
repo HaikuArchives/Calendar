@@ -7,12 +7,13 @@
 
 #include <DateTime.h>
 #include <TimeFormat.h>
-#include <List.h>
-#include <ScrollView.h>
 #include <View.h>
 
-#include "Event.h"
-#include "EventListView.h"
+
+class BScrollView;
+class BList;
+class Event;
+class EventListView;
 
 
 const uint32 kModifyEventMessage = 'ksem';

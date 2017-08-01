@@ -5,12 +5,14 @@
 
 #include "DateHeaderView.h"
 
-#include <DateFormat.h>
+
 #include <Font.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
+#include <StringView.h>
 
 #include "MainView.h"
+
 
 DateHeaderView::DateHeaderView()
 	:BView("DateHeaderView", B_WILL_DRAW)

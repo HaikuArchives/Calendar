@@ -14,8 +14,9 @@ Category::Category(uint32 id, BString name, rgb_color color)
         fColor = color;
 		if (id == 0) {
 			BString hashString;
-			hashString.SetToFormat("%.6Xs", (color.red << 16)|
-				(color.green << 8)|color.blue, name);
+			hashString.SetToFormat("%.6X", (color.red << 16)|
+				(color.green << 8)|color.blue);
+			hashString.Append(fName);
 			fId = hashString.HashValue();
 		}
 		else

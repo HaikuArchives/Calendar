@@ -7,6 +7,10 @@
 
 #include "EventListView.h"
 
+#include <MenuItem.h>
+#include <PopUpMenu.h>
+#include <String.h>
+
 #include "EventListItem.h"
 #include "MainWindow.h"
 

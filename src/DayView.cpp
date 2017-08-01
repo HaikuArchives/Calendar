@@ -6,9 +6,13 @@
 #include "DayView.h"
 
 #include <LayoutBuilder.h>
+#include <List.h>
+#include <ScrollView.h>
 #include <TimeFormat.h>
 
+#include "Event.h"
 #include "EventListItem.h"
+#include "EventListView.h"
 
 
 DayView::DayView(const BDate& date, BList* eventList)

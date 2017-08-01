@@ -6,9 +6,11 @@
 #include "ResourceLoader.h"
 
 #include <Application.h>
+#include <Cursor.h>
 #include <IconUtils.h>
 #include <Mime.h>
 #include <Resources.h>
+#include <TranslatorFormats.h>
 #include <TranslationUtils.h>
 
 

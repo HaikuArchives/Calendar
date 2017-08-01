@@ -8,9 +8,6 @@
 #define EVENTLISTVIEW_H
 
 #include <ListView.h>
-#include <MenuItem.h>
-#include <PopUpMenu.h>
-#include <String.h>
 
 
 static const uint32 kPopClosed	= 'kpop';

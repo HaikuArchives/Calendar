@@ -5,26 +5,28 @@
 #ifndef EVENTWINDOW_H
 #define EVENTWINDOW_H
 
-#include <Button.h>
-#include <Box.h>
-#include <CheckBox.h>
-#include <DateFormat.h>
+
 #include <DateTime.h>
-#include <List.h>
-#include <Menu.h>
-#include <MenuField.h>
+#include <DateFormat.h>
 #include <Messenger.h>
-#include <PopUpMenu.h>
-#include <RadioButton.h>
-#include <StringView.h>
-#include <TextControl.h>
 #include <TimeFormat.h>
-#include <View.h>
 #include <Window.h>
 
-#include "CalendarMenuWindow.h"
-#include "Category.h"
-#include "Event.h"
+
+class BBox;
+class BButton;
+class BCheckBox;
+class BList;
+class BMenu;
+class BMenuField;
+class BPopUpMenu;
+class BRadioButton;
+class BStringView;
+class BTextControl;
+class BTextView;
+class BView;
+class Category;
+class Event;
 
 
 const uint32 kEventWindowQuitting = 'kewq';

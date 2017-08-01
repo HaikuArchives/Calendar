@@ -5,14 +5,20 @@
 
 
 #include "SidePanelView.h"
-#include <DateFormat.h>
+
+#include <Button.h>
+#include <CalendarView.h>
+#include <DateTime.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
+#include <StringView.h>
 
 #include "MainView.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
 
+
+using BPrivate::BCalendarView;
 
 enum StartOfWeek
 {
@@ -25,6 +31,7 @@ enum StartOfWeek
 	kWeekDaySaturday,
 	kWeekDaySunday,
 };
+
 
 SidePanelView::SidePanelView()
 	:

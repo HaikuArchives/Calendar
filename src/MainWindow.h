@@ -6,19 +6,25 @@
 #define MAIN_WINDOW_H
 
 #include <DateTime.h>
-#include <List.h>
-#include <MenuBar.h>
-#include <MenuItem.h>
-#include <ToolBar.h>
-#include <View.h>
 #include <Window.h>
 
-#include "DayView.h"
-#include "EventWindow.h"
-#include "MainView.h"
-#include "Preferences.h"
-#include "PreferenceWindow.h"
-#include "SidePanelView.h"
+
+class BList;
+class BMenu;
+class BMenuBar;
+class DayView;
+class EventWindow;
+class MainView;
+class Preferences;
+class PreferenceWindow;
+class SidePanelView;
+
+
+namespace BPrivate {
+	class BToolBar;
+}
+using BPrivate::BToolBar;
+
 
 static const uint32 kMenuEditPref = 'kmap';
 static const uint32 kMenuEditCategory = 'kmec';

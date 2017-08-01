@@ -6,14 +6,15 @@
 #define CATEGORYEDITWINDOW_H
 
 
-#include <Button.h>
-#include <ColorControl.h>
-#include <TextControl.h>
-#include <View.h>
 #include <Window.h>
 
-#include "Category.h"
-#include "ColorPreview.h"
+
+class BButton;
+class BColorControl;
+class BTextControl;
+class BView;
+class Category;
+class ColorPreview;
 
 
 const uint32 kCategoryEditQuitting = 'kceq';

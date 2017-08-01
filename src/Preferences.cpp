@@ -9,6 +9,7 @@
 
 #include <Alert.h>
 #include <File.h>
+#include <Message.h>
 
 
 void

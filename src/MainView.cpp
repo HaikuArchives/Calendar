@@ -5,8 +5,6 @@
 
 #include "MainView.h"
 
-#include <DateTime.h>
-
 
 MainView::MainView()
 	:

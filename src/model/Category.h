@@ -8,6 +8,7 @@
 #include <GraphicsDefs.h>
 #include <String.h>
 
+
 class Category {
 public:
 		Category(uint32 id, BString name, rgb_color color);

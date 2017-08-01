@@ -5,15 +5,14 @@
 #ifndef CATEGORYWINDOW_H
 #define CATEGORYWINDOW_H
 
-
-#include <Button.h>
-#include <ListView.h>
-#include <ScrollView.h>
-#include <View.h>
 #include <Window.h>
 
-#include "Category.h"
-#include "CategoryEditWindow.h"
+class BButton;
+class BListView;
+class BScrollView;
+class BView;
+class Category;
+class CategoryEditWindow;
 
 
 const uint32 kCategoryWindowQuitting = 'kcwq';

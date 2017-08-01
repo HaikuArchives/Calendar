@@ -6,8 +6,7 @@
 #define RESOURCE_LAODER_H
 
 #include <Bitmap.h>
-#include <Cursor.h>
-#include <TranslatorFormats.h>
+
 
 BBitmap* LoadVectorIcon(const char* name, int32 iconSize = 32, int32 cropSize = 22);
 

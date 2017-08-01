@@ -8,10 +8,8 @@
 #define EVENTLISTITEM_H
 
 
-#include <Font.h>
 #include <InterfaceDefs.h>
 #include <ListItem.h>
-#include <MenuItem.h>
 #include <String.h>
 
 

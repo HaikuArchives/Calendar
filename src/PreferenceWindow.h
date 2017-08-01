@@ -5,16 +5,16 @@
 #ifndef _PREFWIN_H_
 #define _PREFWIN_H_
 
-#include <Box.h>
-#include <CheckBox.h>
-#include <DateFormat.h>
-#include <PopUpMenu.h>
-#include <MenuField.h>
-#include <StringView.h>
-#include <View.h>
 #include <Window.h>
 
-#include "Preferences.h"
+class BBox;
+class BButton;
+class BCheckBox;
+class BPopUpMenu;
+class BMenuField;
+class BStringView;
+class BView;
+class Preferences;
 
 
 const uint32 kPreferenceWindowQuitting	= 'kpwq';

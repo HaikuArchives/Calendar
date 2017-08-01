@@ -5,9 +5,11 @@
 #ifndef _DATEHEADERVIEW_H_
 #define _DATEHEADERVIEW_H_
 
-#include <DateFormat.h>
-#include <StringView.h>
 #include <View.h>
+#include <DateFormat.h>
+
+
+class BStringView;
 
 
 class DateHeaderView: public BView {

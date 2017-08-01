@@ -7,8 +7,15 @@
 
 
 #include <Application.h>
+#include <Button.h>
 #include <LayoutBuilder.h>
+#include <ListView.h>
+#include <ScrollView.h>
+#include <View.h>
+#include <Window.h>
 
+#include "Category.h"
+#include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
 
 

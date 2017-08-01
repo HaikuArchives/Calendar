@@ -5,13 +5,21 @@
 
 #include "App.h"
 
-#include <LocaleRoster.h>
 #include <AboutWindow.h>
+#include <Directory.h>
+#include <Entry.h>
+#include <File.h>
+#include <FindDirectory.h>
+#include <LocaleRoster.h>
 
 #include <locale.h>
 
 #include "EventWindow.h"
 #include "CategoryWindow.h"
+#include "MainWindow.h"
+#include "Preferences.h"
+#include "PreferenceWindow.h"
+
 
 const char* kAppName = "Calendar";
 const char* kSignature = "application/x-vnd.calendar";

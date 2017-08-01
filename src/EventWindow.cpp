@@ -8,17 +8,30 @@
 #include <Application.h>
 #include <Alert.h>
 #include <Box.h>
+#include <Button.h>
+#include <CheckBox.h>
 #include <DateFormat.h>
 #include <File.h>
 #include <GroupLayout.h>
 #include <GraphicsDefs.h>
 #include <LayoutItem.h>
 #include <LayoutBuilder.h>
+#include <List.h>
+#include <Menu.h>
+#include <MenuField.h>
 #include <MenuItem.h>
+#include <PopUpMenu.h>
+#include <RadioButton.h>
+#include <StringView.h>
 #include <Screen.h>
+#include <TextControl.h>
+#include <TextView.h>
 #include <TimeFormat.h>
+#include <View.h>
 
 #include "App.h"
+#include "CalendarMenuWindow.h"
+#include "Category.h"
 #include "Event.h"
 #include "MainWindow.h"
 

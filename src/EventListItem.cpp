@@ -6,6 +6,8 @@
 
 #include <Application.h>
 #include <ControlLook.h>
+#include <Font.h>
+#include <MenuItem.h>
 
 #include "EventListItem.h"
 

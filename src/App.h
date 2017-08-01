@@ -5,17 +5,19 @@
 #ifndef APP_H
 #define APP_H
 
+
 #include <Application.h>
-#include <Directory.h>
-#include <Entry.h>
-#include <File.h>
-#include <FindDirectory.h>
 #include <Path.h>
 
-#include "CategoryWindow.h"
-#include "MainWindow.h"
-#include "Preferences.h"
-#include "PreferenceWindow.h"
+
+class CategoryWindow;
+class MainWindow;
+class Preferences;
+class PreferenceWindow;
+
+
+extern const char* kAppName;
+extern const char* kSignature;
 
 
 class App: public BApplication

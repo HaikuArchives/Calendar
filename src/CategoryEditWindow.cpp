@@ -7,12 +7,19 @@
 
 #include <Alert.h>
 #include <Application.h>
+#include <Button.h>
+#include <ColorControl.h>
 #include <LayoutBuilder.h>
+#include <ListView.h>
 #include <SeparatorView.h>
+#include <TextControl.h>
+#include <View.h>
 
 #include "App.h"
 #include "Application.h"
+#include "Category.h"
 #include "CategoryWindow.h"
+#include "ColorPreview.h"
 
 
 CategoryEditWindow::CategoryEditWindow()

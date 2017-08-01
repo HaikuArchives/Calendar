@@ -7,10 +7,19 @@
 #include "PreferenceWindow.h"
 
 #include <Application.h>
+#include <Box.h>
+#include <Button.h>
+#include <CheckBox.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
+#include <PopUpMenu.h>
+#include <MenuField.h>
+#include <StringView.h>
+#include <View.h>
+#include <Window.h>
 
 #include "App.h"
+#include "Preferences.h"
 #include "SidePanelView.h"
 
 
