@@ -5,11 +5,15 @@
 
 #include "CategoryEditWindow.h"
 
+#include <Alert.h>
 #include <Application.h>
 #include <LayoutBuilder.h>
 #include <SeparatorView.h>
 
 #include "App.h"
+#include "Application.h"
+#include "CategoryWindow.h"
+
 
 CategoryEditWindow::CategoryEditWindow()
 	:
@@ -20,9 +24,11 @@ CategoryEditWindow::CategoryEditWindow()
 
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fCategoryText = new BTextControl("CategoryText", NULL,
-		"New Category", NULL);
+		"New Category", new BMessage(kCategoryTextChanged));
+
 	fSaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
+
 
 	BRect wellrect(0, 0, 49, 49);
 	fColorPreview = new ColorPreview(wellrect, new BMessage(kColorDropped), 0);
@@ -65,27 +71,65 @@ CategoryEditWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
 
-		if (message->WasDropped()) {
-		rgb_color* color = NULL;
-		ssize_t size = 0;
-
-		if (message->FindData("RGBColor", (type_code)'RGBC', (const void**)&color,
-				&size) == B_OK) {
-			_SetCurrentColor(*color);
-		}
-	}
-
 		case kUpdateColor:
 		{
 			rgb_color color = fPicker->ValueAsColor();
 			_SetCurrentColor(color);
+			_CategoryModified();
 			break;
 		}
+
+		case kSavePressed:
+			_OnSavePressed();
+			break;
+
+		case kDeletePressed:
+			_OnDeletePressed();
+			break;
+
+		case kCategoryTextChanged:
+			_CategoryModified();
+			break;
 
 		default:
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+bool
+CategoryEditWindow::QuitRequested()
+{
+	((App*)be_app)->categoryWindow()->PostMessage(kCategoryEditQuitting);
+	return true;
+}
+
+
+void
+CategoryEditWindow::SetCategory(Category* category)
+{
+	fCategory = category;
+
+	if (fCategory != NULL) {
+		fCategoryText->SetText(category->GetName());
+		fPicker->SetValue(category->GetColor());
+		fColorPreview->SetColor(category->GetColor());
+		fColorPreview->Invalidate();
+
+		fSaveButton->SetEnabled(false);
+	}
+
+	else
+	{
+		fPicker->SetValue((rgb_color){255, 255, 0});
+		fColorPreview->SetColor((rgb_color){255, 255, 0});
+		fColorPreview->Invalidate();
+		fDeleteButton->SetEnabled(false);
+
+	}
+
+	fCategoryText->SetModificationMessage(new BMessage(kCategoryTextChanged));
 }
 
 
@@ -98,9 +142,59 @@ CategoryEditWindow::_SetCurrentColor(rgb_color color)
 }
 
 
-bool
-CategoryEditWindow::QuitRequested()
+void
+CategoryEditWindow::_CategoryModified()
 {
-	((App*)be_app)->categoryWindow()->PostMessage(kCategoryEditQuitting);
-	return true;
+	fSaveButton->SetEnabled(true);
+}
+
+
+void
+CategoryEditWindow::_OnDeletePressed()
+{
+	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
+	parent->GetCategoryList()->RemoveItem(fCategory);
+	parent->LoadCategories();
+	_CloseWindow();
+}
+
+
+void
+CategoryEditWindow::_CloseWindow()
+{
+	PostMessage(B_QUIT_REQUESTED);
+}
+
+
+void
+CategoryEditWindow::_OnSavePressed()
+{
+	if (BString(fCategoryText->Text()).CountChars() < 3) {
+
+		BAlert* alert  = new BAlert("Error",
+			"The name must have a length greater than 2",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+		alert->SetShortcut(0, B_ESCAPE);
+		alert->Go();
+		return;
+	}
+
+	Category* category = new Category(0, fCategoryText->Text(), fPicker->ValueAsColor());
+	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
+
+	if (fCategory == NULL) {
+		parent->GetCategoryList()->AddItem(category);
+		parent->LoadCategories();
+		_CloseWindow();
+	}
+
+	else
+	{
+		parent->GetCategoryList()->ReplaceItem(parent->GetListView()->CurrentSelection(),
+			category);
+		parent->LoadCategories();
+		_CloseWindow();
+	}
+
 }

@@ -12,6 +12,7 @@
 #include <View.h>
 #include <Window.h>
 
+#include "Category.h"
 #include "CategoryEditWindow.h"
 
 
@@ -25,7 +26,13 @@ public:
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 
+	BList*				GetCategoryList();
+	BListView*			GetListView();
+	void				LoadCategories();
+
 private:
+	void			_OpenCategoryWindow(Category* category);
+
 	static const uint32	kAddPressed		= 1000;
 	static const uint32	kCancelPressed		= 1001;
 	static const uint32	kCategorySelected	= 1002;

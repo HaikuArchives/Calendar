@@ -12,6 +12,7 @@
 #include <View.h>
 #include <Window.h>
 
+#include "Category.h"
 #include "ColorPreview.h"
 
 
@@ -27,12 +28,18 @@ public:
 	virtual void	MessageReceived(BMessage* message);
 	virtual bool	QuitRequested();
 
-private:
+	void			SetCategory(Category* category);
 
+private:
 	void				_SetCurrentColor(rgb_color color);
+	void				_OnSavePressed();
+	void				_OnDeletePressed();
+	void				_CategoryModified();
+	void				_CloseWindow();
 
 	static const uint32 kSavePressed = 1000;
 	static const uint32 kDeletePressed = 1001;
+	static const uint32 kCategoryTextChanged = 1002;
 
 	BView*			fMainView;
 	BTextControl*		fCategoryText;
@@ -40,6 +47,8 @@ private:
 	ColorPreview*		fColorPreview;
 	BButton*		fSaveButton;
 	BButton*		fDeleteButton;
+
+	Category*		fCategory;
 
 
 };

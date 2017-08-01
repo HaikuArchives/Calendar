@@ -31,9 +31,20 @@ CategoryWindow::CategoryWindow()
 		B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
 
+	fCategoryList = new BList();
+	fCategoryList->AddItem(new Category(0, "Default", (rgb_color){86, 86, 197}));
+	fCategoryList->AddItem(new Category(0, "Birthdays", (rgb_color){194, 86, 86}));
+
 	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
-	fCategoryListView->AddItem(new CategoryListItem("Default", (rgb_color){86, 86, 197}));
-	fCategoryListView->AddItem(new CategoryListItem("Birthdays", (rgb_color){194, 86, 86}));
+
+	Category* category;
+	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+		category = ((Category*)fCategoryList->ItemAt(i));
+		fCategoryListView->AddItem(new CategoryListItem(category->GetName(),
+			category->GetColor()));
+	}
+
+	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
 
 	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
 	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
@@ -63,12 +74,18 @@ CategoryWindow::MessageReceived(BMessage* message)
 
 		case kAddPressed:
 		{
-			if (fCategoryEditWindow == NULL) {
-				fCategoryEditWindow = new CategoryEditWindow();
-				fCategoryEditWindow->Show();
-			}
+			_OpenCategoryWindow(NULL);
+			break;
+		}
 
-			fCategoryEditWindow->Activate();
+		case kCategorySelected:
+		{
+
+			int32 selection = fCategoryListView->CurrentSelection();
+			if (selection >= 0) {
+				Category* category = ((Category*)fCategoryList->ItemAt(selection));
+				_OpenCategoryWindow(category);
+			}
 			break;
 		}
 
@@ -93,4 +110,50 @@ CategoryWindow::QuitRequested()
 
 	be_app->PostMessage(kCategoryWindowQuitting);
 	return true;
+}
+
+
+void
+CategoryWindow::LoadCategories()
+{
+
+	LockLooper();
+	fCategoryListView->MakeEmpty();
+
+	Category* category;
+	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+		category = ((Category*)fCategoryList->ItemAt(i));
+		fCategoryListView->AddItem(new CategoryListItem(category->GetName(),
+			category->GetColor()));
+	}
+
+	fCategoryListView->Invalidate();
+	UnlockLooper();
+}
+
+
+BList*
+CategoryWindow::GetCategoryList()
+{
+	return fCategoryList;
+}
+
+
+BListView*
+CategoryWindow::GetListView()
+{
+	return fCategoryListView;
+}
+
+
+void
+CategoryWindow::_OpenCategoryWindow(Category* category)
+{
+	if (fCategoryEditWindow == NULL) {
+		fCategoryEditWindow = new CategoryEditWindow();
+		fCategoryEditWindow->SetCategory(category);
+		fCategoryEditWindow->Show();
+	}
+
+	fCategoryEditWindow->Activate();
 }
