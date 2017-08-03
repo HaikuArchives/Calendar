@@ -22,6 +22,7 @@
 #include <MenuItem.h>
 #include <PopUpMenu.h>
 #include <RadioButton.h>
+#include <SeparatorView.h>
 #include <StringView.h>
 #include <Screen.h>
 #include <TextControl.h>
@@ -57,7 +58,7 @@ EventWindow::EventWindow()
 
 	fTextDescription = new BTextView("TextDescription", B_WILL_DRAW);
 	fTextDescription->MakeEditable();
-	fTextDescription->SetExplicitMinSize(BSize(B_SIZE_UNSET, 100));
+	fTextDescription->SetExplicitMinSize(BSize(240, 100));
 
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
@@ -74,13 +75,12 @@ EventWindow::EventWindow()
 	fAllDayLabel = new BStringView("AllDayLabel", "All Day:");
 	fEndDateLabel = new BStringView("EndDateLabel", "End Date:");
 	fStartDateLabel = new BStringView("StartDateLabel", "Start Date:");
-	fRecurrenceLabel = new BStringView("RecurrenceLabel", "Recurrence:");
 	fStartTimeLabel = new BStringView("StartTimeLabel", "Start Time:");
 	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
 
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
 	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
-	BButton* SaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
+	BButton* SaveButton = new BButton("SaveButton", "OK", new BMessage(kSavePressed));
 
 	BMessage* message = new BMessage(kShowPopUpCalendar);
 	message->AddInt8("which",0);
@@ -115,13 +115,15 @@ EventWindow::EventWindow()
 	fCategoryMenuField = new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
 
 	BBox* fRecurrenceBox = new BBox("RecurrenceBox");
-
-	BLayoutBuilder::Group<>(fRecurrenceBox, B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
+	BLayoutBuilder::Group<>(fRecurrenceBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
-		.Add(fRecurrenceLabel)
-		.Add(fEveryMonth)
-		.Add(fEveryYear)
+		.AddStrut(B_USE_ITEM_SPACING)
+		.AddGroup(B_HORIZONTAL)
+			.Add(fEveryMonth)
+			.Add(fEveryYear)
+		.End()
 	.End();
+	fRecurrenceBox->SetLabel("Recurrence");
 
 	fStartDateBox = new BBox("Start Date and Time");
 	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -138,7 +140,7 @@ EventWindow::EventWindow()
 	.End();
 	fStartDateBox->SetLabel("Start Date and Time");
 
-	fEndDateBox = new BBox("Start Date and Time");
+	fEndDateBox = new BBox("End Date and Time");
 	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
 		.AddStrut(B_USE_ITEM_SPACING)
@@ -153,36 +155,50 @@ EventWindow::EventWindow()
 	.End();
 	fEndDateBox->SetLabel("End Date and Time");
 
+	BBox* divider = new BBox(BRect(0, 0, 1, 1),
+		B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,
+		B_WILL_DRAW | B_FRAME_EVENTS, B_FANCY_BORDER);
+	divider->SetExplicitMaxSize(BSize(1, B_SIZE_UNLIMITED));
 
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
-		.AddGrid()
-			.Add(fNameLabel, 0, 0)
-			.Add(fTextName, 1, 0)
-			.Add(fPlaceLabel, 0, 1)
-			.Add(fTextPlace, 1 ,1)
-		.End()
+	BLayoutBuilder::Group<>(fMainView, B_HORIZONTAL, B_USE_DEFAULT_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, 0,
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.AddGroup(B_VERTICAL)
+			.AddGrid()
+				.Add(fNameLabel, 0, 0)
+				.Add(fTextName, 1, 0)
+				.Add(fPlaceLabel, 0, 1)
+				.Add(fTextPlace, 1 ,1)
+			.End()
 			.Add(fDescriptionLabel)
 			.Add(fTextDescription)
+			.AddGrid()
+				.Add(fCategoryLabel, 0, 0)
+				.Add(fCategoryMenuField, 1, 0)
+				.Add(fAllDayLabel, 0, 1)
+				.Add(fAllDayCheckBox, 1 ,1)
+			.End()
 		.End()
-		.AddGrid()
-			.Add(fCategoryLabel, 0, 0)
-			.Add(fCategoryMenuField, 1, 0)
-			.Add(fAllDayLabel, 0, 1)
-			.Add(fAllDayCheckBox, 1 ,1)
+		.Add(divider)
+		.AddGroup(B_VERTICAL)
+			.Add(fStartDateBox)
+			.Add(fEndDateBox)
+			.Add(fRecurrenceBox)
 		.End()
-		.Add(fStartDateBox)
-		.Add(fEndDateBox)
-		.Add(fRecurrenceBox)
-		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-			.Add(CancelButton)
-			.Add(fDeleteButton)
-			.Add(SaveButton)
 	.End();
 
-	BLayoutBuilder::Group<>(this, B_VERTICAL, B_USE_SMALL_INSETS)
-		.SetInsets(B_USE_SMALL_INSETS)
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.SetInsets(0, B_USE_DEFAULT_SPACING, 0, 0)
 		.Add(fMainView)
+		.Add(new BSeparatorView(B_HORIZONTAL))
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_WINDOW_SPACING, B_USE_DEFAULT_SPACING,
+				B_USE_DEFAULT_SPACING, B_USE_WINDOW_SPACING)
+			.Add(fDeleteButton)
+			.AddGlue()
+			.Add(CancelButton)
+			.Add(SaveButton)
+		.End()
 	.End();
 
 	DisableControls();
@@ -469,7 +485,7 @@ EventWindow::_ShowPopUpCalendar(int8 which)
 	}
 	where.x = boxPosition.x - buttonPosition.x;
 	where.y = boxPosition.y + buttonPosition.y;
-	where += BPoint(-42.0, 8.0);
+	where += BPoint(-62.0, 8.0);
 
 	if (fCalendarWindow.IsValid()) {
 		BMessage activate(B_SET_PROPERTY);

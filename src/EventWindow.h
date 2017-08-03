@@ -88,7 +88,6 @@ private:
 	BStringView*		fDescriptionLabel;
 	BStringView*		fCategoryLabel;
 	BStringView*		fAllDayLabel;
-	BStringView*		fRecurrenceLabel;
 	BStringView*		fStartDateLabel;
 	BStringView*		fStartTimeLabel;
 	BStringView*		fEndDateLabel;
@@ -120,7 +119,6 @@ private:
 	BList*			fEventList;
 	BList*			fCategoryList;
 	int			fEventIndex;
-
 };
 
 #endif
