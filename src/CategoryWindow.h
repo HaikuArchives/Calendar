@@ -34,6 +34,7 @@ public:
 	SQLiteManager*		GetDBManager();
 
 private:
+	void			_InitInterface();
 	void			_OpenCategoryWindow(Category* category);
 
 	static const uint32	kAddPressed		= 1000;

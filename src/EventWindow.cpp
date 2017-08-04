@@ -45,8 +45,259 @@ EventWindow::EventWindow()
 	fStartDateTime(),
 	fEndDateTime()
 {
+	_InitInterface();
 	CenterOnScreen();
+	_DisableControls();
+}
 
+
+void
+EventWindow::MessageReceived(BMessage* message)
+{
+	switch(message->what) {
+
+		case kAllDayPressed:
+			OnCheckBoxToggle();
+			break;
+
+		case kCancelPressed:
+			PostMessage(B_QUIT_REQUESTED);
+			break;
+
+		case kDeletePressed:
+			OnDeleteClick();
+			break;
+
+		case kSavePressed:
+			OnSaveClick();
+			break;
+
+		case kShowPopUpCalendar:
+		{
+			int8 which;
+			message->FindInt8("which", &which);
+			_ShowPopUpCalendar(which);
+			break;
+		}
+
+		default:
+			BWindow::MessageReceived(message);
+			break;
+	}
+}
+
+
+void
+EventWindow::SetEvent(Event* event, int eventIndex,
+		BList* eventList)
+{
+	fEvent = event;
+	fEventList = eventList;
+	fEventIndex = eventIndex;
+
+	if (event != NULL) {
+		fTextName->SetText(event->GetName());
+		fTextPlace->SetText(event->GetPlace());
+		fTextDescription->SetText(event->GetDescription());
+
+		fStartDateTime = event->GetStartDateTime();
+		fEndDateTime = event->GetEndDateTime();
+
+		fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+		fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
+
+		Category* category;
+
+		for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+			category = ((Category*)fCategoryList->ItemAt(i));
+			if (category->Equals(*event->GetCategory())) {
+				fCategoryMenu->ItemAt(i)->SetMarked(true);
+				break;
+			}
+		}
+
+		if (event->IsAllDay()) {
+			fAllDayCheckBox->SetValue(B_CONTROL_ON);
+			fTextStartTime->SetText("");
+			fTextEndTime->SetText("");
+		}
+
+		else
+		{
+			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+		}
+
+		fDeleteButton->SetEnabled(true);
+
+	}
+
+}
+
+
+void
+EventWindow::SetEventDate(BDate& date)
+{
+	BTime time;
+	// Use a dummy start time for now(6:10 A.M)
+	time.SetTime(6, 10, 0);
+	fStartDateTime.SetTime(time);
+	fStartDateTime.SetDate(date);
+
+	// Use a dummy end time for now(7:10 A.M)
+	time.AddHours(1);
+	fEndDateTime.SetTime(time);
+	fEndDateTime.SetDate(date);
+
+	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
+	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+}
+
+
+void
+EventWindow::SetStartDate(BDate& date)
+{
+	if (!date.IsValid())
+		return;
+
+	fStartDateTime.SetDate(date);
+	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+}
+
+
+void
+EventWindow::SetEndDate(BDate& date)
+{
+	if (!date.IsValid())
+		return;
+
+	fEndDateTime.SetDate(date);
+	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
+}
+
+
+BString
+EventWindow::GetDateString(time_t timeValue)
+{
+	BString dateString;
+	fDateFormat.Format(dateString, timeValue,
+		B_SHORT_DATE_FORMAT);
+	return dateString;
+}
+
+
+BString
+EventWindow::GetLocaleTimeString(time_t timeValue)
+{
+	BString timeString;
+	fTimeFormat.Format(timeString, timeValue,
+		B_SHORT_TIME_FORMAT);
+	return timeString;
+}
+
+
+bool
+EventWindow::QuitRequested()
+{
+	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
+	return true;
+}
+
+
+void
+EventWindow::OnSaveClick()
+{
+	if (BString(fTextName->Text()).CountChars() < 3) {
+
+		BAlert* alert  = new BAlert("Error",
+			"The name must have a length greater than 2",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+		alert->SetShortcut(0, B_ESCAPE);
+		alert->Go();
+		return;
+	}
+
+	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
+		if (fStartDateTime > fEndDateTime) {
+			BAlert* alert  = new BAlert("Error",
+				"TInvalid range of time selected",
+				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+			alert->SetShortcut(0, B_ESCAPE);
+			alert->Go();
+			return;
+		}
+	}
+
+	Category* category = NULL;
+	BMenuItem* item = fCategoryMenu->FindMarked();
+	int32 index = fCategoryMenu->IndexOf(item);
+	Category* c = ((Category*)fCategoryList->ItemAt(index));
+	category = new Category(*c);
+
+	Event* newEvent = new Event(fTextName->Text(), fTextPlace->Text(),
+		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
+		fStartDateTime, fEndDateTime, category);
+
+	if (fEvent!=NULL) {
+		fEventList->ReplaceItem(fEventIndex, newEvent);
+		CloseWindow();
+	}
+
+	else if (fEvent == NULL)
+	{
+		fEventList->AddItem(newEvent);
+		CloseWindow();
+	}
+}
+
+
+void
+EventWindow::OnDeleteClick()
+{
+	fEventList->RemoveItem(fEventIndex);
+	CloseWindow();
+}
+
+
+void
+EventWindow::CloseWindow()
+{
+	PostMessage(B_QUIT_REQUESTED);
+}
+
+
+void
+EventWindow::OnCheckBoxToggle()
+{
+
+	if (fAllDayCheckBox->Value() == B_CONTROL_ON) {
+		fTextStartTime->SetText("");
+		fTextEndTime->SetText("");
+	}
+
+	else
+	{
+		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+	}
+}
+
+
+Event*
+EventWindow::GetEvent()
+{
+	return fEvent;
+}
+
+
+void
+EventWindow::_InitInterface()
+{
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
@@ -204,141 +455,11 @@ EventWindow::EventWindow()
 			.Add(SaveButton)
 		.End()
 	.End();
-
-	DisableControls();
 }
 
 
 void
-EventWindow::MessageReceived(BMessage* message)
-{
-	switch(message->what) {
-
-		case kAllDayPressed:
-			OnCheckBoxToggle();
-			break;
-
-		case kCancelPressed:
-			PostMessage(B_QUIT_REQUESTED);
-			break;
-
-		case kDeletePressed:
-			OnDeleteClick();
-			break;
-
-		case kSavePressed:
-			OnSaveClick();
-			break;
-
-		case kShowPopUpCalendar:
-		{
-			int8 which;
-			message->FindInt8("which", &which);
-			_ShowPopUpCalendar(which);
-			break;
-		}
-
-		default:
-			BWindow::MessageReceived(message);
-			break;
-	}
-}
-
-
-void
-EventWindow::SetEvent(Event* event, int eventIndex,
-		BList* eventList)
-{
-	fEvent = event;
-	fEventList = eventList;
-	fEventIndex = eventIndex;
-
-	if (event != NULL) {
-		fTextName->SetText(event->GetName());
-		fTextPlace->SetText(event->GetPlace());
-		fTextDescription->SetText(event->GetDescription());
-
-		fStartDateTime = event->GetStartDateTime();
-		fEndDateTime = event->GetEndDateTime();
-
-		fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
-		fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
-
-		Category* category;
-
-		for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-			category = ((Category*)fCategoryList->ItemAt(i));
-			if (category->Equals(*event->GetCategory())) {
-				fCategoryMenu->ItemAt(i)->SetMarked(true);
-				break;
-			}
-		}
-
-		if (event->IsAllDay()) {
-			fAllDayCheckBox->SetValue(B_CONTROL_ON);
-			fTextStartTime->SetText("");
-			fTextEndTime->SetText("");
-		}
-
-		else
-		{
-			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
-			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
-			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
-		}
-
-		fDeleteButton->SetEnabled(true);
-
-	}
-
-}
-
-
-void
-EventWindow::SetEventDate(BDate& date)
-{
-	BTime time;
-	// Use a dummy start time for now(6:10 A.M)
-	time.SetTime(6, 10, 0);
-	fStartDateTime.SetTime(time);
-	fStartDateTime.SetDate(date);
-
-	// Use a dummy end time for now(7:10 A.M)
-	time.AddHours(1);
-	fEndDateTime.SetTime(time);
-	fEndDateTime.SetDate(date);
-
-	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
-	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
-	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
-	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
-}
-
-
-void
-EventWindow::SetStartDate(BDate& date)
-{
-	if (!date.IsValid())
-		return;
-
-	fStartDateTime.SetDate(date);
-	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
-}
-
-
-void
-EventWindow::SetEndDate(BDate& date)
-{
-	if (!date.IsValid())
-		return;
-
-	fEndDateTime.SetDate(date);
-	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
-}
-
-
-void
-EventWindow::DisableControls()
+EventWindow::_DisableControls()
 {
 	fTextStartDate->SetEnabled(false);
 	fTextEndDate->SetEnabled(false);
@@ -349,122 +470,6 @@ EventWindow::DisableControls()
 	fStartTimeCheckBox->SetEnabled(false);
 	fEndTimeCheckBox->SetEnabled(false);
 	fDeleteButton->SetEnabled(false);
-}
-
-
-BString
-EventWindow::GetDateString(time_t timeValue)
-{
-	BString dateString;
-	fDateFormat.Format(dateString, timeValue,
-		B_SHORT_DATE_FORMAT);
-	return dateString;
-}
-
-
-BString
-EventWindow::GetLocaleTimeString(time_t timeValue)
-{
-	BString timeString;
-	fTimeFormat.Format(timeString, timeValue,
-		B_SHORT_TIME_FORMAT);
-	return timeString;
-}
-
-
-bool
-EventWindow::QuitRequested()
-{
-	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
-	return true;
-}
-
-
-void
-EventWindow::OnSaveClick()
-{
-	if (BString(fTextName->Text()).CountChars() < 3) {
-
-		BAlert* alert  = new BAlert("Error",
-			"The name must have a length greater than 2",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
-		alert->SetShortcut(0, B_ESCAPE);
-		alert->Go();
-		return;
-	}
-
-	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
-		if (fStartDateTime > fEndDateTime) {
-			BAlert* alert  = new BAlert("Error",
-				"TInvalid range of time selected",
-				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
-			alert->SetShortcut(0, B_ESCAPE);
-			alert->Go();
-			return;
-		}
-	}
-
-	Category* category = NULL;
-	BMenuItem* item = fCategoryMenu->FindMarked();
-	int32 index = fCategoryMenu->IndexOf(item);
-	Category* c = ((Category*)fCategoryList->ItemAt(index));
-	category = new Category(*c);
-
-	Event* newEvent = new Event(fTextName->Text(), fTextPlace->Text(),
-		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		fStartDateTime, fEndDateTime, category);
-
-	if (fEvent!=NULL) {
-		fEventList->ReplaceItem(fEventIndex, newEvent);
-		CloseWindow();
-	}
-
-	else if (fEvent == NULL)
-	{
-		fEventList->AddItem(newEvent);
-		CloseWindow();
-	}
-}
-
-
-void
-EventWindow::OnDeleteClick()
-{
-	fEventList->RemoveItem(fEventIndex);
-	CloseWindow();
-}
-
-
-void
-EventWindow::CloseWindow()
-{
-	PostMessage(B_QUIT_REQUESTED);
-}
-
-
-void
-EventWindow::OnCheckBoxToggle()
-{
-
-	if (fAllDayCheckBox->Value() == B_CONTROL_ON) {
-		fTextStartTime->SetText("");
-		fTextEndTime->SetText("");
-	}
-
-	else
-	{
-		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
-		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
-	}
-}
-
-
-Event*
-EventWindow::GetEvent()
-{
-	return fEvent;
 }
 
 

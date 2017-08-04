@@ -49,7 +49,6 @@ public:
 
 	Event*			GetEvent();
 
-	void 			DisableControls();
 	void			OnCheckBoxToggle();
 	void			OnSaveClick();
 	void			OnDeleteClick();
@@ -59,6 +58,8 @@ public:
 	BString			GetLocaleTimeString(time_t timeValue);
 
 private:
+	void			_InitInterface();
+	void 			_DisableControls();
 	void			_ShowPopUpCalendar(int8 which);
 
 	static const uint32	kDeletePressed	= 1000;

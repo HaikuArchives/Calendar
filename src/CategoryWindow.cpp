@@ -25,43 +25,8 @@ CategoryWindow::CategoryWindow()
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
 {
-
+	_InitInterface();
 	CenterOnScreen();
-
-	fMainView = new BView("MainView", B_WILL_DRAW);
-	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
-
-	fCategoryListView = new BListView("CategoryListView", B_SINGLE_SELECTION_LIST,
-		B_WILL_DRAW);
-
-	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryListView,
-		B_WILL_DRAW, false, true);
-	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
-
-	fDBManager = new SQLiteManager();
-	fCategoryList = new BList();
-	LoadCategories();
-
-	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
-
-	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
-	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
-
-	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	fCancelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL)
-		.Add(fCategoryScroll)
-		.AddGroup(B_VERTICAL, B_USE_HALF_ITEM_SPACING)
-			.Add(fAddButton)
-			.Add(fCancelButton)
-		.End()
-	.End();
-
-	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.SetInsets(B_USE_WINDOW_SPACING)
-		.Add(fMainView)
-	.End();
 }
 
 
@@ -161,6 +126,46 @@ BListView*
 CategoryWindow::GetListView()
 {
 	return fCategoryListView;
+}
+
+
+void
+CategoryWindow::_InitInterface()
+{
+	fMainView = new BView("MainView", B_WILL_DRAW);
+	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
+
+	fCategoryListView = new BListView("CategoryListView", B_SINGLE_SELECTION_LIST,
+		B_WILL_DRAW);
+
+	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryListView,
+		B_WILL_DRAW, false, true);
+	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
+
+	fDBManager = new SQLiteManager();
+	fCategoryList = new BList();
+	LoadCategories();
+
+	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
+
+	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
+	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
+
+	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	fCancelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+
+	BLayoutBuilder::Group<>(fMainView, B_VERTICAL)
+		.Add(fCategoryScroll)
+		.AddGroup(B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+			.Add(fAddButton)
+			.Add(fCancelButton)
+		.End()
+	.End();
+
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.SetInsets(B_USE_WINDOW_SPACING)
+		.Add(fMainView)
+	.End();
 }
 
 

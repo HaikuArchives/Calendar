@@ -41,6 +41,7 @@ public:
 	void			SetPreferences(Preferences* preferences);
 
 private:
+	void			_InitInterface();
 	void			_LaunchEventManager(int32 index);
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();

@@ -37,71 +37,9 @@ MainWindow::MainWindow()
 {
 	SetPulseRate(500000);
 
+	_InitInterface();
 	ResizeTo(640, 360);
 	CenterOnScreen();
-
-	fMainView = new MainView();
-
-	fMenuBar = new BMenuBar("MenuBar");
-
-	fAppMenu = new BMenu("App");
-	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
-	item->SetTarget(be_app);
-	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
-	fAppMenu->AddSeparatorItem();
-	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
-
-	fEventMenu = new BMenu("Event");
-	fEventMenu->AddItem(new BMenuItem("Add event", new BMessage(kAddEvent)));
-	fEventMenu->AddItem(new BMenuItem("Edit event", B_OK));
-	fEventMenu->AddItem(new BMenuItem("Remove event", B_OK));
-
-	fCategoryMenu = new BMenu("Category");
-	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuEditCategory)));
-
-	fViewMenu = new BMenu("View");
-	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
-	fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
-	fViewMenu->AddSeparatorItem();
-	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
-
-	fMenuBar->AddItem(fAppMenu);
-	fMenuBar->AddItem(fEventMenu);
-	fMenuBar->AddItem(fCategoryMenu);
-	fMenuBar->AddItem(fViewMenu);
-
-	fToolBar = new BToolBar();
-	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Today", "Today", true);
-	fToolBar->AddSeparator();
-	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day View", "Day View", true);
-	fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Month View", "Month View", true);
-	fToolBar->AddSeparator();
-	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
-		"Add Event", "Add Event", true);
-	fToolBar->AddGlue();
-
-	fEventList = new BList();
-	fSidePanelView = new SidePanelView();
-	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME), fEventList);
-
-	fMainView->StartWatchingAll(fSidePanelView);
-
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
-		.Add(fDayView)
-	.End();
-
-	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
-		.Add(fMenuBar)
-		.Add(fToolBar)
-		.AddGroup(B_HORIZONTAL, 0)
-			.Add(fMainView, 5)
-			.Add(fSidePanelView, 1)
-		.End()
-	.End();
 }
 
 
@@ -183,6 +121,74 @@ MainWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+MainWindow::_InitInterface()
+{
+	fMainView = new MainView();
+
+	fMenuBar = new BMenuBar("MenuBar");
+
+	fAppMenu = new BMenu("App");
+	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
+	item->SetTarget(be_app);
+	fAppMenu->AddItem(item);
+	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
+	fAppMenu->AddSeparatorItem();
+	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
+
+	fEventMenu = new BMenu("Event");
+	fEventMenu->AddItem(new BMenuItem("Add event", new BMessage(kAddEvent)));
+	fEventMenu->AddItem(new BMenuItem("Edit event", B_OK));
+	fEventMenu->AddItem(new BMenuItem("Remove event", B_OK));
+
+	fCategoryMenu = new BMenu("Category");
+	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuEditCategory)));
+
+	fViewMenu = new BMenu("View");
+	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
+	fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
+	fViewMenu->AddSeparatorItem();
+	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
+
+	fMenuBar->AddItem(fAppMenu);
+	fMenuBar->AddItem(fEventMenu);
+	fMenuBar->AddItem(fCategoryMenu);
+	fMenuBar->AddItem(fViewMenu);
+
+	fToolBar = new BToolBar();
+	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Today", "Today", true);
+	fToolBar->AddSeparator();
+	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Day View", "Day View", true);
+	fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
+		"Month View", "Month View", true);
+	fToolBar->AddSeparator();
+	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
+		"Add Event", "Add Event", true);
+	fToolBar->AddGlue();
+
+	fEventList = new BList();
+	fSidePanelView = new SidePanelView();
+	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME), fEventList);
+
+	fMainView->StartWatchingAll(fSidePanelView);
+
+	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
+		.Add(fDayView)
+	.End();
+
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
+		.Add(fMenuBar)
+		.Add(fToolBar)
+		.AddGroup(B_HORIZONTAL, 0)
+			.Add(fMainView, 5)
+			.Add(fSidePanelView, 1)
+		.End()
+	.End();
 }
 
 

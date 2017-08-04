@@ -32,6 +32,7 @@ public:
 	void			SetCategory(Category* category);
 
 private:
+	void				_InitInterface();
 	void				_SetCurrentColor(rgb_color color);
 	void				_OnSavePressed();
 	void				_OnDeletePressed();
