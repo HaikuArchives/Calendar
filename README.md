@@ -7,13 +7,28 @@ A native Calendar application for [Haiku](https://www.haiku-os.org/).
 ***
 [About](https://www.haiku-os.org/blog/akshayagarwal007/2017-05-08_gsoc_2017_calendar_application/) | [Blog Posts](https://www.haiku-os.org/blog/akshayagarwal007/)
 
-**Mentors**:
+### Mentors
+
 [Scott McCreary](https://github.com/scottmc)
 [Kacper Kasper](https://github.com/KapiX)
 
-**Preview of Current State:**
 
-![Calendar Preview](images/calendar.png)
+### Preview of Current State:
+
+**Calendar Preview**
+
+![Calendar Preview](images/calendar_preview_2.png)
 
 *The toolbar icons are just placeholder icons.*
-*Last updated: 24<sup>th</sup> July 2017.*
+
+**Event Manager**
+
+![Event Manager Preview](images/event_manager.png)
+
+**Category Manager**
+
+![Category Manager Preview](images/category_manager.png)
+
+
+
+*Last updated: 4<sup>th</sup> August 2017.*
