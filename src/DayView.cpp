@@ -24,7 +24,7 @@ DayView::DayView(const BDate& date, BList* eventList)
 
 	fEventListView = new EventListView();
 	fEventListView->SetViewColor(B_TRANSPARENT_COLOR);
-	//fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
+	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
 
 	fEventScroll = new BScrollView("EventScroll", fEventListView,
 		B_WILL_DRAW, false, true);
@@ -71,6 +71,7 @@ DayView::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
 
+		case kInvokationMessage:
 		case kEventModify:
 		{
 			int32 selection = fEventListView->CurrentSelection();
