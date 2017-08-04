@@ -48,16 +48,28 @@ MainWindow::MainWindow()
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
+	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
-	fEditMenu = new BMenu("Edit");
-	fEditMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
-	fEditMenu->AddSeparatorItem();
-	fEditMenu->AddItem(new BMenuItem("Category", new BMessage(kMenuEditCategory)));
+	fEventMenu = new BMenu("Event");
+	fEventMenu->AddItem(new BMenuItem("Add event", new BMessage(kAddEvent)));
+	fEventMenu->AddItem(new BMenuItem("Edit event", B_OK));
+	fEventMenu->AddItem(new BMenuItem("Remove event", B_OK));
+
+	fCategoryMenu = new BMenu("Category");
+	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuEditCategory)));
+
+	fViewMenu = new BMenu("View");
+	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
+	fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
+	fViewMenu->AddSeparatorItem();
+	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
 
 	fMenuBar->AddItem(fAppMenu);
-	fMenuBar->AddItem(fEditMenu);
+	fMenuBar->AddItem(fEventMenu);
+	fMenuBar->AddItem(fCategoryMenu);
+	fMenuBar->AddItem(fViewMenu);
 
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),

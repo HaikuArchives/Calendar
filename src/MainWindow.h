@@ -54,7 +54,9 @@ private:
 	EventWindow*	fEventWindow;
 	BMenuBar*	fMenuBar;
 	BMenu*		fAppMenu;
-	BMenu*		fEditMenu;
+	BMenu*		fEventMenu;
+	BMenu*		fCategoryMenu;
+	BMenu*		fViewMenu;
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
