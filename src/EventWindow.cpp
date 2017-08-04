@@ -35,6 +35,7 @@
 #include "Category.h"
 #include "Event.h"
 #include "MainWindow.h"
+#include "SQLiteManager.h"
 
 
 EventWindow::EventWindow()
@@ -89,15 +90,14 @@ EventWindow::EventWindow()
 	message->AddInt8("which",1);
 	fEndCalButton = new BButton("EndCalButton", "▼", message);
 
-
 	float width, height;
 	fStartDateLabel->GetPreferredSize(&width, &height);
 	fStartCalButton->SetExplicitMinSize(BSize(height, height));
 	fEndCalButton->SetExplicitMinSize(BSize(height, height));
 
-	fCategoryList = new BList();
-	fCategoryList->AddItem(new Category(0, "Default", (rgb_color){86, 86, 197}));
-	fCategoryList->AddItem(new Category(0, "Birthdays", (rgb_color){194, 86, 86}));
+	fDBManager = new SQLiteManager();
+
+	fCategoryList = fDBManager->GetAllCategories();
 
 	fCategoryMenu = new BMenu("CategoryMenu");
 	Category* category;

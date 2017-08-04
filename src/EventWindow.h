@@ -27,6 +27,7 @@ class BTextView;
 class BView;
 class Category;
 class Event;
+class SQLiteManager;
 
 
 const uint32 kEventWindowQuitting = 'kewq';
@@ -119,6 +120,8 @@ private:
 	BList*			fEventList;
 	BList*			fCategoryList;
 	int			fEventIndex;
+
+	SQLiteManager*	fDBManager;
 };
 
 #endif
