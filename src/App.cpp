@@ -45,8 +45,9 @@ App::App()
 	fPreferences->Load(fPreferencesFile.Path());
 	fPreferences->fSettingsPath = settingsPath;
 
+	MainWindow::SetPreferences(fPreferences);
+
 	fMainWindow = new MainWindow();
-	fMainWindow->SetPreferences(fPreferences);
 	fMainWindow->Show();
 }
 
@@ -72,6 +73,8 @@ App::AboutRequested()
 bool
 App::QuitRequested()
 {
+	fPreferences->fMainWindowRect = fMainWindow->Frame();
+
 	if (fMainWindow->Lock())
 		fMainWindow->Quit();
 	return true;

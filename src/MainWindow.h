@@ -38,7 +38,7 @@ public:
 	virtual void	MessageReceived(BMessage* message);
 	virtual bool	QuitRequested();
 
-	void			SetPreferences(Preferences* preferences);
+	static void		SetPreferences(Preferences* preferences);
 
 private:
 	void			_InitInterface();
@@ -51,6 +51,8 @@ private:
 	static const int kDayView 	= 1002;
 	static const int kMonthView	= 1003;
 
+	static Preferences*	fPreferences;
+
 	MainView*	fMainView;
 	EventWindow*	fEventWindow;
 	BMenuBar*	fMenuBar;
@@ -62,7 +64,6 @@ private:
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
 	BList*		fEventList;
-	Preferences*	fPreferences;
 };
 
 #endif

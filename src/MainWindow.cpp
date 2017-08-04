@@ -28,18 +28,25 @@
 using BPrivate::BToolBar;
 
 
+Preferences* MainWindow::fPreferences = NULL;
+
+
 MainWindow::MainWindow()
 	:
-	BWindow(BRect(), "Calendar", B_TITLED_WINDOW,
+	BWindow(fPreferences->fMainWindowRect, "Calendar", B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
-	fEventWindow(NULL),
-	fPreferences(NULL)
+	fEventWindow(NULL)
 {
 	SetPulseRate(500000);
 
 	_InitInterface();
-	ResizeTo(640, 360);
-	CenterOnScreen();
+
+	if (fPreferences->fMainWindowRect == BRect()) {
+		ResizeTo(640, 360);
+		CenterOnScreen();
+	}
+
+	_SyncWithPreferences();
 }
 
 
@@ -223,7 +230,6 @@ void
 MainWindow::SetPreferences(Preferences* preferences)
 {
 	fPreferences = preferences;
-	_SyncWithPreferences();
 }
 
 
