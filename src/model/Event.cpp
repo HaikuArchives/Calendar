@@ -12,7 +12,7 @@
 Event::Event(const char* name,
 	const char* place, const char* description,
 	bool allday, BDateTime start, BDateTime end,
-	Category* category, const char* id = NULL)
+	Category* category, const char* id /*= NULL*/)
 {
 	fName = name;
 	fPlace = place;
