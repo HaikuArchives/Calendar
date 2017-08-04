@@ -17,7 +17,7 @@
 #include "Category.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
-
+#include "SQLiteManager.h"
 
 CategoryWindow::CategoryWindow()
 	:
@@ -38,18 +38,9 @@ CategoryWindow::CategoryWindow()
 		B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
 
+	fDBManager = new SQLiteManager();
 	fCategoryList = new BList();
-	fCategoryList->AddItem(new Category(0, "Default", (rgb_color){86, 86, 197}));
-	fCategoryList->AddItem(new Category(0, "Birthdays", (rgb_color){194, 86, 86}));
-
-	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
-
-	Category* category;
-	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-		category = ((Category*)fCategoryList->ItemAt(i));
-		fCategoryListView->AddItem(new CategoryListItem(category->GetName(),
-			category->GetColor()));
-	}
+	LoadCategories();
 
 	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
 
@@ -71,6 +62,13 @@ CategoryWindow::CategoryWindow()
 		.SetInsets(B_USE_WINDOW_SPACING)
 		.Add(fMainView)
 	.End();
+}
+
+
+CategoryWindow::~CategoryWindow()
+{
+	delete fCategoryList;
+	delete fDBManager;
 }
 
 
@@ -125,7 +123,13 @@ CategoryWindow::LoadCategories()
 {
 
 	LockLooper();
-	fCategoryListView->MakeEmpty();
+
+	if(!fCategoryList->IsEmpty()) {
+		fCategoryListView->MakeEmpty();
+		fCategoryList->MakeEmpty();
+	}
+
+	fCategoryList = fDBManager->GetAllCategories();
 
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
@@ -136,6 +140,13 @@ CategoryWindow::LoadCategories()
 
 	fCategoryListView->Invalidate();
 	UnlockLooper();
+}
+
+
+SQLiteManager*
+CategoryWindow::GetDBManager()
+{
+	return fDBManager;
 }
 
 

@@ -20,6 +20,7 @@
 #include "Category.h"
 #include "CategoryWindow.h"
 #include "ColorPreview.h"
+#include "SQLiteManager.h"
 
 
 CategoryEditWindow::CategoryEditWindow()
@@ -159,10 +160,30 @@ CategoryEditWindow::_CategoryModified()
 void
 CategoryEditWindow::_OnDeletePressed()
 {
-	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
-	parent->GetCategoryList()->RemoveItem(fCategory);
-	parent->LoadCategories();
-	_CloseWindow();
+	BAlert* alert = new BAlert("Confirm delete",
+		"Are you sure you want to delete the selected category?",
+		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+	alert->SetShortcut(1, B_ESCAPE);
+	int32 button_index = alert->Go();
+
+	if (button_index == 0) {
+
+		CategoryWindow* parent = ((App*)be_app)->categoryWindow();
+		if (parent->GetDBManager()->RemoveCategory(fCategory)) {
+			parent->LoadCategories();
+			_CloseWindow();
+		}
+		else
+		{
+			BAlert* alert  = new BAlert("Error",
+				"Cannot Delete category. Can't delete a category used by events",
+				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->Go();
+			return;
+		}
+
+	}
 }
 
 
@@ -182,7 +203,6 @@ CategoryEditWindow::_OnSavePressed()
 			"The name must have a length greater than 2",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
-		alert->SetShortcut(0, B_ESCAPE);
 		alert->Go();
 		return;
 	}
@@ -190,18 +210,25 @@ CategoryEditWindow::_OnSavePressed()
 	Category* category = new Category(0, fCategoryText->Text(), fPicker->ValueAsColor());
 	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
 
-	if (fCategory == NULL) {
-		parent->GetCategoryList()->AddItem(category);
+	if ((fCategory == NULL) && (parent->GetDBManager()->AddCategory(category))) {
+		parent->LoadCategories();
+		_CloseWindow();
+	}
+
+	else if (parent->GetDBManager()->UpdateCategory(fCategory, category))
+	{
 		parent->LoadCategories();
 		_CloseWindow();
 	}
 
 	else
 	{
-		parent->GetCategoryList()->ReplaceItem(parent->GetListView()->CurrentSelection(),
-			category);
-		parent->LoadCategories();
-		_CloseWindow();
+		BAlert* alert  = new BAlert("Error",
+			"Cannot Add/Modify category. Try with a different name and color",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+		return;
+
 	}
 
 }
