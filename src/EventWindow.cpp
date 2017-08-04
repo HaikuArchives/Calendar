@@ -35,18 +35,25 @@
 #include "Category.h"
 #include "Event.h"
 #include "MainWindow.h"
+#include "Preferences.h"
 #include "SQLiteManager.h"
+
+
+Preferences* EventWindow::fPreferences = NULL;
 
 
 EventWindow::EventWindow()
 	:
-	BWindow(BRect(), "Event Manager", B_TITLED_WINDOW,
+	BWindow(fPreferences->fEventWindowRect, "Event Manager", B_TITLED_WINDOW,
 			B_AUTO_UPDATE_SIZE_LIMITS),
 	fStartDateTime(),
 	fEndDateTime()
 {
 	_InitInterface();
-	CenterOnScreen();
+
+	if (fPreferences->fEventWindowRect == BRect())
+		CenterOnScreen();
+
 	_DisableControls();
 }
 
@@ -202,8 +209,16 @@ EventWindow::GetLocaleTimeString(time_t timeValue)
 bool
 EventWindow::QuitRequested()
 {
+	fPreferences->fEventWindowRect = Frame();
 	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
 	return true;
+}
+
+
+void
+EventWindow::SetPreferences(Preferences* preferences)
+{
+	fPreferences = preferences;
 }
 
 

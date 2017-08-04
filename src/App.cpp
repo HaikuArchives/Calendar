@@ -46,6 +46,7 @@ App::App()
 	fPreferences->fSettingsPath = settingsPath;
 
 	MainWindow::SetPreferences(fPreferences);
+	EventWindow::SetPreferences(fPreferences);
 
 	fMainWindow = new MainWindow();
 	fMainWindow->Show();

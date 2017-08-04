@@ -132,6 +132,13 @@ MainWindow::MessageReceived(BMessage* message)
 
 
 void
+MainWindow::SetPreferences(Preferences* preferences)
+{
+	fPreferences = preferences;
+}
+
+
+void
 MainWindow::_InitInterface()
 {
 	fMainView = new MainView();
@@ -223,13 +230,6 @@ MainWindow::_LaunchEventManager(int32 index)
 
 	fEventWindow->Activate();
 
-}
-
-
-void
-MainWindow::SetPreferences(Preferences* preferences)
-{
-	fPreferences = preferences;
 }
 
 

@@ -13,6 +13,7 @@
 #include <Window.h>
 
 
+
 class BBox;
 class BButton;
 class BCheckBox;
@@ -27,6 +28,7 @@ class BTextView;
 class BView;
 class Category;
 class Event;
+class Preferences;
 class SQLiteManager;
 
 
@@ -43,11 +45,13 @@ public:
 
 	void			SetEvent(Event* event, int eventIndex,
 					BList* eventList);
+	Event*			GetEvent();
+
 	void			SetEventDate(BDate& date);
 	void			SetStartDate(BDate& date);
 	void			SetEndDate(BDate& date);
 
-	Event*			GetEvent();
+	static void		SetPreferences(Preferences* preferences);
 
 	void			OnCheckBoxToggle();
 	void			OnSaveClick();
@@ -68,6 +72,8 @@ private:
 	static const uint32	kAllDayPressed	= 1003;
 	static const uint32	kOptEveryMonth	= 1004;
 	static const uint32	kOptEveryYear	= 1005;
+
+	static Preferences*	fPreferences;
 
 	BTextControl*		fTextName;
 	BTextControl*		fTextPlace;
