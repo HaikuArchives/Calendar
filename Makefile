@@ -46,6 +46,7 @@ SRCS = \
 	 src/EventListItem.cpp  \
 	 src/CategoryListItem.cpp \
 	 src/utils/ResourceLoader.cpp  \
+	 src/utils/ColorConverter.cpp  \
 	 src/model/Event.cpp \
 	 src/model/Category.cpp
 

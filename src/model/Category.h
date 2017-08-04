@@ -12,10 +12,12 @@
 class Category {
 public:
 		Category(uint32 id, BString name, rgb_color color);
+		Category(uint32 id, BString name, BString color);
 		Category(Category& category);
 
 		BString GetName();
 		rgb_color GetColor();
+		BString GetHexColor();
 		uint32 GetId();
 
 		bool Equals(Category &c);

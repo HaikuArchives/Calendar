@@ -6,6 +6,9 @@
 #include "Category.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "ColorConverter.h"
 
 
 Category::Category(uint32 id, BString name, rgb_color color)
@@ -13,10 +16,24 @@ Category::Category(uint32 id, BString name, rgb_color color)
 		fName = name;
         fColor = color;
 		if (id == 0) {
-			BString hashString;
-			hashString.SetToFormat("%.6X", (color.red << 16)|
-				(color.green << 8)|color.blue);
+			BString hashString = RGBToHex(fColor);
 			hashString.Append(fName);
+			fId = hashString.HashValue();
+		}
+		else
+			fId = id;
+}
+
+
+Category::Category(uint32 id, BString name, BString color)
+{
+		fName = name;
+		fColor = HexToRGB(color);
+
+		if (id == 0) {
+			BString hashString;
+			hashString.Append(name);
+			hashString.Append(color);
 			fId = hashString.HashValue();
 		}
 		else
@@ -43,6 +60,13 @@ rgb_color
 Category::GetColor()
 {
 	return fColor;
+}
+
+
+BString
+Category::GetHexColor()
+{
+	return RGBToHex(fColor);
 }
 
 
