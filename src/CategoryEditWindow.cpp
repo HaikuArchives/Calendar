@@ -183,7 +183,7 @@ CategoryEditWindow::_OnDeletePressed()
 		else
 		{
 			BAlert* alert  = new BAlert("Error",
-				"Cannot Delete category. Can't delete a category used by events",
+				"Cannot Delete category. Can't delete a category used by events.",
 				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->Go();
 			return;
@@ -206,22 +206,22 @@ CategoryEditWindow::_OnSavePressed()
 	if (BString(fCategoryText->Text()).CountChars() < 3) {
 
 		BAlert* alert  = new BAlert("Error",
-			"The name must have a length greater than 2",
+			"The name must have a length greater than 2.",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->Go();
 		return;
 	}
 
-	Category* category = new Category(0, fCategoryText->Text(), fPicker->ValueAsColor());
+	Category category(0, fCategoryText->Text(), fPicker->ValueAsColor());
 	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
 
-	if ((fCategory == NULL) && (parent->GetDBManager()->AddCategory(category))) {
+	if ((fCategory == NULL) && (parent->GetDBManager()->AddCategory(&category))) {
 		parent->LoadCategories();
 		_CloseWindow();
 	}
 
-	else if (parent->GetDBManager()->UpdateCategory(fCategory, category))
+	else if ((fCategory != NULL) && (parent->GetDBManager()->UpdateCategory(fCategory, &category)))
 	{
 		parent->LoadCategories();
 		_CloseWindow();
@@ -230,7 +230,7 @@ CategoryEditWindow::_OnSavePressed()
 	else
 	{
 		BAlert* alert  = new BAlert("Error",
-			"Cannot Add/Modify category. Try with a different name and color",
+			"Cannot Add/Modify category. Try with a different name and color.",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;
