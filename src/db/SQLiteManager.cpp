@@ -181,6 +181,25 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 }
 
 
+bool
+SQLiteManager::RemoveEvent(Event* event)
+{
+	BString sql;
+	char* zErrMsg;
+
+	sql.SetToFormat("DELETE FROM EVENTS WHERE ID = %s;",
+		event->GetId());
+
+	if (sqlite3_exec(db, sql, 0, 0, &zErrMsg) != SQLITE_OK) {
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+		return false;
+	}
+
+	return true;
+}
+
+
 BList*
 SQLiteManager::GetEventsOfDay(BDate& date)
 {

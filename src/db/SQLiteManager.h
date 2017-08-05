@@ -27,6 +27,7 @@ public:
 		bool		AddEvent(Event* event);
 		bool		UpdateEvent(Event* event, Event* newEvent);
 		BList*		GetEventsOfDay(BDate& date);
+		bool		RemoveEvent(Event* event);
 
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,
