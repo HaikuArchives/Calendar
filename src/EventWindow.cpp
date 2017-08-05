@@ -51,8 +51,10 @@ EventWindow::EventWindow()
 {
 	_InitInterface();
 
-	if (fPreferences->fEventWindowRect == BRect())
+	if (fPreferences->fEventWindowRect == BRect()) {
+		fPreferences->fEventWindowRect = Frame();
 		CenterOnScreen();
+	}
 
 	_DisableControls();
 }
@@ -91,6 +93,13 @@ EventWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+EventWindow::FrameMoved(BPoint newPosition)
+{
+	fPreferences->fEventWindowRect.OffsetTo(newPosition);
 }
 
 
@@ -209,7 +218,6 @@ EventWindow::GetLocaleTimeString(time_t timeValue)
 bool
 EventWindow::QuitRequested()
 {
-	fPreferences->fEventWindowRect = Frame();
 	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
 	return true;
 }

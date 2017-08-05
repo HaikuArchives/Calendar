@@ -42,6 +42,7 @@ public:
 
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
+	virtual void		FrameMoved(BPoint newPosition);
 
 	void			SetEvent(Event* event, int eventIndex,
 					BList* eventList);
