@@ -20,6 +20,7 @@
 #include "Category.h"
 #include "CategoryWindow.h"
 #include "ColorPreview.h"
+#include "MainWindow.h"
 #include "SQLiteManager.h"
 
 
@@ -178,6 +179,7 @@ CategoryEditWindow::_OnDeletePressed()
 		CategoryWindow* parent = ((App*)be_app)->categoryWindow();
 		if (parent->GetDBManager()->RemoveCategory(fCategory)) {
 			parent->LoadCategories();
+			_RefreshWindows();
 			_CloseWindow();
 		}
 		else
@@ -201,6 +203,13 @@ CategoryEditWindow::_CloseWindow()
 
 
 void
+CategoryEditWindow::_RefreshWindows()
+{
+	((App*)be_app)->mainWindow()->PostMessage(kRefreshCategoryList);
+}
+
+
+void
 CategoryEditWindow::_OnSavePressed()
 {
 	if (BString(fCategoryText->Text()).CountChars() < 3) {
@@ -218,12 +227,14 @@ CategoryEditWindow::_OnSavePressed()
 
 	if ((fCategory == NULL) && (parent->GetDBManager()->AddCategory(&category))) {
 		parent->LoadCategories();
+		_RefreshWindows();
 		_CloseWindow();
 	}
 
 	else if ((fCategory != NULL) && (parent->GetDBManager()->UpdateCategory(fCategory, &category)))
 	{
 		parent->LoadCategories();
+		_RefreshWindows();
 		_CloseWindow();
 	}
 

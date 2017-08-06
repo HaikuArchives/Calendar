@@ -18,6 +18,7 @@ class ColorPreview;
 
 
 const uint32 kCategoryEditQuitting = 'kceq';
+const uint32 kRefreshCategoryList = 'krcl';
 const uint32 kColorDropped ='kcld';
 const uint32 kUpdateColor = 'kucl';
 
@@ -37,6 +38,7 @@ private:
 	void				_OnSavePressed();
 	void				_OnDeletePressed();
 	void				_CategoryModified();
+	void				_RefreshWindows();
 	void				_CloseWindow();
 
 	static const uint32 kSavePressed = 1000;

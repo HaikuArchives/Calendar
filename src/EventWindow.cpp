@@ -33,6 +33,7 @@
 #include "App.h"
 #include "CalendarMenuWindow.h"
 #include "Category.h"
+#include "CategoryEditWindow.h"
 #include "Event.h"
 #include "MainWindow.h"
 #include "Preferences.h"
@@ -87,6 +88,13 @@ EventWindow::MessageReceived(BMessage* message)
 		case kSavePressed:
 			OnSaveClick();
 			break;
+
+		case kRefreshCategoryList:
+		{	LockLooper();
+			_UpdateCategoryMenu();
+			UnlockLooper();
+			break;
+		}
 
 		case kShowPopUpCalendar:
 		{
@@ -498,6 +506,38 @@ EventWindow::_InitInterface()
 			.Add(SaveButton)
 		.End()
 	.End();
+}
+
+
+void
+EventWindow::_UpdateCategoryMenu()
+{
+	Category* selectedCategory = NULL;
+	BMenuItem* item = fCategoryMenu->FindMarked();
+	int32 index = fCategoryMenu->IndexOf(item);
+	Category* c = ((Category*)fCategoryList->ItemAt(index));
+	selectedCategory = new Category(*c);
+
+	fCategoryList = fDBManager->GetAllCategories();
+
+	Category* category;
+	bool marked = false;
+
+	fCategoryMenu->RemoveItems(0, fCategoryMenu->CountItems(), true);
+
+	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+		category = ((Category*)fCategoryList->ItemAt(i));
+		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),  B_OK));
+		if (category->Equals(*selectedCategory) && (marked == false)) {
+			fCategoryMenu->ItemAt(i)->SetMarked(true);
+			marked = true;
+		}
+	}
+
+	if(!marked)
+		fCategoryMenu->ItemAt(0)->SetMarked(true);
+
+	delete selectedCategory;
 }
 
 

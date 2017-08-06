@@ -65,6 +65,7 @@ public:
 private:
 	void			_InitInterface();
 	void 			_DisableControls();
+	void			_UpdateCategoryMenu();
 	void			_ShowPopUpCalendar(int8 which);
 
 	static const uint32	kDeletePressed	= 1000;

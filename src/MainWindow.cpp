@@ -15,6 +15,7 @@
 #include <MenuBar.h>
 #include <ToolBar.h>
 
+#include "CategoryEditWindow.h"
 #include "DayView.h"
 #include "EventListView.h"
 #include "EventWindow.h"
@@ -124,6 +125,15 @@ MainWindow::MessageReceived(BMessage* message)
 		case kMenuEditCategory:
 			be_app->PostMessage(message);
 			break;
+
+		case kRefreshCategoryList:
+		{
+			_UpdateDayView();
+			if (fEventWindow != NULL) {
+				BMessenger msgr(fEventWindow);
+				msgr.SendMessage(message);
+			}
+		}
 
 		default:
 			BWindow::MessageReceived(message);
