@@ -60,6 +60,13 @@ EventWindow::EventWindow()
 }
 
 
+EventWindow::~EventWindow()
+{
+	delete fDBManager;
+	delete fCategoryList;
+}
+
+
 void
 EventWindow::MessageReceived(BMessage* message)
 {
@@ -104,12 +111,9 @@ EventWindow::FrameMoved(BPoint newPosition)
 
 
 void
-EventWindow::SetEvent(Event* event, int eventIndex,
-		BList* eventList)
+EventWindow::SetEvent(Event* event)
 {
 	fEvent = event;
-	fEventList = eventList;
-	fEventIndex = eventIndex;
 
 	if (event != NULL) {
 		fTextName->SetText(event->GetName());
@@ -262,19 +266,26 @@ EventWindow::OnSaveClick()
 	Category* c = ((Category*)fCategoryList->ItemAt(index));
 	category = new Category(*c);
 
-	Event* newEvent = new Event(fTextName->Text(), fTextPlace->Text(),
+	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
 		fStartDateTime, fEndDateTime, category);
 
-	if (fEvent!=NULL) {
-		fEventList->ReplaceItem(fEventIndex, newEvent);
+	if ((fEvent == NULL) && (fDBManager->AddEvent(&newEvent))) {
 		CloseWindow();
 	}
 
-	else if (fEvent == NULL)
+	else if ((fEvent != NULL) && (fDBManager->UpdateEvent(fEvent, &newEvent)))
 	{
-		fEventList->AddItem(newEvent);
 		CloseWindow();
+	}
+
+	else
+	{
+		BAlert* alert  = new BAlert("Error",
+			"There was some error in adding the event. Please try again.",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+		return;
 	}
 }
 
@@ -282,8 +293,17 @@ EventWindow::OnSaveClick()
 void
 EventWindow::OnDeleteClick()
 {
-	fEventList->RemoveItem(fEventIndex);
-	CloseWindow();
+	BAlert* alert = new BAlert("Confirm delete",
+		"Are you sure you want to delete this event?",
+		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+	alert->SetShortcut(1, B_ESCAPE);
+	int32 button_index = alert->Go();
+
+	if (button_index == 0) {
+		fDBManager->RemoveEvent(fEvent);
+		CloseWindow();
+	}
 }
 
 

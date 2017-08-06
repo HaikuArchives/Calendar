@@ -68,13 +68,14 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case kAddEvent:
-			_LaunchEventManager(-1);
+			_LaunchEventManager(NULL);
 			break;
 
 		case kModifyEventMessage:
-		{	int32 index;
-			message->FindInt32("index", &index);
-			_LaunchEventManager(index);
+		{
+			Event* event;
+			message->FindPointer("event", (void**)(&event));
+			_LaunchEventManager(event);
 			break;
 		}
 
@@ -185,9 +186,8 @@ MainWindow::_InitInterface()
 		"Add Event", "Add Event", true);
 	fToolBar->AddGlue();
 
-	fEventList = new BList();
 	fSidePanelView = new SidePanelView();
-	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME), fEventList);
+	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));
 
 	fMainView->StartWatchingAll(fSidePanelView);
 
@@ -207,29 +207,21 @@ MainWindow::_InitInterface()
 
 
 void
-MainWindow::_LaunchEventManager(int32 index)
+MainWindow::_LaunchEventManager(Event* event)
 {
 	if (fEventWindow == NULL) {
-		if (index == -1) {
-			Event* event = NULL;
-			fEventWindow = new EventWindow();
-			fEventWindow->SetEvent(event, index, fEventList);
+		fEventWindow = new EventWindow();
+		fEventWindow->SetEvent(event);
+
+		if (event == NULL) {
 			BDate date = _GetSelectedCalendarDate();
 			fEventWindow->SetEventDate(date);
-		}
-
-		else
-		{
-			Event* event = ((Event*)fEventList->ItemAt(index));
-			fEventWindow = new EventWindow();
-			fEventWindow->SetEvent(event, index, fEventList);
 		}
 
 		fEventWindow->Show();
 	}
 
 	fEventWindow->Activate();
-
 }
 
 
@@ -250,9 +242,10 @@ MainWindow::_SyncWithPreferences()
 void
 MainWindow::_UpdateDayView()
 {
-	LockLooper();
 	BDate date = _GetSelectedCalendarDate();
-	fDayView->Update(date, fEventList);
+	fDayView->SetDate(date);
+	LockLooper();
+	fDayView->LoadEvents();
 	UnlockLooper();
 }
 

@@ -9,10 +9,10 @@
 #include <Window.h>
 
 
-class BList;
 class BMenu;
 class BMenuBar;
 class DayView;
+class Event;
 class EventWindow;
 class MainView;
 class Preferences;
@@ -42,7 +42,7 @@ public:
 
 private:
 	void			_InitInterface();
-	void			_LaunchEventManager(int32 index);
+	void			_LaunchEventManager(Event* event);
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();
 	BDate			_GetSelectedCalendarDate() const;
@@ -63,7 +63,6 @@ private:
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
-	BList*		fEventList;
 };
 
 #endif

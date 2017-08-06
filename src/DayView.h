@@ -14,6 +14,7 @@ class BScrollView;
 class BList;
 class Event;
 class EventListView;
+class SQLiteManager;
 
 
 const uint32 kModifyEventMessage = 'ksem';
@@ -21,29 +22,25 @@ const uint32 kModifyEventMessage = 'ksem';
 
 class DayView: public BView {
 public:
-					DayView(const BDate& date, BList* eventList);
+					DayView(const BDate& date);
 		void			MessageReceived(BMessage* message);
 		void			AttachedToWindow();
 
-		void			AddDayEvents();
-		bool			CheckForEventThisDay();
-		void			SortEvents();
-
-		void			Update(const BDate& date, BList* eventList);
+		void			SetDate(const BDate& date);
+		void			LoadEvents();
 		static	int		CompareFunc(const void* a, const void* b);
 
-		int32			GetIndexOf(Event* event);
-
 private:
+		void			_PopulateEvents();
 
 		static const uint32 kInvokationMessage = 1000;
 
 		BList*			fEventList;
-		BList*			fDayEventList;
 		EventListView*		fEventListView;
 		BScrollView*		fEventScroll;
 		BDate			fDate;
 		BTimeFormat		fTimeFormat;
+		SQLiteManager*	fDBManager;
 
 };
 

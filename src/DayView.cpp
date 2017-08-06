@@ -5,6 +5,7 @@
 
 #include "DayView.h"
 
+#include <Alert.h>
 #include <LayoutBuilder.h>
 #include <List.h>
 #include <ScrollView.h>
@@ -13,31 +14,30 @@
 #include "Event.h"
 #include "EventListItem.h"
 #include "EventListView.h"
+#include "SQLiteManager.h"
 
 
-DayView::DayView(const BDate& date, BList* eventList)
+DayView::DayView(const BDate& date)
 	:
 	BView("DayView", B_WILL_DRAW)
 {
 	fDate = date;
-	fEventList = eventList;
 
 	fEventListView = new EventListView();
 	fEventListView->SetViewColor(B_TRANSPARENT_COLOR);
 	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
+	fEventList = new BList();
 
 	fEventScroll = new BScrollView("EventScroll", fEventListView,
 		B_WILL_DRAW, false, true);
 	fEventScroll->SetExplicitMinSize(BSize(260, 260));
 
+	fDBManager = new SQLiteManager();
+	LoadEvents();
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fEventScroll)
 	.End();
-
-	if (CheckForEventThisDay()) {
-		SortEvents();
-		AddDayEvents();
-	}
 }
 
 
@@ -49,19 +49,22 @@ DayView::AttachedToWindow()
 
 
 void
-DayView::Update(const BDate& date, BList* eventList)
+DayView::SetDate(const BDate& date)
 {
 	fDate = date;
-	fEventList = eventList;
+}
 
-	fDayEventList->MakeEmpty();
-	fEventListView->MakeEmpty();
-
-	if (CheckForEventThisDay()) {
-		SortEvents();
-		AddDayEvents();
+void
+DayView::LoadEvents()
+{
+	if (!fEventList->IsEmpty()) {
+		fEventList->MakeEmpty();
+		fEventListView->MakeEmpty();
 	}
 
+	fEventList = fDBManager->GetEventsOfDay(fDate);
+	fEventList->SortItems((int (*)(const void *, const void *))CompareFunc);
+	_PopulateEvents();
 	fEventListView->Invalidate();
 }
 
@@ -76,10 +79,9 @@ DayView::MessageReceived(BMessage* message)
 		{
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection >= 0) {
-				Event* event = ((Event*)fDayEventList->ItemAt(selection));
-				int32 eventIndex = GetIndexOf(event);
+				Event* event = ((Event*)fEventList->ItemAt(selection));
 				BMessage msg(kModifyEventMessage);
-				msg.AddInt32("index", eventIndex);
+				msg.AddPointer("event", event);
 				Window()->PostMessage(&msg);
 			}
 			break;
@@ -89,13 +91,23 @@ DayView::MessageReceived(BMessage* message)
 		{
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection >= 0) {
-				Event* event = ((Event*)fDayEventList->ItemAt(selection));
-				int32 eventIndex = GetIndexOf(event);
-				fEventList->RemoveItem(eventIndex);
-				Window()->LockLooper();
-				Update(fDate, fEventList);
-				Window()->UnlockLooper();
+				Event* event = ((Event*)fEventList->ItemAt(selection));
+
+				BAlert* alert = new BAlert("Confirm delete",
+					"Are you sure you want to delete the selected event?",
+					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+				alert->SetShortcut(1, B_ESCAPE);
+				int32 button_index = alert->Go();
+
+				if (button_index == 0) {
+					fDBManager->RemoveEvent(event);
+					Window()->LockLooper();
+					LoadEvents();
+					Window()->UnlockLooper();
+				}
 			}
+
 			break;
 		}
 
@@ -124,7 +136,7 @@ DayView::CompareFunc(const void* a, const void* b)
 
 
 void
-DayView::AddDayEvents()
+DayView::_PopulateEvents()
 {
 	Event* event;
 	EventListItem* item;
@@ -133,8 +145,8 @@ DayView::AddDayEvents()
 	BString eventName;
 	BString timePeriod;
 
-	for (int32 i = 0; i < fDayEventList->CountItems(); i++) {
-		event = ((Event*)fDayEventList->ItemAt(i));
+	for (int32 i = 0; i < fEventList->CountItems(); i++) {
+		event = ((Event*)fEventList->ItemAt(i));
 		eventName = "";
 		startTime = "";
 		endTime = "";
@@ -156,45 +168,5 @@ DayView::AddDayEvents()
 		item = new EventListItem(eventName, timePeriod , color);
 		fEventListView->AddItem(item);
 	}
-}
 
-
-void
-DayView::SortEvents()
-{
-	fDayEventList->SortItems((int (*)(const void * , const void *))CompareFunc);
-}
-
-
-bool
-DayView::CheckForEventThisDay()
-{
-	Event* event;
-	fDayEventList = new BList();
-
-	for (int32 i = 0; i < fEventList->CountItems(); i++) {
-		event = ((Event*)fEventList->ItemAt(i));
-		if (event->GetStartDateTime().Date() == fDate)
-			fDayEventList->AddItem(event);
-	}
-
-	if (fDayEventList->IsEmpty())
-		return false;
-
-	return true;
-}
-
-
-int32
-DayView::GetIndexOf(Event* event)
-{
-	Event* e;
-
-	for (int32 i = 0; i < fEventList->CountItems(); i++) {
-		e = ((Event*)fEventList->ItemAt(i));
-		if (e->Equals(*event))
-				return i;
-	}
-
-	return -1;
 }

@@ -39,13 +39,13 @@ const uint32 kShowPopUpCalendar = 'kspc';
 class EventWindow: public BWindow {
 public:
 			EventWindow();
+			~EventWindow();
 
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 	virtual void		FrameMoved(BPoint newPosition);
 
-	void			SetEvent(Event* event, int eventIndex,
-					BList* eventList);
+	void			SetEvent(Event* event);
 	Event*			GetEvent();
 
 	void			SetEventDate(BDate& date);
@@ -125,9 +125,7 @@ private:
 	BTimeFormat		fTimeFormat;
 
 	Event*			fEvent;
-	BList*			fEventList;
 	BList*			fCategoryList;
-	int			fEventIndex;
 
 	SQLiteManager*	fDBManager;
 };
