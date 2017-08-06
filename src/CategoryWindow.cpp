@@ -19,6 +19,7 @@
 #include "CategoryListItem.h"
 #include "SQLiteManager.h"
 
+
 CategoryWindow::CategoryWindow()
 	:
 	BWindow(BRect(), "Category Manager",B_TITLED_WINDOW,

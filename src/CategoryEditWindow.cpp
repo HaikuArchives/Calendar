@@ -230,7 +230,7 @@ CategoryEditWindow::_OnSavePressed()
 	else
 	{
 		BAlert* alert  = new BAlert("Error",
-			"Cannot Add/Modify category. Try with a different name and color.",
+			"Cannot Add/Modify category. A category with the same name already exists.",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;

@@ -16,9 +16,7 @@ Category::Category(uint32 id, BString name, rgb_color color)
 		fName = name;
         fColor = color;
 		if (id == 0) {
-			BString hashString = RGBToHex(fColor);
-			hashString.Append(fName);
-			fId = hashString.HashValue();
+			fId = name.HashValue();
 		}
 		else
 			fId = id;
@@ -31,10 +29,7 @@ Category::Category(uint32 id, BString name, BString color)
 		fColor = HexToRGB(color);
 
 		if (id == 0) {
-			BString hashString;
-			hashString.Append(name);
-			hashString.Append(color);
-			fId = hashString.HashValue();
+			fId = name.HashValue();
 		}
 		else
 			fId = id;
