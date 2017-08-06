@@ -44,10 +44,12 @@ CategoryWindow::MessageReceived(BMessage* message)
 	switch(message->what) {
 
 		case kAddPressed:
-		{
 			_OpenCategoryWindow(NULL);
 			break;
-		}
+
+		case kCancelPressed:
+			PostMessage(B_QUIT_REQUESTED);
+			break;
 
 		case kCategorySelected:
 		{
@@ -113,20 +115,6 @@ SQLiteManager*
 CategoryWindow::GetDBManager()
 {
 	return fDBManager;
-}
-
-
-BList*
-CategoryWindow::GetCategoryList()
-{
-	return fCategoryList;
-}
-
-
-BListView*
-CategoryWindow::GetListView()
-{
-	return fCategoryListView;
 }
 
 

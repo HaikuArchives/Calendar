@@ -27,10 +27,7 @@ public:
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 
-	BList*				GetCategoryList();
-	BListView*			GetListView();
 	void				LoadCategories();
-
 	SQLiteManager*		GetDBManager();
 
 private:
