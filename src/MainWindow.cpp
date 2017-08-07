@@ -6,7 +6,6 @@
 #include "MainWindow.h"
 
 #include <Application.h>
-#include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <List.h>
 #include <LocaleRoster.h>

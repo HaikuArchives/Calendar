@@ -211,7 +211,7 @@ BString
 EventWindow::GetDateString(time_t timeValue)
 {
 	BString dateString;
-	fDateFormat.Format(dateString, timeValue,
+	BDateFormat().Format(dateString, timeValue,
 		B_SHORT_DATE_FORMAT);
 	return dateString;
 }
@@ -221,7 +221,7 @@ BString
 EventWindow::GetLocaleTimeString(time_t timeValue)
 {
 	BString timeString;
-	fTimeFormat.Format(timeString, timeValue,
+	BTimeFormat().Format(timeString, timeValue,
 		B_SHORT_TIME_FORMAT);
 	return timeString;
 }

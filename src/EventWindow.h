@@ -7,11 +7,8 @@
 
 
 #include <DateTime.h>
-#include <DateFormat.h>
 #include <Messenger.h>
-#include <TimeFormat.h>
 #include <Window.h>
-
 
 
 class BBox;
@@ -121,9 +118,6 @@ private:
 
 	BDateTime		fStartDateTime;
 	BDateTime		fEndDateTime;
-
-	BDateFormat		fDateFormat;
-	BTimeFormat		fTimeFormat;
 
 	Event*			fEvent;
 	BList*			fCategoryList;

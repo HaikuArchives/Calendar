@@ -5,8 +5,7 @@
 #ifndef SIDE_PANEL_VIEW_H
 #define SIDE_PANEL_VIEW_H
 
-
-#include <DateFormat.h>
+#include <DateTime.h>
 #include <View.h>
 
 #include "DateHeaderView.h"
@@ -18,7 +17,6 @@ class BStringView;
 
 namespace BPrivate {
 	class BCalendarView;
-	class BDateTime;
 }
 
 using BPrivate::BCalendarView;
@@ -54,8 +52,6 @@ private:
 		DateHeaderView*		fDateHeaderView;
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;
-
-		BDateFormat		fDateFormat;
 };
 
 #endif

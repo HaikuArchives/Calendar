@@ -152,6 +152,7 @@ DayView::_PopulateEvents()
 	BString endTime;
 	BString eventName;
 	BString timePeriod;
+	BTimeFormat timeFormat;
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
@@ -163,9 +164,9 @@ DayView::_PopulateEvents()
 			timePeriod = "All Day";
 		else
 		{
-			fTimeFormat.Format(startTime, event->GetStartDateTime().Time_t(),
+			timeFormat.Format(startTime, event->GetStartDateTime().Time_t(),
 				B_SHORT_TIME_FORMAT);
-			fTimeFormat.Format(endTime, event->GetEndDateTime().Time_t(),
+			timeFormat.Format(endTime, event->GetEndDateTime().Time_t(),
 				B_SHORT_TIME_FORMAT);
 			timePeriod << startTime << " - " << endTime;
 		}

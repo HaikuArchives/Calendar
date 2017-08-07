@@ -6,7 +6,6 @@
 #define _DATEHEADERVIEW_H_
 
 #include <View.h>
-#include <DateFormat.h>
 
 
 class BStringView;
@@ -23,7 +22,6 @@ private:
 		BStringView*		fDayLabel;
 		BStringView*		fDayOfWeekLabel;
 		BStringView*		fMonthYearLabel;
-		BDateFormat			fDateFormat;
 };
 
 #endif

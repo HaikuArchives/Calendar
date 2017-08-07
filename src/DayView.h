@@ -6,7 +6,6 @@
 #define DAYVIEW_H
 
 #include <DateTime.h>
-#include <TimeFormat.h>
 #include <View.h>
 
 
@@ -42,7 +41,6 @@ private:
 		EventListView*		fEventListView;
 		BScrollView*		fEventScroll;
 		BDate			fDate;
-		BTimeFormat		fTimeFormat;
 		SQLiteManager*		fDBManager;
 
 };

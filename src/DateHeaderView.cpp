@@ -5,7 +5,7 @@
 
 #include "DateHeaderView.h"
 
-
+#include <DateFormat.h>
 #include <Font.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
@@ -95,10 +95,11 @@ DateHeaderView::_UpdateDateHeader()
 	int positionCount;
 	BDateElement* fields;
 	int fieldCount;
+	BDateFormat dateFormat;
 
-	fDateFormat.Format(dateString, fieldPositions, positionCount,
+	dateFormat.Format(dateString, fieldPositions, positionCount,
 		timeValue, B_FULL_DATE_FORMAT);
-	fDateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
+	dateFormat.GetFields(fields, fieldCount, B_FULL_DATE_FORMAT);
 
 	for(int i = 0; i < fieldCount; ++i)  {
 		if (fields[i] == B_DATE_ELEMENT_WEEKDAY)

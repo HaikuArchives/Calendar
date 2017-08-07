@@ -8,7 +8,7 @@
 
 #include <Button.h>
 #include <CalendarView.h>
-#include <DateTime.h>
+#include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
 #include <StringView.h>
@@ -154,7 +154,7 @@ SidePanelView::SetStartOfWeek(int32 index)
 	BWeekday firstDay;
 
 	if (startOfWeekDay == kLocaleStartOfWeek) {
-		fDateFormat.GetStartOfWeek(&firstDay);
+		BDateFormat().GetStartOfWeek(&firstDay);
 		fCalendarView->SetStartOfWeek(firstDay);
 	}
 
@@ -202,7 +202,7 @@ SidePanelView::_UpdateDateLabel()
 	BString monthYearString;
 	yearString << date.Year();
 
-	fDateFormat.GetMonthName(date.Month(), monthYearString);
+	BDateFormat().GetMonthName(date.Month(), monthYearString);
 	monthYearString += " ";
 	monthYearString += yearString.String();
 

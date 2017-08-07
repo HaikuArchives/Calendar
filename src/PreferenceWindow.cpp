@@ -10,7 +10,6 @@
 #include <Box.h>
 #include <Button.h>
 #include <CheckBox.h>
-#include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <PopUpMenu.h>
 #include <MenuField.h>
