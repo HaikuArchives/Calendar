@@ -26,10 +26,8 @@ namespace BPrivate {
 using BPrivate::BToolBar;
 
 
-static const uint32 kMenuEditPref = 'kmap';
-static const uint32 kMenuEditCategory = 'kmec';
-static const uint32 kShowToday = 'ksty';
-static const uint32 kAddEvent = 'kaet';
+static const uint32 kMenuAppPref = 'kmap';
+static const uint32 kMenuCategoryEdit = 'kmce';
 
 
 class MainWindow: public BWindow {
@@ -39,17 +37,21 @@ public:
 	virtual bool	QuitRequested();
 
 	static void		SetPreferences(Preferences* preferences);
-
 private:
 	void			_InitInterface();
 	void			_LaunchEventManager(Event* event);
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();
+	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
 
 	static const int kMenuAppQuit	= 1000;
-	static const int kDayView 	= 1002;
-	static const int kMonthView	= 1003;
+	static const int kMenuEventEdit = 1002;
+	static const int kMenuEventDelete = 1003;
+	static const int kAddEvent = 1004;
+	static const int kDayView 	= 1005;
+	static const int kMonthView	= 1006;
+
 
 	static Preferences*	fPreferences;
 

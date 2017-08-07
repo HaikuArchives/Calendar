@@ -75,20 +75,21 @@ DayView::MessageReceived(BMessage* message)
 	switch (message->what) {
 
 		case kInvokationMessage:
-		case kEventModify:
+		case kEditEventMessage:
 		{
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection >= 0) {
 				Event* event = ((Event*)fEventList->ItemAt(selection));
-				BMessage msg(kModifyEventMessage);
+				BMessage msg(kLaunchEventManagerToModify);
 				msg.AddPointer("event", event);
 				Window()->PostMessage(&msg);
 			}
 			break;
 		}
 
-		case kEventDelete:
+		case kDeleteEventMessage:
 		{
+
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection >= 0) {
 				Event* event = ((Event*)fEventList->ItemAt(selection));
@@ -115,6 +116,13 @@ DayView::MessageReceived(BMessage* message)
 			BView::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+DayView::SetEventListPopUpEnabled(bool state)
+{
+	fEventListView->SetPopUpMenuEnabled(state);
 }
 
 

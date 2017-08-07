@@ -72,7 +72,21 @@ MainWindow::MessageReceived(BMessage* message)
 			_LaunchEventManager(NULL);
 			break;
 
-		case kModifyEventMessage:
+		case kMenuEventEdit:
+		{
+			BMessage msg(kEditEventMessage);
+			fDayView->MessageReceived(&msg);
+			break;
+		}
+
+		case kMenuEventDelete:
+		{
+			BMessage msg(kDeleteEventMessage);
+			fDayView->MessageReceived(&msg);
+			break;
+		}
+
+		case kLaunchEventManagerToModify:
 		{
 			Event* event;
 			message->FindPointer("event", (void**)(&event));
@@ -84,6 +98,8 @@ MainWindow::MessageReceived(BMessage* message)
 		{
 			fEventWindow = NULL;
 			_UpdateDayView();
+			_SetEventListPopUpEnabled(true);
+			fEventMenu->SetEnabled(true);
 			break;
 		}
 
@@ -118,11 +134,11 @@ MainWindow::MessageReceived(BMessage* message)
 			_SyncWithPreferences();
 			break;
 
-		case kMenuEditPref:
+		case kMenuAppPref:
 			be_app->PostMessage(message);
 			break;
 
-		case kMenuEditCategory:
+		case kMenuCategoryEdit:
 			be_app->PostMessage(message);
 			break;
 
@@ -160,18 +176,17 @@ MainWindow::_InitInterface()
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuEditPref)));
+	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuAppPref)));
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
 	fEventMenu = new BMenu("Event");
 	fEventMenu->AddItem(new BMenuItem("Add event", new BMessage(kAddEvent)));
-	fEventMenu->AddItem(new BMenuItem("Edit event", B_OK));
-	fEventMenu->AddItem(new BMenuItem("Remove event", B_OK));
+	fEventMenu->AddItem(new BMenuItem("Edit event", new BMessage(kMenuEventEdit)));
+	fEventMenu->AddItem(new BMenuItem("Remove event", new BMessage(kMenuEventDelete)));
 
 	fCategoryMenu = new BMenu("Category");
-	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuEditCategory)));
-
+	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuCategoryEdit)));
 	fViewMenu = new BMenu("View");
 	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
 	fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
@@ -229,9 +244,18 @@ MainWindow::_LaunchEventManager(Event* event)
 		}
 
 		fEventWindow->Show();
+		_SetEventListPopUpEnabled(false);
+		fEventMenu->SetEnabled(false);
 	}
 
 	fEventWindow->Activate();
+}
+
+
+void
+MainWindow::_SetEventListPopUpEnabled(bool state)
+{
+	fDayView->SetEventListPopUpEnabled(state);
 }
 
 

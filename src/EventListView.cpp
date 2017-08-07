@@ -13,6 +13,7 @@
 
 #include "EventListItem.h"
 #include "MainWindow.h"
+#include "DayView.h"
 
 
 class PopUpMenu : public BPopUpMenu {
@@ -44,6 +45,7 @@ EventListView::EventListView()
 	:
 	BListView("EventList"),
 	fShowingPopUpMenu(false),
+	fPopUpMenuEnabled(true),
 	fPrimaryButton(false)
 {
 }
@@ -108,22 +110,22 @@ EventListView::MessageReceived(BMessage* message)
 			break;
 		}
 
-		case kModifyInvoked:
+		case kEditActionInvoked:
 		{
 			fShowingPopUpMenu = false;
 			BView* view = Window()->FindView("DayView");
 			BMessenger msgr(view);
-			BMessage msg(kEventModify);
+			BMessage msg(kEditEventMessage);
 			msgr.SendMessage(&msg);
 			break;
 		}
 
-		case kDeleteInvoked:
+		case kDeleteActionInvoked:
 		{
 			fShowingPopUpMenu = false;
 			BView* view = Window()->FindView("DayView");
 			BMessenger msgr(view);
-			BMessage msg(kEventDelete);
+			BMessage msg(kDeleteEventMessage);
 			msgr.SendMessage(&msg);
 			break;
 		}
@@ -181,9 +183,19 @@ EventListView::MouseUp(BPoint position)
 
 
 void
+EventListView::SetPopUpMenuEnabled(bool enable)
+{
+	if (fPopUpMenuEnabled == enable)
+		return;
+
+	fPopUpMenuEnabled = enable;
+}
+
+
+void
 EventListView::_ShowPopUpMenu(BPoint screen)
 {
-	if (fShowingPopUpMenu || IsEmpty())
+	if (fShowingPopUpMenu || IsEmpty() || (!fPopUpMenuEnabled))
 		return;
 
 	EventListItem* sItem = dynamic_cast<EventListItem *>
@@ -192,11 +204,11 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	PopUpMenu* menu = new PopUpMenu("PopUpMenu", this);
 
 	BMenuItem* item;
-	item = new BMenuItem("Modify",
-			new BMessage(kModifyInvoked), 'E');
+	item = new BMenuItem("Edit",
+			new BMessage(kEditActionInvoked), 'E');
 	menu->AddItem(item);
 	item = new BMenuItem("Delete",
-			new BMessage(kDeleteInvoked), 'D');
+			new BMessage(kDeleteActionInvoked), 'D');
 	menu->AddItem(item);
 
 	menu->SetTargetForItems(this);

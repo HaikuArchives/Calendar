@@ -11,8 +11,6 @@
 
 
 static const uint32 kPopClosed	= 'kpop';
-static const uint32 kEventModify	= 'kemd';
-static const uint32 kEventDelete	= 'kedt';
 
 
 class EventListView : public BListView {
@@ -26,13 +24,16 @@ public:
 	void			MouseDown(BPoint position);
 	void			MouseUp(BPoint position);
 
+	void			SetPopUpMenuEnabled(bool enable);
+
 private:
-	static const int32 kModifyInvoked	= 1000;
-	static const int32 kDeleteInvoked	= 1001;
+	static const int32 kEditActionInvoked	= 1000;
+	static const int32 kDeleteActionInvoked	= 1001;
 
 	void			_ShowPopUpMenu(BPoint screen);
 
 	bool			fShowingPopUpMenu;
+	bool			fPopUpMenuEnabled;
 	bool			fPrimaryButton;
 	int32			fCurrentItemIndex;
 };

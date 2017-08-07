@@ -101,7 +101,7 @@ App::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
 
-		case kMenuEditPref:
+		case kMenuAppPref:
 		{
 			if (fPreferenceWindow == NULL) {
 				fPreferenceWindow = new PreferenceWindow(fPreferences);
@@ -112,7 +112,7 @@ App::MessageReceived(BMessage* message)
 			break;
 		}
 
-		case kMenuEditCategory:
+		case kMenuCategoryEdit:
 		{
 			if (fCategoryWindow == NULL) {
 				fCategoryWindow = new CategoryWindow();

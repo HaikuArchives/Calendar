@@ -17,7 +17,9 @@ class EventListView;
 class SQLiteManager;
 
 
-const uint32 kModifyEventMessage = 'ksem';
+const uint32 kEditEventMessage = 'ksem';
+const uint32 kDeleteEventMessage = 'kdem';
+const uint32 kLaunchEventManagerToModify = 'klem';
 
 
 class DayView: public BView {
@@ -28,6 +30,7 @@ public:
 
 		void			SetDate(const BDate& date);
 		void			LoadEvents();
+		void			SetEventListPopUpEnabled(bool state);
 		static	int		CompareFunc(const void* a, const void* b);
 
 private:
@@ -40,7 +43,7 @@ private:
 		BScrollView*		fEventScroll;
 		BDate			fDate;
 		BTimeFormat		fTimeFormat;
-		SQLiteManager*	fDBManager;
+		SQLiteManager*		fDBManager;
 
 };
 
