@@ -11,19 +11,21 @@
 
 class Category {
 public:
-		Category(uint32 id, BString name, rgb_color color);
-		Category(uint32 id, BString name, BString color);
+		Category(BString name, rgb_color color,
+			const char* id = NULL);
+		Category(BString name, BString color,
+			const char* id = NULL);
 		Category(Category& category);
 
 		BString GetName();
 		rgb_color GetColor();
 		BString GetHexColor();
-		uint32 GetId();
+		const char* GetId();
 
 		bool Equals(Category &c);
 
 private:
-		uint32			fId;
+		BString			fId;
 		BString 		fName;
 		rgb_color 		fColor;
 

@@ -32,7 +32,7 @@ public:
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,
 						Category* newCategory);
-		Category*	GetCategory(uint32 id);
+		Category*	GetCategory(const char* id);
 		BList*		GetAllCategories();
 		bool		RemoveCategory(Category* category);
 

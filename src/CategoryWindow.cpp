@@ -89,7 +89,6 @@ CategoryWindow::QuitRequested()
 void
 CategoryWindow::LoadCategories()
 {
-
 	LockLooper();
 
 	if(!fCategoryList->IsEmpty()) {

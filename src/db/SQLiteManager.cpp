@@ -71,12 +71,12 @@ SQLiteManager::_Initialise()
 
 	if (!exists) {
 		const char *sql =
-		"CREATE TABLE CATEGORIES(ID UNSIGNED INTEGER PRIMARY KEY, NAME TEXT, COLOR TEXT);"
+		"CREATE TABLE CATEGORIES(ID TEXT PRIMARY KEY, NAME TEXT NOT NULL UNIQUE, COLOR TEXT);"
 		"CREATE TABLE EVENTS(ID TEXT PRIMARY KEY, NAME TEXT, PLACE TEXT,"
-		"DESCRIPTION TEXT, ALLDAY INTEGER, START DATETIME, END DATETIME, CATEGORY UNSIGNED INTEGER,"
+		"DESCRIPTION TEXT, ALLDAY INTEGER, START DATETIME, END DATETIME, CATEGORY TEXT,"
 		"FOREIGN KEY(CATEGORY) REFERENCES CATEGORIES(ID) ON DELETE RESTRICT);"
-		"INSERT INTO CATEGORIES VALUES(1253870644, 'Default', '1e90ff');"
-		"INSERT INTO CATEGORIES VALUES(2426072713, 'Birthday', 'c25656');"
+		"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', 'Default', '1e90ff');"
+		"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4', 'Birthday', 'c25656');"
 		"PRAGMA foreign_keys = ON;";
 
 		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
@@ -137,7 +137,8 @@ SQLiteManager::AddEvent(Event* event)
     sqlite3_bind_int(stmt, 5, allday);
     sqlite3_bind_text(stmt, 6, start, strlen(start), 0);
     sqlite3_bind_text(stmt, 7, end, strlen(end), 0);
-    sqlite3_bind_int(stmt, 8, event->GetCategory()->GetId());
+    sqlite3_bind_text(stmt, 8, event->GetCategory()->GetId(),
+		strlen(event->GetCategory()->GetId()), 0);
 
     rc = sqlite3_step(stmt);
 
@@ -193,7 +194,8 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
     sqlite3_bind_text(stmt, 5, start, strlen(start), 0);
     sqlite3_bind_text(stmt, 6, end, strlen(end), 0);
 
-    sqlite3_bind_int(stmt, 7, newEvent->GetCategory()->GetId());
+    sqlite3_bind_text(stmt, 7, newEvent->GetCategory()->GetId(),
+		strlen(newEvent->GetCategory()->GetId()), 0);
     sqlite3_bind_text(stmt, 8, event->GetId(), strlen(event->GetId()), 0);
 
     rc = sqlite3_step(stmt);
@@ -270,7 +272,7 @@ SQLiteManager::GetEventsOfDay(BDate& date)
         start = (const char*)sqlite3_column_text(stmt, 5);
 		end = (const char*)sqlite3_column_text(stmt, 6);
 
-        Category* category = GetCategory((uint32)sqlite3_column_int(stmt, 7));
+        Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
         if (category == NULL) {
             fprintf(stderr, "Error: Received NULL category\n");
             continue;
@@ -303,7 +305,7 @@ SQLiteManager::AddCategory(Category* category)
     char* zErrMsg = 0;
     BString sql;
 
-    sql.SetToFormat("INSERT INTO CATEGORIES VALUES(%u, '%s', '%s');",
+    sql.SetToFormat("INSERT INTO CATEGORIES VALUES('%s', '%s', '%s');",
     	category->GetId(), category->GetName().String(),
     	category->GetHexColor().String());
 
@@ -329,7 +331,7 @@ SQLiteManager::UpdateCategory(Category* category,
     char* zErrMsg = 0;
     BString sql;
 
-    sql.SetToFormat("UPDATE CATEGORIES SET NAME='%s', COLOR='%s' WHERE ID=%u;",
+    sql.SetToFormat("UPDATE CATEGORIES SET NAME='%s', COLOR='%s' WHERE ID='%s';",
     	newCategory->GetName().String(), newCategory->GetHexColor().String(),
     	category->GetId());
 
@@ -346,12 +348,12 @@ SQLiteManager::UpdateCategory(Category* category,
 
 
 Category*
-SQLiteManager::GetCategory(uint32 id)
+SQLiteManager::GetCategory(const char* id)
 {
    sqlite3_stmt* stmt;
    BString sql;
 
-   sql.SetToFormat("SELECT * FROM CATEGORIES WHERE ID = %u;", id);
+   sql.SetToFormat("SELECT * FROM CATEGORIES WHERE ID = '%s';", id);
 
     int rc = sqlite3_prepare_v2(db, sql.String(), -1, &stmt, NULL);
 
@@ -361,9 +363,11 @@ SQLiteManager::GetCategory(uint32 id)
     }
 
     if ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        Category* category = new Category(sqlite3_column_int(stmt, 0),
-        	(const char*)sqlite3_column_text(stmt, 1),
-        	(const char*)sqlite3_column_text(stmt, 2));
+		const char* id = (const char*)sqlite3_column_text(stmt, 0);
+        const char* name = (const char*)sqlite3_column_text(stmt, 1);
+        const char* color = (const char*)sqlite3_column_text(stmt, 2);
+        Category* category = new Category(name, color, id);
+
         sqlite3_finalize(stmt);
         return category;
 
@@ -390,10 +394,10 @@ SQLiteManager::GetAllCategories()
     }
 
     while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-
-        Category* category = new Category( sqlite3_column_int(stmt, 0),
-             (const char*)sqlite3_column_text(stmt, 1),
-             (const char*)sqlite3_column_text(stmt, 2));
+        const char* id = (const char*)sqlite3_column_text(stmt, 0);
+        const char* name = (const char*)sqlite3_column_text(stmt, 1);
+        const char* color = (const char*)sqlite3_column_text(stmt, 2);
+        Category* category = new Category(name, color, id);
 
         categories->AddItem(category);
     }
@@ -409,7 +413,7 @@ SQLiteManager::RemoveCategory(Category* category)
     char* zErrMsg = 0;
     BString sql;
 
-    sql.SetToFormat("PRAGMA foreign_keys = ON; DELETE FROM CATEGORIES WHERE ID = %u;",
+    sql.SetToFormat("PRAGMA foreign_keys = ON; DELETE FROM CATEGORIES WHERE ID = '%s';",
     	category->GetId());
 
     int rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);

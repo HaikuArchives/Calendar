@@ -8,28 +8,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <Uuid.h>
+
 #include "ColorConverter.h"
 
 
-Category::Category(uint32 id, BString name, rgb_color color)
+Category::Category(BString name, rgb_color color,
+	const char* id /*= NULL*/)
 {
 		fName = name;
         fColor = color;
-		if (id == 0) {
-			fId = name.HashValue();
+
+		if (id == NULL) {
+			fId = BUuid().SetToRandom().ToString();
 		}
 		else
 			fId = id;
 }
 
 
-Category::Category(uint32 id, BString name, BString color)
+Category::Category(BString name, BString color,
+	const char* id /*= NULL*/)
 {
 		fName = name;
 		fColor = HexToRGB(color);
 
-		if (id == 0) {
-			fId = name.HashValue();
+		if (id == NULL) {
+			fId = BUuid().SetToRandom().ToString();
 		}
 		else
 			fId = id;
@@ -65,10 +70,10 @@ Category::GetHexColor()
 }
 
 
-uint32
+const char*
 Category::GetId()
 {
-	return fId;
+	return fId.String();
 }
 
 

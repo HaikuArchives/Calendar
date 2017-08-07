@@ -171,6 +171,15 @@ CategoryEditWindow::_OnDeletePressed()
 		"Are you sure you want to delete the selected category?",
 		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
+	if (BString(fCategoryText->Text()) == BString("Default")) {
+		BAlert* alert  = new BAlert("Error",
+			"You cannot delete the default category.",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+		alert->Go();
+		return;
+	}
+
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();
 
@@ -222,7 +231,7 @@ CategoryEditWindow::_OnSavePressed()
 		return;
 	}
 
-	Category category(0, fCategoryText->Text(), fPicker->ValueAsColor());
+	Category category(fCategoryText->Text(), fPicker->ValueAsColor());
 	CategoryWindow* parent = ((App*)be_app)->categoryWindow();
 
 	if ((fCategory == NULL) && (parent->GetDBManager()->AddCategory(&category))) {
