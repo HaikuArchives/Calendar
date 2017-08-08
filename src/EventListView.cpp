@@ -195,7 +195,7 @@ EventListView::SetPopUpMenuEnabled(bool enable)
 void
 EventListView::_ShowPopUpMenu(BPoint screen)
 {
-	if (fShowingPopUpMenu || IsEmpty() || (!fPopUpMenuEnabled))
+	if (fShowingPopUpMenu || IsEmpty())
 		return;
 
 	EventListItem* sItem = dynamic_cast<EventListItem *>
@@ -210,6 +210,10 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	item = new BMenuItem("Delete",
 			new BMessage(kDeleteActionInvoked), 'D');
 	menu->AddItem(item);
+
+	if (!fPopUpMenuEnabled) {
+		menu->SetEnabled(false);
+	}
 
 	menu->SetTargetForItems(this);
 	menu->Go(screen, true, true, true);
