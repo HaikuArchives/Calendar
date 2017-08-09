@@ -274,9 +274,11 @@ EventWindow::OnSaveClick()
 	Category* c = ((Category*)fCategoryList->ItemAt(index));
 	category = new Category(*c);
 
+	bool notified = (fStartDateTime < BDateTime::CurrentDateTime(B_LOCAL_TIME)) ? true : false;
+
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		fStartDateTime, fEndDateTime, category);
+		fStartDateTime, fEndDateTime, category, notified);
 
 	if ((fEvent == NULL) && (fDBManager->AddEvent(&newEvent))) {
 		CloseWindow();

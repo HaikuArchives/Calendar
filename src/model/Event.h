@@ -17,7 +17,7 @@ public:
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
 				BDateTime start, BDateTime end,
-				Category* category, const char* id = NULL);
+				Category* category, bool notified, const char* id = NULL);
 			Event(Event& event);
 
 	BDateTime	GetStartDateTime();
@@ -25,7 +25,6 @@ public:
 
 	BDateTime	GetEndDateTime();
 	void		SetEndDateTime(BDateTime& end);
-
 
 	const char*	GetId();
 	Category*	GetCategory();
@@ -41,6 +40,9 @@ public:
 	bool		IsAllDay();
 	void		SetAllDay(bool allday);
 
+	bool		IsNotified();
+	void		SetNotified(bool notified);
+
 	bool 		Equals(Event& e);
 
 private:
@@ -54,6 +56,7 @@ private:
 	BDateTime	fEnd;
 
 	bool		fAllDay;
+	bool		fNotified;
 
 	Category*	fCategory;
 

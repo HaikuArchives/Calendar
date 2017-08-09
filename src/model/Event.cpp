@@ -12,12 +12,13 @@
 Event::Event(const char* name,
 	const char* place, const char* description,
 	bool allday, BDateTime start, BDateTime end,
-	Category* category, const char* id /*= NULL*/)
+	Category* category, bool notified, const char* id /*= NULL*/)
 {
 	fName = name;
 	fPlace = place;
 	fDescription = description;
 	fAllDay = allday;
+	fNotified = notified;
 	fStart = start;
 	fEnd = end;
 
@@ -40,6 +41,7 @@ Event::Event(Event& event)
 	fCategory = event.GetCategory();
 	fDescription = event.GetDescription();
 	fAllDay = event.IsAllDay();
+	fNotified = event.IsNotified();
 	fStart = event.GetStartDateTime();
 	fEnd = event.GetEndDateTime();
 }
@@ -140,6 +142,20 @@ bool
 Event::IsAllDay()
 {
 	return fAllDay;
+}
+
+
+void
+Event::SetNotified(bool notified)
+{
+	fNotified = notified;
+}
+
+
+bool
+Event::IsNotified()
+{
+	return fNotified;
 }
 
 

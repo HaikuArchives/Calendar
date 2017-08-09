@@ -7,7 +7,6 @@
 
 #include <Application.h>
 #include <LayoutBuilder.h>
-#include <List.h>
 #include <LocaleRoster.h>
 #include <Menu.h>
 #include <MenuItem.h>
@@ -16,6 +15,7 @@
 
 #include "CategoryEditWindow.h"
 #include "DayView.h"
+#include "Event.h"
 #include "EventListView.h"
 #include "EventWindow.h"
 #include "MainView.h"
@@ -28,6 +28,7 @@
 using BPrivate::BToolBar;
 
 
+extern int32 NotificationLoop(void* data);
 Preferences* MainWindow::fPreferences = NULL;
 
 
@@ -47,6 +48,8 @@ MainWindow::MainWindow()
 	}
 
 	_SyncWithPreferences();
+	fNotificationThread = -1;
+	StartNotificationThread();
 }
 
 
@@ -103,10 +106,8 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 
 		case kSetCalendarToCurrentDate:
-		{
 			fSidePanelView->MessageReceived(message);
 			break;
-		}
 
 		case kSelectedDateChanged:
 			_UpdateDayView();
@@ -120,10 +121,8 @@ MainWindow::MessageReceived(BMessage* message)
 
 		case kMonthUpMessage:
 		case kMonthDownMessage:
-		{
 			fSidePanelView->MessageReceived(message);
 			break;
-		}
 
 		case B_LOCALE_CHANGED:
 			fSidePanelView->MessageReceived(message);
@@ -161,6 +160,27 @@ void
 MainWindow::SetPreferences(Preferences* preferences)
 {
 	fPreferences = preferences;
+}
+
+
+void
+MainWindow::StartNotificationThread()
+{
+	if (fNotificationThread < 0) {
+		fNotificationThread = spawn_thread(NotificationLoop, "Notification Thread",
+			B_NORMAL_PRIORITY, NULL);
+		resume_thread(fNotificationThread);
+	}
+}
+
+
+void
+MainWindow::StopNotificationThread()
+{
+	if (fNotificationThread > 0) {
+		kill_thread(fNotificationThread);
+		fNotificationThread = -1;
+	}
 }
 
 

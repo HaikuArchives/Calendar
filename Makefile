@@ -49,7 +49,8 @@ SRCS = \
 	 src/utils/ColorConverter.cpp  \
 	 src/model/Event.cpp \
 	 src/model/Category.cpp  \
-	 src/db/SQLiteManager.cpp
+	 src/db/SQLiteManager.cpp  \
+	 src/NotificationLoop.cpp
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.

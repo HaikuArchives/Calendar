@@ -37,6 +37,9 @@ public:
 	virtual bool	QuitRequested();
 
 	static void		SetPreferences(Preferences* preferences);
+
+	void			StartNotificationThread();
+	void			StopNotificationThread();
 private:
 	void			_InitInterface();
 	void			_LaunchEventManager(Event* event);
@@ -65,6 +68,8 @@ private:
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;
+
+	thread_id		fNotificationThread;
 };
 
 #endif
