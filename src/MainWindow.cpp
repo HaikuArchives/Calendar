@@ -125,8 +125,11 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case B_LOCALE_CHANGED:
-			fSidePanelView->MessageReceived(message);
+		{	fSidePanelView->MessageReceived(message);
+			fSidePanelView->SetStartOfWeek(fPreferences->fStartOfWeekOffset);
+			_UpdateDayView();
 			break;
+		}
 
 		case kAppPreferencesChanged:
 			_SyncWithPreferences();
