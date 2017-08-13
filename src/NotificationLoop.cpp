@@ -35,7 +35,7 @@ NotificationLoop(void* data)
 			startTime = "";
 			notificationContent = "";
 			if (!event->IsNotified()) {
-				BTimeFormat().Format(startTime, event->GetStartDateTime().Time_t(),
+				BTimeFormat().Format(startTime, event->GetStartDateTime(),
 					B_SHORT_TIME_FORMAT);
 				notificationContent.SetToFormat("%s is starting at %s.",
 					event->GetName(), startTime.String());

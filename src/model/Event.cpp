@@ -11,7 +11,7 @@
 
 Event::Event(const char* name,
 	const char* place, const char* description,
-	bool allday, BDateTime start, BDateTime end,
+	bool allday, time_t start, time_t end,
 	Category* category, bool notified, const char* id /*= NULL*/)
 {
 	fName = name;
@@ -47,7 +47,7 @@ Event::Event(Event& event)
 }
 
 
-BDateTime
+time_t
 Event::GetStartDateTime()
 {
 	return fStart;
@@ -55,13 +55,13 @@ Event::GetStartDateTime()
 
 
 void
-Event::SetStartDateTime(BDateTime& start)
+Event::SetStartDateTime(time_t start)
 {
 	fStart = start;
 }
 
 
-BDateTime
+time_t
 Event::GetEndDateTime()
 {
 	return fEnd;
@@ -69,7 +69,7 @@ Event::GetEndDateTime()
 
 
 void
-Event::SetEndDateTime(BDateTime& end)
+Event::SetEndDateTime(time_t end)
 {
 
 	fEnd = end;

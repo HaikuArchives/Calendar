@@ -16,15 +16,15 @@ public:
 
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
-				BDateTime start, BDateTime end,
+				time_t start, time_t end,
 				Category* category, bool notified, const char* id = NULL);
 			Event(Event& event);
 
-	BDateTime	GetStartDateTime();
-	void		SetStartDateTime(BDateTime& start);
+	time_t		GetStartDateTime();
+	void		SetStartDateTime(time_t start);
 
-	BDateTime	GetEndDateTime();
-	void		SetEndDateTime(BDateTime& end);
+	time_t		GetEndDateTime();
+	void		SetEndDateTime(time_t end);
 
 	const char*	GetId();
 	Category*	GetCategory();
@@ -52,8 +52,8 @@ private:
 	BString		fPlace;
 	BString		fId;
 
-	BDateTime	fStart;
-	BDateTime	fEnd;
+	time_t		fStart;
+	time_t		fEnd;
 
 	bool		fAllDay;
 	bool		fNotified;

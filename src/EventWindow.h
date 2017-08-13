@@ -116,13 +116,13 @@ private:
 
 	BMessenger		fCalendarWindow;
 
-	BDateTime		fStartDateTime;
-	BDateTime		fEndDateTime;
+	time_t			fStartDateTime;
+	time_t			fEndDateTime;
 
 	Event*			fEvent;
 	BList*			fCategoryList;
 
-	SQLiteManager*	fDBManager;
+	SQLiteManager*		fDBManager;
 };
 
 #endif

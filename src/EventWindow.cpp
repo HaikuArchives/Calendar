@@ -5,6 +5,8 @@
 
 #include "EventWindow.h"
 
+#include <time.h>
+
 #include <Application.h>
 #include <Alert.h>
 #include <Box.h>
@@ -131,8 +133,8 @@ EventWindow::SetEvent(Event* event)
 		fStartDateTime = event->GetStartDateTime();
 		fEndDateTime = event->GetEndDateTime();
 
-		fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
-		fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
+		fTextStartDate->SetText(GetDateString(fStartDateTime));
+		fTextEndDate->SetText(GetDateString(fEndDateTime));
 
 		Category* category;
 
@@ -153,8 +155,8 @@ EventWindow::SetEvent(Event* event)
 		else
 		{
 			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
-			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
-			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
+			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
 		}
 
 		fDeleteButton->SetEnabled(true);
@@ -168,20 +170,25 @@ void
 EventWindow::SetEventDate(BDate& date)
 {
 	BTime time;
+	BDateTime startDateTime;
+	BDateTime endDateTime;
 	// Use a dummy start time for now(6:10 A.M)
 	time.SetTime(6, 10, 0);
-	fStartDateTime.SetTime(time);
-	fStartDateTime.SetDate(date);
+	startDateTime.SetTime(time);
+	startDateTime.SetDate(date);
 
 	// Use a dummy end time for now(7:10 A.M)
 	time.AddHours(1);
-	fEndDateTime.SetTime(time);
-	fEndDateTime.SetDate(date);
+	endDateTime.SetTime(time);
+	endDateTime.SetDate(date);
 
-	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
-	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
-	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
-	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
+	fStartDateTime = startDateTime.Time_t();
+	fEndDateTime = endDateTime.Time_t();
+
+	fTextStartDate->SetText(GetDateString(fStartDateTime));
+	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
+	fTextEndDate->SetText(GetDateString(fEndDateTime));
+	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
 }
 
 
@@ -190,9 +197,12 @@ EventWindow::SetStartDate(BDate& date)
 {
 	if (!date.IsValid())
 		return;
+	BTime time;
+	time.SetTime(7, 10, 0);
+	BDateTime start(date, time);
+	fStartDateTime = start.Time_t();
 
-	fStartDateTime.SetDate(date);
-	fTextStartDate->SetText(GetDateString(fStartDateTime.Time_t()));
+	fTextStartDate->SetText(GetDateString(fStartDateTime));
 }
 
 
@@ -201,9 +211,12 @@ EventWindow::SetEndDate(BDate& date)
 {
 	if (!date.IsValid())
 		return;
+	BTime time;
+	time.SetTime(6, 10, 0);
+	BDateTime end(date, time);
+	fEndDateTime = end.Time_t();
 
-	fEndDateTime.SetDate(date);
-	fTextEndDate->SetText(GetDateString(fEndDateTime.Time_t()));
+	fTextEndDate->SetText(GetDateString(fEndDateTime));
 }
 
 
@@ -257,7 +270,7 @@ EventWindow::OnSaveClick()
 	}
 
 	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
-		if (fStartDateTime > fEndDateTime) {
+		if (difftime(fStartDateTime, fEndDateTime) > 0) {
 			BAlert* alert  = new BAlert("Error",
 				"TInvalid range of time selected",
 				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
@@ -274,7 +287,7 @@ EventWindow::OnSaveClick()
 	Category* c = ((Category*)fCategoryList->ItemAt(index));
 	category = new Category(*c);
 
-	bool notified = (fStartDateTime < BDateTime::CurrentDateTime(B_LOCAL_TIME)) ? true : false;
+	bool notified = (difftime(fStartDateTime, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
 
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
@@ -335,8 +348,8 @@ EventWindow::OnCheckBoxToggle()
 
 	else
 	{
-		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime.Time_t()));
-		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime.Time_t()));
+		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
+		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
 	}
 }
 

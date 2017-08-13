@@ -73,7 +73,7 @@ SQLiteManager::_Initialise()
 		const char *sql =
 		"CREATE TABLE CATEGORIES(ID TEXT PRIMARY KEY, NAME TEXT NOT NULL UNIQUE, COLOR TEXT NOT NULL UNIQUE);"
 		"CREATE TABLE EVENTS(ID TEXT PRIMARY KEY, NAME TEXT, PLACE TEXT,"
-		"DESCRIPTION TEXT, ALLDAY INTEGER, START DATETIME, END DATETIME, CATEGORY TEXT, EVENT_NOTIFIED INTEGER,"
+		"DESCRIPTION TEXT, ALLDAY INTEGER, START INTEGER, END INTEGER, CATEGORY TEXT, EVENT_NOTIFIED INTEGER,"
 		"FOREIGN KEY(CATEGORY) REFERENCES CATEGORIES(ID) ON DELETE RESTRICT);"
 		"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', 'Default', '1E90FF');"
 		"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4', 'Birthday', 'C25656');"
@@ -117,27 +117,13 @@ SQLiteManager::AddEvent(Event* event)
     int allday = (event->IsAllDay())? 1 : 0;
     int notified = (event->IsNotified())? 1 : 0;
 
-    BDate startDate = event->GetStartDateTime().Date();
-    BDate endDate = event->GetEndDateTime().Date();
-    BTime startTime = event->GetStartDateTime().Time();
-    BTime endTime = event->GetEndDateTime().Time();
-
-    BString start, end;
-
-    // TODO: Use BDateTimeFormat/BTimeFormat/BDateFormat to perform date/time parsing
-    // and formatting. Also consider timezone while storing timestamp.
-    start.SetToFormat("%04d-%02d-%02d %02d:%02d:%02d", startDate.Year(), startDate.Month(),
-		startDate.Day(), startTime.Hour(), startTime.Minute(), 0);
-    end.SetToFormat("%04d-%02d-%02d %02d:%02d:%02d", endDate.Year(), endDate.Month(),
-		endDate.Day(), endTime.Hour(), endTime.Minute(), 0);
-
     sqlite3_bind_text(stmt, 1, event->GetId(), strlen(event->GetId()), 0);
     sqlite3_bind_text(stmt, 2, event->GetName(), strlen(event->GetName()), 0);
     sqlite3_bind_text(stmt, 3, event->GetPlace(), strlen(event->GetPlace()), 0);
     sqlite3_bind_text(stmt, 4, event->GetDescription(), strlen(event->GetDescription()), 0);
     sqlite3_bind_int(stmt, 5, allday);
-    sqlite3_bind_text(stmt, 6, start, strlen(start), 0);
-    sqlite3_bind_text(stmt, 7, end, strlen(end), 0);
+    sqlite3_bind_int(stmt, 6, event->GetStartDateTime());
+    sqlite3_bind_int(stmt, 7, event->GetEndDateTime());
     sqlite3_bind_text(stmt, 8, event->GetCategory()->GetId(),
 		strlen(event->GetCategory()->GetId()), 0);
 	sqlite3_bind_int(stmt, 9, notified);
@@ -176,25 +162,12 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 
     int allday = (newEvent->IsAllDay())? 1 : 0;
 
-    BDate startDate = newEvent->GetStartDateTime().Date();
-    BDate endDate = newEvent->GetEndDateTime().Date();
-    BTime startTime = newEvent->GetStartDateTime().Time();
-    BTime endTime = newEvent->GetEndDateTime().Time();
-
-    BString start, end;
-
-    start.SetToFormat("%04d-%02d-%02d %02d:%02d:%02d", startDate.Year(), startDate.Month(),
-		startDate.Day(), startTime.Hour(), startTime.Minute(), 0);
-    end.SetToFormat("%04d-%02d-%02d %02d:%02d:%02d", endDate.Year(), endDate.Month(),
-		endDate.Day(), endTime.Hour(), endTime.Minute(), 0);
-
-
     sqlite3_bind_text(stmt, 1, newEvent->GetName(), strlen(newEvent->GetName()), 0);
     sqlite3_bind_text(stmt, 2, newEvent->GetPlace(), strlen(newEvent->GetPlace()), 0);
     sqlite3_bind_text(stmt, 3, newEvent->GetDescription(), strlen(newEvent->GetDescription()), 0);
     sqlite3_bind_int(stmt, 4, allday);
-    sqlite3_bind_text(stmt, 5, start, strlen(start), 0);
-    sqlite3_bind_text(stmt, 6, end, strlen(end), 0);
+      sqlite3_bind_int(stmt, 5, event->GetStartDateTime());
+    sqlite3_bind_int(stmt, 6, event->GetEndDateTime());
 
     sqlite3_bind_text(stmt, 7, newEvent->GetCategory()->GetId(),
 		strlen(newEvent->GetCategory()->GetId()), 0);
@@ -265,12 +238,10 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 {
 	BList* events = new BList();
 
-	BString start, end;
+	time_t start, end;
 
-    start.SetToFormat("%04d-%02d-%02d 00:00:00", date.Year(), date.Month(),
-		date.Day());
-    end.SetToFormat("%04d-%02d-%02d 23:59:59", date.Year(), date.Month(),
-		date.Day());
+	BDateTime startOfDay(date, BTime(0, 0, 0));
+	BDateTime endOfDay(date, BTime(23, 59, 59));
 
 	sqlite3_stmt* stmt;
     int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE (START >= ? AND START <= ?) \
@@ -281,10 +252,10 @@ SQLiteManager::GetEventsOfDay(BDate& date)
         return events;
     }
 
-    sqlite3_bind_text(stmt, 1, start, strlen(start), 0);
-    sqlite3_bind_text(stmt, 2, end, strlen(end), 0);
-    sqlite3_bind_text(stmt, 3, start, strlen(start), 0);
-    sqlite3_bind_text(stmt, 4, start, strlen(start), 0);
+    sqlite3_bind_int(stmt, 1, startOfDay.Time_t());
+    sqlite3_bind_int(stmt, 2, endOfDay.Time_t());
+    sqlite3_bind_int(stmt, 3, startOfDay.Time_t());
+    sqlite3_bind_int(stmt, 4, startOfDay.Time_t());
 
     while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
         const char* id = (const char*)sqlite3_column_text(stmt, 0);
@@ -292,8 +263,8 @@ SQLiteManager::GetEventsOfDay(BDate& date)
         const char* place = (const char*)sqlite3_column_text(stmt, 2);
         const char* description = (const char*)sqlite3_column_text(stmt, 3);
         bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-        start = (const char*)sqlite3_column_text(stmt, 5);
-		end = (const char*)sqlite3_column_text(stmt, 6);
+        start = (time_t)sqlite3_column_int(stmt, 5);
+		end = (time_t)sqlite3_column_int(stmt, 6);
 
         Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
         if (category == NULL) {
@@ -303,14 +274,8 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 
         bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 
-		int year, month, day, hour, min, sec;
-		sscanf(start, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &min, &sec);
-        BDateTime startDateTime(BDate(year, month, day), BTime(hour, min, sec));
-        sscanf(end, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &min, &sec);
-        BDateTime endDateTime(BDate(year, month, day), BTime(hour, min, sec));
-
         Event* event = new Event(name, place, description, allday,
-		startDateTime, endDateTime, category, notified, id);
+		start, end, category, notified, id);
 
         events->AddItem(event);
     }
@@ -324,15 +289,10 @@ BList*
 SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 {
 	BList* events = new BList();
-
-	BString timestamp;
-	BString start, end;
-
-    timestamp.SetToFormat("%04d-%02d-%02d %02d:%02d:%02d", dateTime.Date().Year(),
-	dateTime.Date().Month(), dateTime.Date().Day(), dateTime.Time().Hour(),
-	dateTime.Time().Minute(), dateTime.Time().Second());
-
+	time_t start, end;
 	sqlite3_stmt* stmt;
+
+	time_t timestamp = dateTime.Time_t();
 
     int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE EVENT_NOTIFIED = ? AND START < ?;",
 	-1, &stmt, NULL);
@@ -344,7 +304,7 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
     }
 
     sqlite3_bind_int(stmt, 1, 0);
-    sqlite3_bind_text(stmt, 2, timestamp, strlen(timestamp), 0);
+    sqlite3_bind_int(stmt, 2, timestamp);
 
     while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
         const char* id = (const char*)sqlite3_column_text(stmt, 0);
@@ -352,8 +312,8 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
         const char* place = (const char*)sqlite3_column_text(stmt, 2);
         const char* description = (const char*)sqlite3_column_text(stmt, 3);
         bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-        start = (const char*)sqlite3_column_text(stmt, 5);
-		end = (const char*)sqlite3_column_text(stmt, 6);
+        start = (time_t)sqlite3_column_int(stmt, 5);
+		end = (time_t)sqlite3_column_int(stmt, 6);
 
         Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
         if (category == NULL) {
@@ -363,14 +323,8 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 
         bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 
-		int year, month, day, hour, min, sec;
-		sscanf(start, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &min, &sec);
-        BDateTime startDateTime(BDate(year, month, day), BTime(hour, min, sec));
-        sscanf(end, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &min, &sec);
-        BDateTime endDateTime(BDate(year, month, day), BTime(hour, min, sec));
-
         Event* event = new Event(name, place, description, allday,
-		startDateTime, endDateTime, category, notified, id);
+		start, end, category, notified, id);
 
         events->AddItem(event);
     }

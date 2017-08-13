@@ -5,6 +5,8 @@
 
 #include "DayView.h"
 
+#include <time.h>
+
 #include <Alert.h>
 #include <LayoutBuilder.h>
 #include <List.h>
@@ -134,9 +136,9 @@ DayView::CompareFunc(const void* a, const void* b)
 		return -1;
 	else if ((*(Event**) b)->IsAllDay() && !(*(Event**) a)->IsAllDay())
 		return 1;
-	else if ((*(Event**) a)->GetStartDateTime() < (*(Event**) b)->GetStartDateTime())
+	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) < 0 )
 		return -1;
-	else if ((*(Event**) a)->GetStartDateTime() > (*(Event**) b)->GetStartDateTime())
+	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) > 0)
 		return 1;
 	else
 		return 0;
@@ -164,9 +166,9 @@ DayView::_PopulateEvents()
 			timePeriod = "All Day";
 		else
 		{
-			timeFormat.Format(startTime, event->GetStartDateTime().Time_t(),
+			timeFormat.Format(startTime, event->GetStartDateTime(),
 				B_SHORT_TIME_FORMAT);
-			timeFormat.Format(endTime, event->GetEndDateTime().Time_t(),
+			timeFormat.Format(endTime, event->GetEndDateTime(),
 				B_SHORT_TIME_FORMAT);
 			timePeriod << startTime << " - " << endTime;
 		}
