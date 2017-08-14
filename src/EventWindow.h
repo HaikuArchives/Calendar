@@ -43,8 +43,6 @@ public:
 	virtual void		FrameMoved(BPoint newPosition);
 
 	void			SetEvent(Event* event);
-	Event*			GetEvent();
-
 	void			SetEventDate(BDate& date);
 	void			SetStartDate(BDate& date);
 	void			SetEndDate(BDate& date);
@@ -56,7 +54,7 @@ public:
 	void			OnDeleteClick();
 	void			CloseWindow();
 
-	BString			GetDateString(time_t timeValue);
+	BString			GetDateString(BDate& date);
 	BString			GetLocaleTimeString(time_t timeValue);
 
 private:
@@ -108,16 +106,14 @@ private:
 	BRadioButton*		fEveryYear;
 
 	BCheckBox*		fAllDayCheckBox;
-	BCheckBox*		fStartTimeCheckBox;
-	BCheckBox*		fEndTimeCheckBox;
 
 	BBox*			fStartDateBox;
 	BBox*			fEndDateBox;
 
 	BMessenger		fCalendarWindow;
 
-	time_t			fStartDateTime;
-	time_t			fEndDateTime;
+	BDate			fStartDate;
+	BDate			fEndDate;
 
 	Event*			fEvent;
 	BList*			fCategoryList;

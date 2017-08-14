@@ -166,8 +166,8 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
     sqlite3_bind_text(stmt, 2, newEvent->GetPlace(), strlen(newEvent->GetPlace()), 0);
     sqlite3_bind_text(stmt, 3, newEvent->GetDescription(), strlen(newEvent->GetDescription()), 0);
     sqlite3_bind_int(stmt, 4, allday);
-      sqlite3_bind_int(stmt, 5, event->GetStartDateTime());
-    sqlite3_bind_int(stmt, 6, event->GetEndDateTime());
+      sqlite3_bind_int(stmt, 5, newEvent->GetStartDateTime());
+    sqlite3_bind_int(stmt, 6, newEvent->GetEndDateTime());
 
     sqlite3_bind_text(stmt, 7, newEvent->GetCategory()->GetId(),
 		strlen(newEvent->GetCategory()->GetId()), 0);

@@ -48,9 +48,7 @@ Preferences* EventWindow::fPreferences = NULL;
 EventWindow::EventWindow()
 	:
 	BWindow(fPreferences->fEventWindowRect, "Event Manager", B_TITLED_WINDOW,
-			B_AUTO_UPDATE_SIZE_LIMITS),
-	fStartDateTime(),
-	fEndDateTime()
+			B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
 
@@ -97,7 +95,6 @@ EventWindow::MessageReceived(BMessage* message)
 			UnlockLooper();
 			break;
 		}
-
 		case kShowPopUpCalendar:
 		{
 			int8 which;
@@ -130,11 +127,12 @@ EventWindow::SetEvent(Event* event)
 		fTextPlace->SetText(event->GetPlace());
 		fTextDescription->SetText(event->GetDescription());
 
-		fStartDateTime = event->GetStartDateTime();
-		fEndDateTime = event->GetEndDateTime();
+		fStartDate = BDate(event->GetStartDateTime());
+		fEndDate = BDate(event->GetEndDateTime());
 
-		fTextStartDate->SetText(GetDateString(fStartDateTime));
-		fTextEndDate->SetText(GetDateString(fEndDateTime));
+		fTextStartDate->SetText(GetDateString(fStartDate));
+		fTextEndDate->SetText(GetDateString(fEndDate));
+
 
 		Category* category;
 
@@ -148,16 +146,17 @@ EventWindow::SetEvent(Event* event)
 
 		if (event->IsAllDay()) {
 			fAllDayCheckBox->SetValue(B_CONTROL_ON);
-			fTextStartTime->SetText("");
-			fTextEndTime->SetText("");
+			fTextStartTime->SetEnabled(false);
+			fTextEndTime->SetEnabled(false);
 		}
 
 		else
 		{
 			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
-			fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
-			fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
 		}
+
+		fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
+		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
 
 		fDeleteButton->SetEnabled(true);
 
@@ -169,26 +168,15 @@ EventWindow::SetEvent(Event* event)
 void
 EventWindow::SetEventDate(BDate& date)
 {
-	BTime time;
-	BDateTime startDateTime;
-	BDateTime endDateTime;
-	// Use a dummy start time for now(6:10 A.M)
-	time.SetTime(6, 10, 0);
-	startDateTime.SetTime(time);
-	startDateTime.SetDate(date);
+	// Set initial start time as (00:00) for a new event
+	fStartDate = date;
+	fTextStartDate->SetText(GetDateString(fStartDate));
+	fTextStartTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(0, 0, 0)).Time_t()));
 
-	// Use a dummy end time for now(7:10 A.M)
-	time.AddHours(1);
-	endDateTime.SetTime(time);
-	endDateTime.SetDate(date);
-
-	fStartDateTime = startDateTime.Time_t();
-	fEndDateTime = endDateTime.Time_t();
-
-	fTextStartDate->SetText(GetDateString(fStartDateTime));
-	fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
-	fTextEndDate->SetText(GetDateString(fEndDateTime));
-	fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
+	// Set initial end time as (01:00) for a new event
+	fEndDate = date;
+	fTextEndDate->SetText(GetDateString(fEndDate));
+	fTextEndTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(1, 0, 0)).Time_t()));
 }
 
 
@@ -197,12 +185,8 @@ EventWindow::SetStartDate(BDate& date)
 {
 	if (!date.IsValid())
 		return;
-	BTime time;
-	time.SetTime(7, 10, 0);
-	BDateTime start(date, time);
-	fStartDateTime = start.Time_t();
-
-	fTextStartDate->SetText(GetDateString(fStartDateTime));
+	fStartDate = date;
+	fTextStartDate->SetText(GetDateString(fStartDate));
 }
 
 
@@ -211,20 +195,16 @@ EventWindow::SetEndDate(BDate& date)
 {
 	if (!date.IsValid())
 		return;
-	BTime time;
-	time.SetTime(6, 10, 0);
-	BDateTime end(date, time);
-	fEndDateTime = end.Time_t();
-
-	fTextEndDate->SetText(GetDateString(fEndDateTime));
+	fEndDate = date;
+	fTextEndDate->SetText(GetDateString(fEndDate));
 }
 
 
 BString
-EventWindow::GetDateString(time_t timeValue)
+EventWindow::GetDateString(BDate& date)
 {
 	BString dateString;
-	BDateFormat().Format(dateString, timeValue,
+	BDateFormat().Format(dateString, date,
 		B_SHORT_DATE_FORMAT);
 	return dateString;
 }
@@ -234,7 +214,9 @@ BString
 EventWindow::GetLocaleTimeString(time_t timeValue)
 {
 	BString timeString;
-	BTimeFormat().Format(timeString, timeValue,
+	BTimeFormat timeFormat;
+	timeFormat.SetTimeFormat(B_SHORT_TIME_FORMAT, "HH:mm");
+	timeFormat.Format(timeString, timeValue,
 		B_SHORT_TIME_FORMAT);
 	return timeString;
 }
@@ -261,7 +243,7 @@ EventWindow::OnSaveClick()
 	if (BString(fTextName->Text()).CountChars() < 3) {
 
 		BAlert* alert  = new BAlert("Error",
-			"The name must have a length greater than 2",
+			"The name must have a length greater than 2.",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->SetShortcut(0, B_ESCAPE);
@@ -269,10 +251,23 @@ EventWindow::OnSaveClick()
 		return;
 	}
 
+	time_t start;
+	time_t end;
+	BTime startTime;
+	BTime endTime;
+
+	BTimeFormat timeFormat;
+	timeFormat.SetTimeFormat(B_SHORT_TIME_FORMAT, "HH:mm");
+	timeFormat.Parse(fTextStartTime->Text(), B_SHORT_TIME_FORMAT, startTime);
+	timeFormat.Parse(fTextEndTime->Text(), B_SHORT_TIME_FORMAT, endTime);
+
+	start = BDateTime(fStartDate, startTime).Time_t();
+	end = BDateTime(fEndDate, endTime).Time_t();
+
 	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
-		if (difftime(fStartDateTime, fEndDateTime) > 0) {
+		if (difftime(start, end) > 0) {
 			BAlert* alert  = new BAlert("Error",
-				"TInvalid range of time selected",
+				"Invalid range of time selected.",
 				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 			alert->SetShortcut(0, B_ESCAPE);
@@ -287,11 +282,11 @@ EventWindow::OnSaveClick()
 	Category* c = ((Category*)fCategoryList->ItemAt(index));
 	category = new Category(*c);
 
-	bool notified = (difftime(fStartDateTime, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
+	bool notified = (difftime(start, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
 
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		fStartDateTime, fEndDateTime, category, notified);
+		start, end, category, notified);
 
 	if ((fEvent == NULL) && (fDBManager->AddEvent(&newEvent))) {
 		CloseWindow();
@@ -342,22 +337,17 @@ EventWindow::OnCheckBoxToggle()
 {
 
 	if (fAllDayCheckBox->Value() == B_CONTROL_ON) {
-		fTextStartTime->SetText("");
-		fTextEndTime->SetText("");
+		fTextStartTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(0, 0, 0)).Time_t()));
+		fTextEndTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(23, 59, 0)).Time_t()));
+		fTextStartTime->SetEnabled(false);
+		fTextEndTime->SetEnabled(false);
 	}
 
 	else
 	{
-		fTextEndTime->SetText(GetLocaleTimeString(fEndDateTime));
-		fTextStartTime->SetText(GetLocaleTimeString(fStartDateTime));
+		fTextStartTime->SetEnabled(true);
+		fTextEndTime->SetEnabled(true);
 	}
-}
-
-
-Event*
-EventWindow::GetEvent()
-{
-	return fEvent;
 }
 
 
@@ -374,14 +364,16 @@ EventWindow::_InitInterface()
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 
+	const char* tooltip = "Enter the time in HH::mm (24 hour) format.";
+	fTextStartTime->SetToolTip(tooltip);
+	fTextEndTime->SetToolTip(tooltip);
+
 	fTextDescription = new BTextView("TextDescription", B_WILL_DRAW);
 	fTextDescription->MakeEditable();
 	fTextDescription->SetExplicitMinSize(BSize(240, 100));
 
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
-	fStartTimeCheckBox = new BCheckBox("AM", B_OK);
-	fEndTimeCheckBox = new BCheckBox("AM", B_OK);
 
 	fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
 	fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
@@ -409,8 +401,8 @@ EventWindow::_InitInterface()
 
 	float width, height;
 	fStartDateLabel->GetPreferredSize(&width, &height);
-	fStartCalButton->SetExplicitMinSize(BSize(height, height));
-	fEndCalButton->SetExplicitMinSize(BSize(height, height));
+	fStartCalButton->SetExplicitMinSize(BSize(height * 2, height));
+	fEndCalButton->SetExplicitMinSize(BSize(height * 2, height));
 
 	fDBManager = new SQLiteManager();
 
@@ -452,7 +444,6 @@ EventWindow::_InitInterface()
 			.Add(fStartCalButton, 2, 0)
 			.Add(fStartTimeLabel, 0, 1)
 			.Add(fTextStartTime, 1, 1)
-			.Add(fStartTimeCheckBox, 2, 1)
 		.End()
 	.End();
 	fStartDateBox->SetLabel("Start Date and Time");
@@ -467,7 +458,6 @@ EventWindow::_InitInterface()
 			.Add(fEndCalButton, 2, 0)
 			.Add(fEndTimeLabel, 0, 1)
 			.Add(fTextEndTime, 1, 1)
-			.Add(fEndTimeCheckBox, 2, 1)
 		.End()
 	.End();
 	fEndDateBox->SetLabel("End Date and Time");
@@ -561,13 +551,8 @@ EventWindow::_DisableControls()
 {
 	fTextStartDate->SetEnabled(false);
 	fTextEndDate->SetEnabled(false);
-	fTextStartTime->SetEnabled(false);
-	fTextEndTime->SetEnabled(false);
 	fEveryMonth->SetEnabled(false);
 	fEveryYear->SetEnabled(false);
-	fStartTimeCheckBox->SetEnabled(false);
-	fEndTimeCheckBox->SetEnabled(false);
-	fDeleteButton->SetEnabled(false);
 }
 
 
