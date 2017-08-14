@@ -319,7 +319,10 @@ EventWindow::OnDeleteClick()
 	int32 button_index = alert->Go();
 
 	if (button_index == 0) {
-		fDBManager->RemoveEvent(fEvent);
+		Event newEvent(*fEvent);
+		newEvent.SetStatus(false);
+		newEvent.SetUpdated(time(NULL));
+		fDBManager->UpdateEvent(fEvent, &newEvent);
 		CloseWindow();
 	}
 }

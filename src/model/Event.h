@@ -5,7 +5,8 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <DateTime.h>
+#include <time.h>
+
 #include <String.h>
 
 #include "Category.h"
@@ -17,7 +18,9 @@ public:
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
 				time_t start, time_t end,
-				Category* category, bool notified, const char* id = NULL);
+				Category* category, bool notified,
+				time_t updated = time(NULL), bool status = true,
+				const char* id = NULL);
 			Event(Event& event);
 
 	time_t		GetStartDateTime();
@@ -40,6 +43,13 @@ public:
 	bool		IsAllDay();
 	void		SetAllDay(bool allday);
 
+	bool		GetStatus();
+	void		SetStatus(bool status);
+
+	time_t		GetUpdated();
+	void		SetUpdated(time_t updated);
+
+
 	bool		IsNotified();
 	void		SetNotified(bool notified);
 
@@ -54,9 +64,11 @@ private:
 
 	time_t		fStart;
 	time_t		fEnd;
+	time_t		fUpdated;
 
 	bool		fAllDay;
 	bool		fNotified;
+	bool		fStatus;
 
 	Category*	fCategory;
 

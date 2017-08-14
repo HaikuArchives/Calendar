@@ -104,7 +104,10 @@ DayView::MessageReceived(BMessage* message)
 				int32 button_index = alert->Go();
 
 				if (button_index == 0) {
-					fDBManager->RemoveEvent(event);
+					Event newEvent(*event);
+					newEvent.SetStatus(false);
+					newEvent.SetUpdated(time(NULL));
+					fDBManager->UpdateEvent(event, &newEvent);
 					Window()->LockLooper();
 					LoadEvents();
 					Window()->UnlockLooper();
@@ -158,10 +161,12 @@ DayView::_PopulateEvents()
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
+
 		eventName = "";
 		startTime = "";
 		endTime = "";
 		timePeriod = "";
+
 		if (event->IsAllDay())
 			timePeriod = "All Day";
 		else
