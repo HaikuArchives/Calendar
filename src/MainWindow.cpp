@@ -143,6 +143,10 @@ MainWindow::MessageReceived(BMessage* message)
 			be_app->PostMessage(message);
 			break;
 
+		case kMenuSyncGCAL:
+			be_app->PostMessage(message);
+			break;
+
 		case kRefreshCategoryList:
 		{
 			_UpdateDayView();
@@ -186,7 +190,6 @@ MainWindow::StopNotificationThread()
 	}
 }
 
-
 void
 MainWindow::_InitInterface()
 {
@@ -215,10 +218,14 @@ MainWindow::_InitInterface()
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
 
+	fSyncMenu = new BMenu("Sync");
+	fSyncMenu->AddItem(new BMenuItem("Google Calendar", new BMessage(kMenuSyncGCAL)));
+
 	fMenuBar->AddItem(fAppMenu);
 	fMenuBar->AddItem(fEventMenu);
 	fMenuBar->AddItem(fCategoryMenu);
 	fMenuBar->AddItem(fViewMenu);
+	fMenuBar->AddItem(fSyncMenu);
 
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),

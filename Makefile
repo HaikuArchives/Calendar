@@ -44,13 +44,16 @@ SRCS = \
 	 src/Preferences.cpp  \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
+	 src/NotificationLoop.cpp  \
 	 src/CategoryListItem.cpp \
 	 src/utils/ResourceLoader.cpp  \
 	 src/utils/ColorConverter.cpp  \
 	 src/model/Event.cpp \
 	 src/model/Category.cpp  \
 	 src/db/SQLiteManager.cpp  \
-	 src/NotificationLoop.cpp
+	 src/plugin/GoogleCalendar/EventSync.cpp \
+	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp  \
+	 src/plugin/GoogleCalendar/EventSyncWindow.cpp
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
@@ -83,7 +86,7 @@ RSRCS = \
 #	- 	if your library does not follow the standard library naming scheme,
 #		you need to specify the path to the library and it's name.
 #		(e.g. for mylib.a, specify "mylib.a" or "path/mylib.a")
-LIBS = be tracker shared sqlite3 $(STDCPPLIBS)
+LIBS = be tracker shared sqlite3 bnetapi network $(STDCPPLIBS)
 
 #	Specify additional paths to directories following the standard libXXX.so
 #	or libXXX.a naming scheme. You can specify full paths or paths relative

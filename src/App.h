@@ -14,6 +14,7 @@ class CategoryWindow;
 class MainWindow;
 class Preferences;
 class PreferenceWindow;
+class EventSyncWindow;
 
 
 extern const char* kAppName;
@@ -37,6 +38,8 @@ private:
 	MainWindow*		fMainWindow;
 	PreferenceWindow*	fPreferenceWindow;
 	CategoryWindow*		fCategoryWindow;
+	EventSyncWindow*	fEventSyncWindow;
+
 	Preferences*		fPreferences;
 	BPath			fPreferencesFile;
 };

@@ -12,7 +12,6 @@
 #include <ListView.h>
 #include <ScrollView.h>
 #include <View.h>
-#include <Window.h>
 
 #include "Category.h"
 #include "CategoryEditWindow.h"

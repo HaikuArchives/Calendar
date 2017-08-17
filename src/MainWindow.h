@@ -28,6 +28,7 @@ using BPrivate::BToolBar;
 
 static const uint32 kMenuAppPref = 'kmap';
 static const uint32 kMenuCategoryEdit = 'kmce';
+static const uint32 kMenuSyncGCAL = 'kmsg';
 
 
 class MainWindow: public BWindow {
@@ -65,6 +66,7 @@ private:
 	BMenu*		fEventMenu;
 	BMenu*		fCategoryMenu;
 	BMenu*		fViewMenu;
+	BMenu*		fSyncMenu;
 	BToolBar*	fToolBar;
 	SidePanelView*	fSidePanelView;
 	DayView*	fDayView;

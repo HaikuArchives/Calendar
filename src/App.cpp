@@ -15,6 +15,7 @@
 #include <locale.h>
 
 #include "EventWindow.h"
+#include "EventSyncWindow.h"
 #include "CategoryWindow.h"
 #include "MainWindow.h"
 #include "Preferences.h"
@@ -30,7 +31,8 @@ App::App()
 	BApplication(kSignature),
 	fPreferenceWindow(NULL),
 	fCategoryWindow(NULL),
-	fPreferences(NULL)
+	fPreferences(NULL),
+	fEventSyncWindow(NULL)
 {
 	BPath settingsPath;
 	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
@@ -125,6 +127,21 @@ App::MessageReceived(BMessage* message)
 
 		case kCategoryWindowQuitting:
 			fCategoryWindow = NULL;
+			break;
+
+		case kMenuSyncGCAL:
+		{
+			if (fEventSyncWindow == NULL) {
+				fEventSyncWindow = new EventSyncWindow();
+				fEventSyncWindow->Show();
+			}
+
+			fEventSyncWindow->Activate();
+			break;
+		}
+
+		case kEventSyncWindowQuitting:
+			fEventSyncWindow = NULL;
 			break;
 
 		case kPreferenceWindowQuitting:
