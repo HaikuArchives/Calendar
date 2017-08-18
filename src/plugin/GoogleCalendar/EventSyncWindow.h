@@ -5,6 +5,7 @@
 #ifndef _EVENT_SYNC_WINDOW_H
 #define _EVENT_SYNC_WINDOW_H
 
+#include <Path.h>
 #include <String.h>
 #include <Window.h>
 
@@ -26,27 +27,23 @@ public:
 	virtual bool	QuitRequested();
 
 private:
+	void			_InitInterface();
 	void			_Sync();
-	void			_SetStatus();
+	void			_LoadSyncData();
+	void			_SaveSyncData(bool status);
 	void			_StartSynchronizationThread();
 	void			_StopSynchronizationThread();
+	void			_SetStatusLabel(bool status, time_t syncTime);
 
 	static const uint32	kSyncPressed = 1000;
 
 	BStringView*	fStatusLabel;
 	BButton*		fSyncButton;
 	BView*			fMainView;
-	BString			fStatus;
+	BPath			fSyncDataFile;
 
 	thread_id		fSynchronizationThread;
 	BMessage*		fThreadMessage;
 };
 
 #endif
-
-
-
-
-
-
-

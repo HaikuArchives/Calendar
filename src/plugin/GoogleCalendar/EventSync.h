@@ -5,11 +5,9 @@
 #ifndef _EVENT_SYNC_H
 #define _EVENT_SYNC_H
 
-
 #include <InterfaceKit.h>
 #include <String.h>
 
-class BHandler;
 class BList;
 class Event;
 class SQLiteManager;
@@ -18,6 +16,9 @@ class SQLiteManager;
 #define CLIENT_SECRET "sH095g9EzY5BxwI-DHIlqVXr"
 #define CLIENT_ID "581092483253-blhpqn22i1gcpcr5o42nrja50v679g4h.apps.googleusercontent.com"
 #define REDIRECT_URI "urn:ietf:wg:oauth:2.0:oob"
+
+
+static const uint32 kSyncStatusMessage = 'kssm';
 
 
 enum EventDateType {
@@ -33,24 +34,22 @@ enum EventStatus {
 };
 
 
-static const uint32 kAuthorizationCode = 'katm';
-static const uint32 kSyncFailedMessage = 'ksfm';
-static const uint32 kSyncSuccessMessage = 'kssm';
-
-
 class EventSync {
 	public:
-									EventSync(BHandler* handler);
+									EventSync();
 									~EventSync();
 
 		void						MessageReceived(BMessage* message);
 
 		status_t					LoadToken();
 		status_t					LoadSyncToken();
-		bool						Login();
-		void						NextStep(BMessage* authMessage);
+		status_t					RequestToken();
+		void						NextStep();
+		void						RequestAuthorizationCode();
 
-		void						Sync();
+		status_t					Sync();
+
+		status_t					SyncWithDatabase();
 
 		status_t					AddEvent(Event* event);
 		status_t					UpdateEvent(Event* event);
@@ -68,10 +67,11 @@ class EventSync {
 
 		BString 					fToken;
 		BString 					fRefreshToken;
+		BString						fAuthCode;
 		SQLiteManager*				fDBManager;
 		BString						fLastSyncToken;
 		BList*						fEvents;
-		BHandler*					fHandler;
+		BStringList*				fCancelledEvents;
 };
 
 #endif

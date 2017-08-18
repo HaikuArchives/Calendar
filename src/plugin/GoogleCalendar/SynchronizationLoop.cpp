@@ -16,6 +16,19 @@ SynchronizationLoop(void* data)
 
 	message->FindPointer("handler", (void**)(&handler));
 
-	EventSync* sync = new EventSync(handler);
-	sync->Login();
+	status_t status;
+	status = B_ERROR;
+
+	EventSync* sync = new EventSync();
+	status = sync->Sync();
+
+	BMessage statusMessage(kSyncStatusMessage);
+	BMessenger msgr(handler);
+
+	if (status != B_OK)
+		statusMessage.AddBool("status", false);
+	else
+		statusMessage.AddBool("status", true);
+
+	msgr.SendMessage(&statusMessage);
 }

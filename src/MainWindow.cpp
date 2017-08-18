@@ -202,6 +202,9 @@ MainWindow::_InitInterface()
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
 	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuAppPref)));
+	fSyncMenu = new BMenu("Synchronize");
+	fSyncMenu->AddItem(new BMenuItem("Google Calendar", new BMessage(kMenuSyncGCAL)));
+	fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
@@ -218,14 +221,10 @@ MainWindow::_InitInterface()
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
 
-	fSyncMenu = new BMenu("Sync");
-	fSyncMenu->AddItem(new BMenuItem("Google Calendar", new BMessage(kMenuSyncGCAL)));
-
 	fMenuBar->AddItem(fAppMenu);
 	fMenuBar->AddItem(fEventMenu);
 	fMenuBar->AddItem(fCategoryMenu);
 	fMenuBar->AddItem(fViewMenu);
-	fMenuBar->AddItem(fSyncMenu);
 
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),

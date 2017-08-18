@@ -21,7 +21,6 @@
 #include "Preferences.h"
 #include "PreferenceWindow.h"
 
-
 const char* kAppName = "Calendar";
 const char* kSignature = "application/x-vnd.calendar";
 

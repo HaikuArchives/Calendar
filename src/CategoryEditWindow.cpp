@@ -167,10 +167,6 @@ CategoryEditWindow::_CategoryModified()
 void
 CategoryEditWindow::_OnDeletePressed()
 {
-	BAlert* alert = new BAlert("Confirm delete",
-		"Are you sure you want to delete the selected category?",
-		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
 	if (BString(fCategoryText->Text()) == BString("Default")) {
 		BAlert* alert  = new BAlert("Error",
 			"You cannot delete the default category.",
@@ -179,6 +175,10 @@ CategoryEditWindow::_OnDeletePressed()
 		alert->Go();
 		return;
 	}
+
+	BAlert* alert = new BAlert("Confirm delete",
+		"Are you sure you want to delete the selected category?",
+		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();

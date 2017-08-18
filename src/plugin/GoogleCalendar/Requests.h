@@ -89,7 +89,7 @@ class Requests {
 	public:
 		static status_t Request(BString url, const char* const method,
 			BHttpHeaders* headers, BHttpForm* form, const BString* jsonString,
-		 	BMessage& responseMessage, bool debug = false)
+			BMessage& responseMessage)
 		{
 			ProtocolListener listener(true);
 			BHttpRequest request(BUrl(url), true, "HTTP", &listener);
@@ -119,7 +119,7 @@ class Requests {
 				request.Result());
 
 			int32 statusCode = result.StatusCode();
-			if (statusCode != 200 && debug == true) {
+			if (statusCode != 200) {
 				printf("Response code:  %d \n", statusCode);
 				return B_ERROR;
 			}
@@ -128,12 +128,9 @@ class Requests {
 				replyData.BufferLength());
 
 			if (responseJson.Length() == 0) {
-				printf("No Json");
+				printf("No Json data found in response \n");
 				return B_ERROR;
 			}
-
-			if (debug == true)
-				printf(responseJson.String());
 
 			status_t status = BJson::Parse(responseJson, responseMessage);
 			if (status == B_BAD_DATA) {

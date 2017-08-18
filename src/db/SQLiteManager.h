@@ -27,9 +27,12 @@ public:
 		bool		AddEvent(Event* event);
 		bool		UpdateEvent(Event* event, Event* newEvent);
 		bool		UpdateNotifiedEvent(const char* id);
+
+		Event*		GetEvent(const char* id);
 		BList*		GetEventsOfDay(BDate& date);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
+		bool		RemoveCancelledEvents();
 
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,

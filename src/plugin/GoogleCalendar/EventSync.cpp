@@ -7,16 +7,17 @@
 
 #include <Button.h>
 #include <DateFormat.h>
-#include <Handler.h>
 #include <LayoutBuilder.h>
 #include <List.h>
 #include <Key.h>
 #include <KeyStore.h>
 #include <Roster.h>
+#include <StringList.h>
 #include <StringView.h>
 #include <TextControl.h>
 #include <Window.h>
 
+#include "App.h"
 #include "Category.h"
 #include "Event.h"
 #include "EventSync.h"
@@ -36,17 +37,18 @@ static const char* kEventStatusToGCalStatus[] = {
 
 class LoginDialog : public BWindow {
 	public:
-		LoginDialog(EventSync* sync)
+		LoginDialog(EventSync* sync, BString* authString)
 			:
 			BWindow(BRect(),"Authorization", B_TITLED_WINDOW,
-				B_NOT_RESIZABLE | B_NOT_ZOOMABLE),
-				fSync(sync)
+				B_NOT_RESIZABLE | B_NOT_ZOOMABLE)
 		{
 			BView* fMainView = new BView("MainView", B_WILL_DRAW);
 			fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
 			fLabel = new BStringView("AuthCodeLabel",
 				"Google Calendar API Authorization");
+
+			fAuthString = authString;
 
 			BFont font;
 			fLabel->GetFont(&font);
@@ -57,7 +59,6 @@ class LoginDialog : public BWindow {
 				"Enter the Authorization Code obtained here.", NULL);
 
 			fLogin = new BButton(NULL, "OK", new BMessage(kAuthCode));
-			BMessage* fAuthMessage = new BMessage(kAuthorizationCode);
 
 			BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 			.AddGroup(B_HORIZONTAL)
@@ -93,9 +94,7 @@ class LoginDialog : public BWindow {
 			{
 				case kAuthCode:
 				{
-					fAuthString = fAuthCodeText->Text();
-					fAuthMessage->AddString("auth", fAuthString);
-					fSync->NextStep(fAuthMessage);
+					fAuthString->SetTo(fAuthCodeText->Text());
 					Quit();
 					break;
 				}
@@ -107,7 +106,7 @@ class LoginDialog : public BWindow {
 		bool
 		QuitRequested()
 		{
-			fSync->NextStep(fAuthMessage);
+			fAuthString->SetTo("NOT_FOUND");
 			return true;
 		}
 
@@ -115,24 +114,46 @@ class LoginDialog : public BWindow {
 
 		BStringView*		fLabel;
 		BTextControl*		fAuthCodeText;
-		BButton*			fLogin;
-		BString				fAuthString;
-		EventSync*			fSync;
-		BMessage*			fAuthMessage;
+		BButton*		fLogin;
+		BString*		fAuthString;
 };
 
 
-EventSync::EventSync(BHandler* handler)
+EventSync::EventSync()
+	:
+	fAuthCode()
 {
 	fDBManager = new SQLiteManager();
 	fEvents = new BList();
-	fHandler = handler;
+	fCancelledEvents = new BStringList();
 }
 
 
 EventSync::~EventSync()
 {
 	delete fDBManager;
+	delete fEvents;
+	delete fCancelledEvents;
+}
+
+
+status_t
+EventSync::Sync()
+{
+	if (LoadToken() == B_OK ) {
+		if (RequestToken() != B_OK)
+			RequestAuthorizationCode();
+	}
+	else
+		RequestAuthorizationCode();
+
+	if (GetEvents() != B_OK)
+		return B_ERROR;
+
+	if (SyncWithDatabase() !=  B_OK)
+		return B_ERROR;
+
+	return B_OK;
 }
 
 
@@ -141,7 +162,7 @@ EventSync::LoadToken()
 {
 	BPasswordKey key;
 	BKeyStore keyStore;
-	if(keyStore.GetKey("Calendar", B_KEY_TYPE_PASSWORD, "refresh_token", key) == B_OK) {
+	if(keyStore.GetKey(kAppName, B_KEY_TYPE_PASSWORD, "refresh_token", key) == B_OK) {
 		fRefreshToken = key.Password();
 		return B_OK;
 	}
@@ -149,40 +170,37 @@ EventSync::LoadToken()
 }
 
 
-bool
-EventSync::Login()
+status_t
+EventSync::RequestToken()
 {
-	if (LoadToken() == B_OK) {
-		BHttpForm* form = new BHttpForm();
-		form->AddString("refresh_token", fRefreshToken);
-		form->AddString("client_id", CLIENT_ID);
-		form->AddString("client_secret", CLIENT_SECRET);
-		form->AddString("grant_type", "refresh_token");
-		form->SetFormType(B_HTTP_FORM_URL_ENCODED);
-		BString url("https://www.googleapis.com/oauth2/v4/token");
+	BHttpForm* form = new BHttpForm();
+	form->AddString("refresh_token", fRefreshToken);
+	form->AddString("client_id", CLIENT_ID);
+	form->AddString("client_secret", CLIENT_SECRET);
+	form->AddString("grant_type", "refresh_token");
+	form->SetFormType(B_HTTP_FORM_URL_ENCODED);
+	BString url("https://www.googleapis.com/oauth2/v4/token");
 
-		BMessage refreshJson;
-		if (Requests::Request(url, B_HTTP_GET, NULL, form, NULL, refreshJson, false)
-				== B_ERROR)
-			return B_ERROR;
+	BMessage refreshJson;
+	Requests::Request(url, B_HTTP_GET, NULL, form, NULL, refreshJson);
 
-
-		fToken = BString(refreshJson.GetString("access_token", "NOT_FOUND"));
-		if (fToken.Compare("NOT_FOUND") == 0)
-		{
-			BPasswordKey key;
-			BKeyStore keyStore;
-			keyStore.GetKey("Calendar", B_KEY_TYPE_PASSWORD, "refresh_token", key);
-			keyStore.RemoveKey("Calendar", key);
-		}
-
-		else
-		{
-			GetEvents();
-			return true;
-		}
+	fToken = BString(refreshJson.GetString("access_token", "NOT_FOUND"));
+	if (fToken.Compare("NOT_FOUND") == 0)
+	{
+		BPasswordKey key;
+		BKeyStore keyStore;
+		keyStore.GetKey(kAppName, B_KEY_TYPE_PASSWORD, "refresh_token", key);
+		keyStore.RemoveKey(kAppName, key);
+		return B_ERROR;
 	}
 
+	return B_OK;
+}
+
+
+void
+EventSync::RequestAuthorizationCode()
+{
 	BString endpoint("https://accounts.google.com/o/oauth2/auth");
 	endpoint.Append("?response_type=code");
 	endpoint.Append("&client_id=");
@@ -193,21 +211,21 @@ EventSync::Login()
 	endpoint.Append("&access_type=offline");
 	const char* args[] = { endpoint.String(), 0 };
 	be_roster->Launch("application/x-vnd.Be.URL.http", 1, const_cast<char **>(args));
-	LoginDialog* loginWindow = new LoginDialog(this);
+	LoginDialog* loginWindow = new LoginDialog(this, &fAuthCode);
 	loginWindow->Show();
+
+	while (fAuthCode.IsEmpty())
+		snooze(1000);
+
+	NextStep();
 }
 
 
 void
-EventSync::NextStep(BMessage* authMessage)
+EventSync::NextStep()
 {
-	BString code;
-	if (authMessage->FindString("auth", &code) != B_OK) {
-
-	}
-
 	BHttpForm* form = new BHttpForm();
-	form->AddString("code",code);
+	form->AddString("code",fAuthCode);
 	form->AddString("client_id",CLIENT_ID);
 	form->AddString("client_secret",CLIENT_SECRET);
 	form->AddString("grant_type","authorization_code");
@@ -216,16 +234,16 @@ EventSync::NextStep(BMessage* authMessage)
 
 	BString oauth2("https://www.googleapis.com/oauth2/v3/token");
 	BMessage tokenJson;
-	status_t status;
-	status = Requests::Request(oauth2, B_HTTP_GET, NULL, form, NULL, tokenJson, false);
+
+	Requests::Request(oauth2, B_HTTP_GET, NULL, form, NULL, tokenJson);
 
 	fToken = BString(tokenJson.GetString("access_token","NOT_FOUND"));
 	fRefreshToken = BString(tokenJson.GetString("refresh_token","NOT_FOUND"));
 
 	BPasswordKey key(fRefreshToken, B_KEY_PURPOSE_WEB, "refresh_token");
 	BKeyStore keyStore;
-	keyStore.AddKeyring("Calendar");
-	keyStore.AddKey("Calendar", key);
+	keyStore.AddKeyring(kAppName);
+	keyStore.AddKey(kAppName, key);
 }
 
 
@@ -234,11 +252,12 @@ EventSync::LoadSyncToken()
 {
 	BPasswordKey key;
 	BKeyStore keyStore;
-	if(keyStore.GetKey("Calendar", B_KEY_TYPE_PASSWORD, "nextSyncToken", key) == B_OK) {
+	if(keyStore.GetKey(kAppName, B_KEY_TYPE_PASSWORD, "nextSyncToken", key) == B_OK) {
 		fLastSyncToken = key.Password();
+		if (fLastSyncToken.Compare("NOT_FOUND") == 0)
+			return B_ERROR;
 		return B_OK;
 	}
-	fLastSyncToken.Append("NOT_FOUND");
 	return B_ERROR;
 }
 
@@ -251,7 +270,6 @@ EventSync::GetEvents()
 		url.Append("?syncToken=");
 		url.Append(fLastSyncToken);
 	}
-
 	else
 		url.Append("?showDeleted=true");
 
@@ -262,18 +280,17 @@ EventSync::GetEvents()
 
 	BMessage eventJson;
 	BString nextPageToken;
-	BString currentNextSyncToken;
 	BString nextSyncToken;
 
 	do {
 		if (!eventJson.IsEmpty())
 			eventJson.MakeEmpty();
 
-		if (Requests::Request(url, B_HTTP_GET, headers, NULL, NULL, eventJson, false)
+		if (Requests::Request(url, B_HTTP_GET, headers, NULL, NULL, eventJson)
 				== B_ERROR)
 			return B_ERROR;
 
-		if (ParseEvent(&eventJson) == B_ERROR);
+		if (ParseEvent(&eventJson) == B_ERROR)
 			return B_ERROR;
 
 		nextPageToken = BString(eventJson.GetString("nextPageToken", "NOT_FOUND"));
@@ -282,26 +299,15 @@ EventSync::GetEvents()
 
 	} while (nextPageToken.Compare("NOT_FOUND") != 0);
 
-	currentNextSyncToken = BString(eventJson.GetString("nextSyncToken", "NOT_FOUND"));
-
-	if (currentNextSyncToken.Compare("NOT_FOUND") != 0)
-		nextSyncToken = currentNextSyncToken;
-	else
-		nextSyncToken = fLastSyncToken;
+	nextSyncToken  = BString(eventJson.GetString("nextSyncToken", "NOT_FOUND"));
 
 	BPasswordKey key(nextSyncToken, B_KEY_PURPOSE_WEB, "nextSyncToken");
 	BKeyStore keyStore;
-	keyStore.AddKey("Calendar", key);
+	keyStore.AddKey(kAppName, key);
 
-	if (currentNextSyncToken.Compare("NOT_FOUND") == 0) {
+	if (nextSyncToken.Compare("NOT_FOUND") == 0) {
 		fprintf(stderr, "Error: nextSyncToken not found in API response.\n");
 		return B_ERROR;
-	}
-
-	Event* event;
-	for (int32 i = 0; i < fEvents->CountItems(); i++) {
-		event = ((Event*)fEvents->ItemAt(i));
-		std::cout<<"\n"<<event->GetName()<<"\n";
 	}
 
 	return B_OK;
@@ -315,8 +321,8 @@ EventSync::ParseEvent(BMessage* eventJson)
 	eventJson->FindMessage("items", &items);
 	int32 eventsCount = items.CountNames(B_ANY_TYPE);
 	if (eventsCount == 0) {
-		fprintf(stderr, "Error: 0 items found in API response.\n");
-		return B_ERROR;
+		fprintf(stderr, "0 items found in API response.\n");
+		return B_OK;
 	}
 
 	for (int32 currentEvent = 0; currentEvent < eventsCount; currentEvent++) {
@@ -324,7 +330,7 @@ EventSync::ParseEvent(BMessage* eventJson)
 		ss << currentEvent;
 		BMessage event;
 		if (items.FindMessage(ss.str().c_str(), &event) != B_OK) {
-			fprintf(stderr, "Error: Item %d found in API response.\n",
+			fprintf(stderr, "Error: Item %d notfound in API response.\n",
 				currentEvent);
 			return B_ERROR;
 		}
@@ -348,16 +354,28 @@ EventSync::ParseEvent(BMessage* eventJson)
 		bool notified;
 
 		event.FindString("id", &id);
-		event.FindString("summary", &name);
 		event.FindString("status", &eventStatus);
-		place = BString(event.GetString("location", ""));
-		description = BString(event.GetString("description", ""));
 
 		if (eventStatus == BString(kEventStatusToGCalStatus[kConfirmedEvent])
-			|| eventStatus == BString(kEventStatusToGCalStatus[kTentativeEvent]))
+			|| eventStatus == BString(kEventStatusToGCalStatus[kTentativeEvent])) {
 			status = kConfirmedEvent;
-		else if (eventStatus == BString(kEventStatusToGCalStatus[kTentativeEvent]))
+		}
+		else if (eventStatus == BString(kEventStatusToGCalStatus[kCancelledEvent]))
 			status = kCancelledEvent;
+
+		if (status == kCancelledEvent) {
+			fCancelledEvents->Add(BString(id));
+			continue;
+		}
+
+		if (event.FindString("summary", &name) != B_OK)
+			name = "Untitled Event";
+
+		if (event.FindString("location", &place) != B_OK)
+			place = "";
+
+		if (event.FindString("description", &description) != B_OK)
+			description = "";
 
 		event.FindString("updated", &updatedString);
 		updated = RFC3339ToTime(updatedString, kEventUpdateDate);
@@ -404,6 +422,7 @@ EventSync::ParseEvent(BMessage* eventJson)
 		fEvents->AddItem(newEvent);
 	}
 
+	return B_OK;
 }
 
 
@@ -435,7 +454,7 @@ EventSync::AddEvent(Event* event)
 	jsonString.Append("}");
 
 	BMessage reply;
-	if (Requests::Request(url, B_HTTP_POST, headers, NULL, &jsonString, reply, true)
+	if (Requests::Request(url, B_HTTP_POST, headers, NULL, &jsonString, reply)
 		== B_ERROR)
 		return B_ERROR;
 }
@@ -449,9 +468,44 @@ EventSync::DeleteEvent(Event* event)
 	endpoint.Append("?access_token=");
 	endpoint.Append(fToken);
 	BMessage reply;
-	if (Requests::Request(endpoint, B_HTTP_DELETE, NULL, NULL, NULL, reply, true)
+	if (Requests::Request(endpoint, B_HTTP_DELETE, NULL, NULL, NULL, reply)
 		== B_ERROR)
 		return B_ERROR;
+}
+
+
+status_t
+EventSync::SyncWithDatabase()
+{
+	Event* newEvent;
+	Event* event;
+
+	for (int32 i = 0; i < fEvents->CountItems(); i++) {
+		newEvent = ((Event*)fEvents->ItemAt(i));
+		event = fDBManager->GetEvent(newEvent->GetId());
+
+		if ((event != NULL) && (difftime(newEvent->GetUpdated(), event->GetUpdated()) > 0)) {
+			if (fDBManager->UpdateEvent(event, newEvent) == false)
+				return B_ERROR;
+		}
+
+		else if ((event == NULL) && (fDBManager->AddEvent(newEvent) == false))
+			return B_ERROR;
+	}
+
+	const char* cancelId;
+	for (int32 i = 0; i < fCancelledEvents->CountStrings(); i++) {
+		cancelId = ((const char*)fCancelledEvents->StringAt(i));
+		event  = fDBManager->GetEvent(cancelId);
+		if (event != NULL)  {
+			if (fDBManager->RemoveEvent(event) == false)
+				return B_ERROR;
+		}
+	}
+
+	fDBManager->RemoveCancelledEvents();
+
+	return B_OK;
 }
 
 
