@@ -17,6 +17,7 @@
 #include "DayView.h"
 #include "Event.h"
 #include "EventListView.h"
+#include "EventSyncWindow.h"
 #include "EventWindow.h"
 #include "MainView.h"
 #include "Preferences.h"
@@ -130,6 +131,10 @@ MainWindow::MessageReceived(BMessage* message)
 			_UpdateDayView();
 			break;
 		}
+
+		case kSynchronizationComplete:
+			_UpdateDayView();
+			break;
 
 		case kAppPreferencesChanged:
 			_SyncWithPreferences();

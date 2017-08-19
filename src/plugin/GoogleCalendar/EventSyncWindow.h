@@ -16,6 +16,7 @@ class BView;
 
 
 static const uint32 kEventSyncWindowQuitting = 'kswq';
+static const uint32 kSynchronizationComplete = 'kesc';
 
 
 class EventSyncWindow: public BWindow {

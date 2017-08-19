@@ -64,10 +64,11 @@ EventSyncWindow::MessageReceived(BMessage* message)
 
 		case kSyncStatusMessage:
 		{
-			_StopSynchronizationThread();
 			bool status;
 			message->FindBool("status", &status);
 			_SaveSyncData(status);
+			be_app->WindowAt(0)->PostMessage(kSynchronizationComplete);
+			_StopSynchronizationThread();
 			break;
 		}
 		default:
