@@ -29,14 +29,15 @@ class Preferences;
 class SQLiteManager;
 
 
-const uint32 kEventWindowQuitting = 'kewq';
-const uint32 kShowPopUpCalendar = 'kspc';
-
+static const uint32 kEventWindowQuitting = 'kewq';
+static const uint32 kShowPopUpCalendar = 'kspc';
+static const uint32 kStartDateChanged = 'ksdc';
+static const uint32 kEndDateChanged = 'kedc';
 
 class EventWindow: public BWindow {
 public:
-			EventWindow();
-			~EventWindow();
+				EventWindow();
+				~EventWindow();
 
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
@@ -56,6 +57,8 @@ public:
 
 	BString			GetDateString(BDate& date);
 	BString			GetLocaleTimeString(time_t timeValue);
+	void			GetDateFromMessage(BMessage* message,
+					BDate& date);
 
 private:
 	void			_InitInterface();

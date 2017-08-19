@@ -9,6 +9,7 @@
 
 #include <Button.h>
 #include <CalendarView.h>
+#include <DateFormat.h>
 #include <GridLayoutBuilder.h>
 #include <GroupLayout.h>
 #include <GroupLayoutBuilder.h>
@@ -70,14 +71,15 @@ FlatButton::Draw(BRect updateRect)
 //	#pragma mark - CalendarMenuWindow
 
 
-CalendarMenuWindow::CalendarMenuWindow(BPoint where, BMessage& message)
+CalendarMenuWindow::CalendarMenuWindow(BHandler* handler, BPoint where)
 	:
 	BWindow(BRect(0.0, 0.0, 100.0, 130.0), "", B_BORDERED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS | B_ASYNCHRONOUS_CONTROLS | B_CLOSE_ON_ESCAPE
 		| B_NOT_MINIMIZABLE | B_NOT_ZOOMABLE),
 	fYearLabel(NULL),
 	fMonthLabel(NULL),
-	fMessage(message),
+	fHandler(handler),
+	fInvocationMessage(NULL),
 	fCalendarView(NULL),
 	fSuppressFirstClose(true)
 {
@@ -119,12 +121,12 @@ CalendarMenuWindow::CalendarMenuWindow(BPoint where, BMessage& message)
 	AddChild(groupView);
 
 	MoveTo(where);
-	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 }
 
 
 CalendarMenuWindow::~CalendarMenuWindow()
 {
+	SetInvocationMessage(NULL);
 }
 
 
@@ -170,20 +172,11 @@ CalendarMenuWindow::MessageReceived(BMessage* message)
 			BDate date = BDate(year, month, day);
 			_UpdateDate(date);
 
-			EventWindow* parent;
-			int8 which;
-
-			fMessage.FindPointer("parent", (void**)(&parent));
-			fMessage.FindInt8("which", &which);
-
-			if(parent->Lock()) {
-				if (which == 0)
-					parent->SetStartDate(date);
-				else
-					parent->SetEndDate(date);
-
-				parent->Unlock();
-			}
+			BMessenger msgr(fHandler);
+			fInvocationMessage->AddInt32("day", day);
+			fInvocationMessage->AddInt32("month", month);
+			fInvocationMessage->AddInt32("year", year);
+			msgr.SendMessage(fInvocationMessage);
 
 			PostMessage(B_QUIT_REQUESTED);
 			break;
@@ -215,6 +208,21 @@ CalendarMenuWindow::MessageReceived(BMessage* message)
 
 
 void
+CalendarMenuWindow::SetInvocationMessage(BMessage* message)
+{
+	delete fInvocationMessage;
+	fInvocationMessage = message;
+}
+
+
+void
+CalendarMenuWindow::SetDate(const BDate& date)
+{
+	_UpdateDate(date);
+}
+
+
+void
 CalendarMenuWindow::_UpdateDate(const BDate& date)
 {
 	if (!date.IsValid())
@@ -222,11 +230,14 @@ CalendarMenuWindow::_UpdateDate(const BDate& date)
 
 	fCalendarView->SetDate(date);
 
-	BString text;
-	text << date.Year();
-	fYearLabel->SetText(text.String());
+	BString yearString;
+	BString monthString;
 
-	fMonthLabel->SetText(date.LongMonthName(date.Month()).String());
+	yearString << date.Year();
+	fYearLabel->SetText(yearString);
+
+	BDateFormat().GetMonthName(date.Month(), monthString);
+	fMonthLabel->SetText(monthString);
 }
 
 

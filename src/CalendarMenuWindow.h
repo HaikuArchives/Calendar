@@ -20,14 +20,17 @@ namespace BPrivate {
 
 using BPrivate::BCalendarView;
 
+
 class CalendarMenuWindow : public BWindow {
 public:
-						CalendarMenuWindow(BPoint where, BMessage& message);
+						CalendarMenuWindow(BHandler* handler, BPoint where);
 	virtual					~CalendarMenuWindow();
 
 	virtual void				Show();
 	virtual void				WindowActivated(bool active);
 	virtual void				MessageReceived(BMessage* message);
+	void					SetDate(const BDate& date);
+	void					SetInvocationMessage(BMessage* message);
 
 private:
 			void			_UpdateDate(const BDate& date);
@@ -46,7 +49,8 @@ private:
 			BStringView*		fYearLabel;
 			BStringView*		fMonthLabel;
 			BCalendarView*		fCalendarView;
-			BMessage		fMessage;
+			BHandler*		fHandler;
+			BMessage*		fInvocationMessage;
 			bool			fSuppressFirstClose;
 };
 

@@ -103,6 +103,22 @@ EventWindow::MessageReceived(BMessage* message)
 			break;
 		}
 
+		case kStartDateChanged:
+		{
+			BDate date;
+			GetDateFromMessage(message, date);
+			SetStartDate(date);
+			break;
+		}
+
+		case kEndDateChanged:
+		{
+			BDate date;
+			GetDateFromMessage(message, date);
+			SetEndDate(date);
+			break;
+		}
+
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -162,6 +178,17 @@ EventWindow::SetEvent(Event* event)
 
 	}
 
+}
+
+
+void
+EventWindow::GetDateFromMessage(BMessage* message, BDate& date)
+{
+	int32 day, month, year;
+	message->FindInt32("day", &day);
+	message->FindInt32("month", &month);
+	message->FindInt32("year", &year);
+	date = BDate(year, month, day);
 }
 
 
@@ -562,26 +589,6 @@ EventWindow::_DisableControls()
 void
 EventWindow::_ShowPopUpCalendar(int8 which)
 {
-	BPoint where;
-	BPoint boxPosition;
-	BPoint buttonPosition;
-
-	//TODO: This is bad. Improve how coordinates for pop up calendar
-	//window is calculated. Better implement a DateTimeEdit control.
-
-	if(which ==0) {
-		boxPosition = fStartDateBox->Frame().RightTop();
-		buttonPosition = fStartCalButton->Frame().LeftBottom();
-	}
-	else
-	{
-		boxPosition = fEndDateBox->Frame().RightTop();
-		buttonPosition = fEndCalButton->Frame().LeftBottom();
-	}
-	where.x = boxPosition.x - buttonPosition.x;
-	where.y = boxPosition.y + buttonPosition.y;
-	where += BPoint(-62.0, 8.0);
-
 	if (fCalendarWindow.IsValid()) {
 		BMessage activate(B_SET_PROPERTY);
 		activate.AddSpecifier("Active");
@@ -591,14 +598,40 @@ EventWindow::_ShowPopUpCalendar(int8 which)
 			return;
 	}
 
+	BPoint where;
+	BPoint boxPosition;
+	BPoint buttonPosition;
+	BDate date;
+	BMessage* invocationMessage;
+
+	//TODO: This is bad. Improve how coordinates for pop up calendar
+	//window is calculated. Better implement a DateTimeEdit control.
+
+	if (which == 0) {
+		boxPosition = fStartDateBox->Frame().RightTop();
+		buttonPosition = fStartCalButton->Frame().LeftBottom();
+		date = fStartDate;
+		invocationMessage = new BMessage(kStartDateChanged);
+
+	}
+	else
+	{
+		boxPosition = fEndDateBox->Frame().RightTop();
+		buttonPosition = fEndCalButton->Frame().LeftBottom();
+		date = fEndDate;
+		invocationMessage = new BMessage(kEndDateChanged);
+	}
+
+	where.x = boxPosition.x - buttonPosition.x;
+	where.y = boxPosition.y + buttonPosition.y;
+	where += BPoint(-62.0, 8.0);
+
 	ConvertToScreen(&where);
 
-	BMessage message;
-	message.AddPointer("parent", this);
-	message.AddInt8("which", which);
-
-	CalendarMenuWindow* window = new CalendarMenuWindow(where, message);
+	CalendarMenuWindow* window = new CalendarMenuWindow(this, where);
+	window->SetDate(date);
+	window->SetInvocationMessage(invocationMessage);
+	window->SetDate(date);
 	fCalendarWindow = BMessenger(window);
-
 	window->Show();
 }
