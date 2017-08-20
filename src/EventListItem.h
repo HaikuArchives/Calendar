@@ -23,7 +23,7 @@ public:
 	virtual	void		Update(BView*, const BFont*);
 
 private:
-	static const int 	fItemHeight	= 32;
+	static const int 	fItemHeight	= 42;
 
 	BString			fName;
 	BString			fTimeText;
