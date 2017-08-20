@@ -164,15 +164,17 @@ EventWindow::SetEvent(Event* event)
 			fAllDayCheckBox->SetValue(B_CONTROL_ON);
 			fTextStartTime->SetEnabled(false);
 			fTextEndTime->SetEnabled(false);
+			fTextStartTime->SetText("");
+			fTextEndTime->SetText("");
 		}
 
 		else
 		{
 			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+			fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
+			fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
 		}
 
-		fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
-		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
 
 		fDeleteButton->SetEnabled(true);
 
@@ -283,24 +285,30 @@ EventWindow::OnSaveClick()
 	BTime startTime;
 	BTime endTime;
 
-	BTimeFormat timeFormat;
-	timeFormat.SetTimeFormat(B_SHORT_TIME_FORMAT, "HH:mm");
-	timeFormat.Parse(fTextStartTime->Text(), B_SHORT_TIME_FORMAT, startTime);
-	timeFormat.Parse(fTextEndTime->Text(), B_SHORT_TIME_FORMAT, endTime);
+	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
+		BTimeFormat timeFormat;
+		timeFormat.SetTimeFormat(B_SHORT_TIME_FORMAT, "HH:mm");
+		timeFormat.Parse(fTextStartTime->Text(), B_SHORT_TIME_FORMAT, startTime);
+		timeFormat.Parse(fTextEndTime->Text(), B_SHORT_TIME_FORMAT, endTime);
+	}
+
+	else
+	{
+		startTime.SetTime(0, 0, 0);
+		endTime.SetTime(23, 59, 59, 59);
+	}
 
 	start = BDateTime(fStartDate, startTime).Time_t();
 	end = BDateTime(fEndDate, endTime).Time_t();
 
-	if (fAllDayCheckBox->Value() == B_CONTROL_OFF) {
-		if (difftime(start, end) > 0) {
-			BAlert* alert  = new BAlert("Error",
-				"Invalid range of time selected.",
-				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	if (difftime(start, end) > 0) {
+		BAlert* alert  = new BAlert("Error",
+			"Sorry, you cannot create an event that ends before it starts.",
+			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
-			alert->SetShortcut(0, B_ESCAPE);
-			alert->Go();
-			return;
-		}
+		alert->SetShortcut(0, B_ESCAPE);
+		alert->Go();
+		return;
 	}
 
 	Category* category = NULL;
@@ -367,16 +375,19 @@ EventWindow::OnCheckBoxToggle()
 {
 
 	if (fAllDayCheckBox->Value() == B_CONTROL_ON) {
-		fTextStartTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(0, 0, 0)).Time_t()));
-		fTextEndTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(23, 59, 0)).Time_t()));
+		fTextStartTime->SetText("");
+		fTextEndTime->SetText("");
 		fTextStartTime->SetEnabled(false);
 		fTextEndTime->SetEnabled(false);
 	}
 
 	else
 	{
+		fTextStartTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(0, 0, 0)).Time_t()));
+		fTextEndTime->SetText(GetLocaleTimeString(BDateTime(fEndDate, BTime(1, 0, 0)).Time_t()));
 		fTextStartTime->SetEnabled(true);
 		fTextEndTime->SetEnabled(true);
+
 	}
 }
 
