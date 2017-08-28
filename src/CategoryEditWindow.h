@@ -25,25 +25,25 @@ const uint32 kUpdateColor = 'kucl';
 
 class CategoryEditWindow: public BWindow {
 public:
-			CategoryEditWindow();
+				CategoryEditWindow();
 
-	virtual void	MessageReceived(BMessage* message);
-	virtual bool	QuitRequested();
+	virtual void		MessageReceived(BMessage* message);
+	virtual bool		QuitRequested();
 
 	void			SetCategory(Category* category);
 
 private:
-	void				_InitInterface();
-	void				_SetCurrentColor(rgb_color color);
-	void				_OnSavePressed();
-	void				_OnDeletePressed();
-	void				_CategoryModified();
-	void				_RefreshWindows();
-	void				_CloseWindow();
+	void			_InitInterface();
+	void			_SetCurrentColor(rgb_color color);
+	void			_OnSavePressed();
+	void			_OnDeletePressed();
+	void			_CategoryModified();
+	void			_RefreshWindows();
+	void			_CloseWindow();
 
-	static const uint32 kSavePressed = 1000;
-	static const uint32 kDeletePressed = 1001;
-	static const uint32 kCategoryTextChanged = 1002;
+	static const uint32	kSavePressed		= 1000;
+	static const uint32	kDeletePressed		= 1001;
+	static const uint32	kCategoryTextChanged	= 1002;
 
 	BView*			fMainView;
 	BTextControl*		fCategoryText;
@@ -53,7 +53,6 @@ private:
 	BButton*		fDeleteButton;
 
 	Category*		fCategory;
-
 
 };
 

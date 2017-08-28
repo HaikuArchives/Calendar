@@ -33,9 +33,9 @@ static const uint32 kMenuSyncGCAL = 'kmsg';
 
 class MainWindow: public BWindow {
 public:
-			MainWindow();
-	virtual void	MessageReceived(BMessage* message);
-	virtual bool	QuitRequested();
+				MainWindow();
+	virtual void		MessageReceived(BMessage* message);
+	virtual bool		QuitRequested();
 
 	static void		SetPreferences(Preferences* preferences);
 
@@ -49,28 +49,27 @@ private:
 	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
 
-	static const int kMenuAppQuit	= 1000;
-	static const int kMenuEventEdit = 1002;
-	static const int kMenuEventDelete = 1003;
-	static const int kAddEvent = 1004;
-	static const int kDayView 	= 1005;
-	//static const int kMonthView	= 1006;
+	static const int	kMenuAppQuit		= 1000;
+	static const int 	kMenuEventEdit 		= 1002;
+	static const int 	kMenuEventDelete	= 1003;
+	static const int 	kAddEvent 		= 1004;
+	static const int 	kDayView 		= 1005;
+	//static const int 	kMonthView		= 1006;
 
 
 	static Preferences*	fPreferences;
 
-	MainView*	fMainView;
-	EventWindow*	fEventWindow;
-	BMenuBar*	fMenuBar;
-	BMenu*		fAppMenu;
-	BMenu*		fEventMenu;
-	BMenu*		fCategoryMenu;
-	BMenu*		fViewMenu;
-	BMenu*		fSyncMenu;
-	BToolBar*	fToolBar;
-	SidePanelView*	fSidePanelView;
-	DayView*	fDayView;
-
+	MainView*		fMainView;
+	EventWindow*		fEventWindow;
+	BMenuBar*		fMenuBar;
+	BMenu*			fAppMenu;
+	BMenu*			fEventMenu;
+	BMenu*			fCategoryMenu;
+	BMenu*			fViewMenu;
+	BMenu*			fSyncMenu;
+	BToolBar*		fToolBar;
+	SidePanelView*		fSidePanelView;
+	DayView*		fDayView;
 	thread_id		fNotificationThread;
 };
 

@@ -17,15 +17,15 @@ const uint32 kDateChange = 'kdcm';
 
 class MainView : public BView {
 public:
-								MainView();
+				MainView();
 
-	virtual	void			 	Pulse();
-	virtual	void				AttachedToWindow();
+	virtual	void	 	Pulse();
+	virtual	void		AttachedToWindow();
 
 private:
-			void				_SendNotices();
-			BMessage			fMessage;
-			BDate				fCurrentDate;
+	void			_SendNotices();
+	BMessage		fMessage;
+	BDate			fCurrentDate;
 };
 
 

@@ -27,7 +27,7 @@ public:
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 
-	void				LoadCategories();
+	void			LoadCategories();
 	SQLiteManager*		GetDBManager();
 
 private:
