@@ -54,7 +54,7 @@ private:
 	static const int kMenuEventDelete = 1003;
 	static const int kAddEvent = 1004;
 	static const int kDayView 	= 1005;
-	static const int kMonthView	= 1006;
+	//static const int kMonthView	= 1006;
 
 
 	static Preferences*	fPreferences;

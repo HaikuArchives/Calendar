@@ -40,7 +40,7 @@ EventSyncWindow::EventSyncWindow()
 	fSyncDataFile.SetTo(&syncDataDir, "sync");
 
 	_InitInterface();
-	ResizeTo(300, 300);
+	ResizeTo(240, 240);
 	CenterOnScreen();
 
 	_LoadSyncData();

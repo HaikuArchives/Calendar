@@ -127,7 +127,7 @@ CategoryWindow::_InitInterface()
 
 	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryListView,
 		B_WILL_DRAW, false, true);
-	fCategoryScroll->SetExplicitMinSize(BSize(260, 260));
+	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
 	fDBManager = new SQLiteManager();
 	fCategoryList = new BList();

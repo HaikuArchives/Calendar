@@ -222,7 +222,7 @@ MainWindow::_InitInterface()
 	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuCategoryEdit)));
 	fViewMenu = new BMenu("View");
 	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
-	fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
+	//fViewMenu->AddItem(new BMenuItem("Month view", new BMessage(kMonthView)));
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
 
@@ -237,8 +237,8 @@ MainWindow::_InitInterface()
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
 		"Day View", "Day View", true);
-	fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Month View", "Month View", true);
+	//fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
+	//	"Month View", "Month View", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
 		"Add Event", "Add Event", true);
