@@ -1,4 +1,4 @@
-![Calendar Icon](images/calendar_icon_64.png) 
+![Calendar Icon](images/calendar_icon_64.png)
 **Calendar**
 for [Haiku](https://www.haiku-os.org/).
 
@@ -6,7 +6,7 @@ for [Haiku](https://www.haiku-os.org/).
 ![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg)
 
 ***
- 
+
 [About](https://www.haiku-os.org/blog/akshayagarwal007/2017-05-08_gsoc_2017_calendar_application/) | [Blog Posts](https://www.haiku-os.org/blog/akshayagarwal007/)
 
 A native Calendar application for Haiku.
