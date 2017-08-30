@@ -405,7 +405,7 @@ EventWindow::_InitInterface()
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 
-	const char* tooltip = "Enter the time in HH::mm (24 hour) format.";
+	const char* tooltip = "Enter the time in HH:mm (24 hour) format.";
 	fTextStartTime->SetToolTip(tooltip);
 	fTextEndTime->SetToolTip(tooltip);
 
