@@ -12,6 +12,7 @@
 #include <Box.h>
 #include <Button.h>
 #include <CheckBox.h>
+#include <ColorMenuItem.h>
 #include <DateFormat.h>
 #include <File.h>
 #include <GroupLayout.h>
@@ -430,6 +431,7 @@ EventWindow::_InitInterface()
 	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
 
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
+	fDeleteButton->SetEnabled(false);
 	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
 	BButton* SaveButton = new BButton("SaveButton", "OK", new BMessage(kSavePressed));
 
@@ -453,7 +455,7 @@ EventWindow::_InitInterface()
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
 		category = ((Category*)fCategoryList->ItemAt(i));
-		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),  B_OK));
+		fCategoryMenu->AddItem(new BColorMenuItem(category->GetName(), NULL, category->GetColor()));
 	}
 	fCategoryMenu->SetRadioMode(true);
 	fCategoryMenu->SetLabelFromMarked(true);
