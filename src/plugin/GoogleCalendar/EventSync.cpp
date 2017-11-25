@@ -381,27 +381,40 @@ EventSync::ParseEvent(BMessage* eventJson)
 		updated = RFC3339ToTime(updatedString, kEventUpdateDate);
 
 		// TODO:
-		// Check for events having only start date (all day event).
+		// [X] Check for events having only start date (all day event).
+		// All day have only the date without the time
 		// Check whether reminder option is set on or off in GCal event.
 		// Incorporate color IDs of GCal events into Calendar.
 		// Add support for multiple calendar, treat them as a category maybe?
-
+		bool allDay = false;
 		BMessage start;
 		if (event.FindMessage("start", &start) != B_OK) {
 			fprintf(stderr, "Error: StartTime not found in API response.\n");
 			return B_ERROR;
 		}
-		start.FindString("dateTime", &startString);
+		if (start.FindString("dateTime", &startString) != B_OK)
+		if (start.FindString("date", &startString) == B_OK) {
+			allDay = true;
+		}
+		else {
+			fprintf(stderr, "Error: StartTime not found in API response.\n");
+			return B_ERROR;
+		}
 		startDateTime = RFC3339ToTime(startString, kEventStartEndDate);
+
 
 		BMessage end;
 		if (event.FindMessage("end", &end) != B_OK) {
 			fprintf(stderr, "Error: EndTime not found in API response.\n");
 			return B_ERROR;
 		}
-
-		end.FindString("dateTime", &endString);
+		if (end.FindString("dateTime", &endString) != B_OK
+			&& end.FindString("date", &endString) != B_OK) {
+			fprintf(stderr, "Error: EndTime not found in API response.\n");
+			return B_ERROR;
+		}
 		endDateTime = RFC3339ToTime(endString, kEventStartEndDate);
+		if (allDay) endDateTime -= 86400; // if allDay remove one day from the endate
 
 		notified = (difftime(startDateTime, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
 
@@ -415,7 +428,7 @@ EventSync::ParseEvent(BMessage* eventJson)
 
 		Category* newCategory = new Category(*category);
 
-		Event* newEvent = new Event(name, place, description, false,
+		Event* newEvent = new Event(name, place, description, allDay,
 			startDateTime, endDateTime, newCategory, notified, updated,
 			status, id);
 
@@ -441,11 +454,11 @@ EventSync::AddEvent(Event* event)
 	jsonString += BString().SetToFormat("\"summary\":\"%s\",", event->GetName());
 	jsonString += BString().SetToFormat("\"location\":\"%s\",", event->GetPlace());
 	jsonString += BString().SetToFormat("\"description\":\"%s\",", event->GetDescription());
-
+/*  TODO This is optional but this is a wrong cast must be improved better
 	EventStatus eventStatus = static_cast<EventStatus>(event->GetStatus());
 	BString statusString = kEventStatusToGCalStatus[eventStatus];
 	jsonString += BString().SetToFormat("\"status\": \"%s\",", statusString);
-
+*/
 	BString start = TimeToRFC3339(event->GetStartDateTime());
 	jsonString += BString().SetToFormat("\"start\":{\"dateTime\":\"%s\"},", start.String());
 
