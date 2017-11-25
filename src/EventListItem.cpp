@@ -76,9 +76,9 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->MovePenTo(offset, rect.top + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
 		+ (finfo.ascent + finfo.descent) - timefont.Size() + 2 + 3);
-
-	view->TruncateString(&fTimeText, B_TRUNCATE_MIDDLE,  rect.Width() - offset - 2);
-	view->DrawString(fTimeText.String());
+	BString timeText(fTimeText);
+	view->TruncateString(&timeText, B_TRUNCATE_END,  rect.Width() - offset - 2);
+	view->DrawString(timeText.String());
 
 	// event name
 
@@ -96,9 +96,9 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
 		+ (finfo.ascent + finfo.descent));
-
-		view->TruncateString(&fName, B_TRUNCATE_MIDDLE, rect.Width() - offset - 2);
-		view->DrawString(fName.String());
+	BString name(fName);
+	view->TruncateString(&name, B_TRUNCATE_END, rect.Width() - offset - 2);
+	view->DrawString(name.String());
 
 	// draw lines
 
