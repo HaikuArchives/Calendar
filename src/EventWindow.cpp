@@ -477,7 +477,7 @@ EventWindow::_InitInterface()
 	.End();
 	fRecurrenceBox->SetLabel("Recurrence");
 
-	fStartDateBox = new BBox("Start date and time");
+	fStartDateBox = new BBox("startdatetime");
 	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
 		.AddStrut(B_USE_ITEM_SPACING)
@@ -491,7 +491,7 @@ EventWindow::_InitInterface()
 	.End();
 	fStartDateBox->SetLabel("Start date and time");
 
-	fEndDateBox = new BBox("End date and time");
+	fEndDateBox = new BBox("enddatetime");
 	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
 		.AddStrut(B_USE_ITEM_SPACING)
