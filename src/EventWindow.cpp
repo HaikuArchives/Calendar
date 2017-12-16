@@ -48,7 +48,7 @@ Preferences* EventWindow::fPreferences = NULL;
 
 EventWindow::EventWindow()
 	:
-	BWindow(fPreferences->fEventWindowRect, "Event Manager", B_TITLED_WINDOW,
+	BWindow(fPreferences->fEventWindowRect, "Event manager", B_TITLED_WINDOW,
 			B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
@@ -424,11 +424,11 @@ EventWindow::_InitInterface()
 	fPlaceLabel = new BStringView("PlaceLabel", "Place:");
 	fDescriptionLabel = new BStringView("DescriptionLabel", "Description:");
 	fCategoryLabel = new BStringView("CategoryLabel", "Category:");
-	fAllDayLabel = new BStringView("AllDayLabel", "All Day:");
-	fEndDateLabel = new BStringView("EndDateLabel", "End Date:");
-	fStartDateLabel = new BStringView("StartDateLabel", "Start Date:");
-	fStartTimeLabel = new BStringView("StartTimeLabel", "Start Time:");
-	fEndTimeLabel = new BStringView("EndTimeLabel", "End Time:");
+	fAllDayLabel = new BStringView("AllDayLabel", "All day:");
+	fEndDateLabel = new BStringView("EndDateLabel", "End date:");
+	fStartDateLabel = new BStringView("StartDateLabel", "Start date:");
+	fStartTimeLabel = new BStringView("StartTimeLabel", "Start time:");
+	fEndTimeLabel = new BStringView("EndTimeLabel", "End time:");
 
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
 	fDeleteButton->SetEnabled(false);
@@ -461,8 +461,8 @@ EventWindow::_InitInterface()
 	fCategoryMenu->SetLabelFromMarked(true);
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
-	fStartDateEdit = new BMenu("Start Date");
-	fEndDateEdit = new BMenu("End Date");
+	fStartDateEdit = new BMenu("Start date");
+	fEndDateEdit = new BMenu("End date");
 
 	fCategoryMenuField = new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
 
@@ -477,7 +477,7 @@ EventWindow::_InitInterface()
 	.End();
 	fRecurrenceBox->SetLabel("Recurrence");
 
-	fStartDateBox = new BBox("Start Date and Time");
+	fStartDateBox = new BBox("startdatetime");
 	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
 		.AddStrut(B_USE_ITEM_SPACING)
@@ -489,9 +489,9 @@ EventWindow::_InitInterface()
 			.Add(fTextStartTime, 1, 1)
 		.End()
 	.End();
-	fStartDateBox->SetLabel("Start Date and Time");
+	fStartDateBox->SetLabel("Start date and time");
 
-	fEndDateBox = new BBox("End Date and Time");
+	fEndDateBox = new BBox("enddatetime");
 	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(B_USE_ITEM_INSETS)
 		.AddStrut(B_USE_ITEM_SPACING)
@@ -503,7 +503,7 @@ EventWindow::_InitInterface()
 			.Add(fTextEndTime, 1, 1)
 		.End()
 	.End();
-	fEndDateBox->SetLabel("End Date and Time");
+	fEndDateBox->SetLabel("End date and time");
 
 	BBox* divider = new BBox(BRect(0, 0, 1, 1),
 		B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,

@@ -168,7 +168,7 @@ DayView::_PopulateEvents()
 		timePeriod = "";
 
 		if (event->IsAllDay())
-			timePeriod = "All Day";
+			timePeriod = "All day";
 		else
 		{
 			timeFormat.Format(startTime, event->GetStartDateTime(),
