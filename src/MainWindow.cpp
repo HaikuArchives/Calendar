@@ -179,7 +179,7 @@ void
 MainWindow::StartNotificationThread()
 {
 	if (fNotificationThread < 0) {
-		fNotificationThread = spawn_thread(NotificationLoop, "Notification Thread",
+		fNotificationThread = spawn_thread(NotificationLoop, "Notification thread",
 			B_NORMAL_PRIORITY, NULL);
 		resume_thread(fNotificationThread);
 	}
@@ -236,12 +236,12 @@ MainWindow::_InitInterface()
 		"Today", "Today", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day View", "Day View", true);
+		"Day view", "Day view", true);
 	//fToolBar->AddAction(new BMessage(kMonthView), this, LoadVectorIcon("CALENDAR_ICON"),
 	//	"Month View", "Month View", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
-		"Add Event", "Add Event", true);
+		"Add event", "Add event", true);
 	fToolBar->AddGlue();
 
 	fSidePanelView = new SidePanelView();

@@ -92,7 +92,8 @@ class Requests {
 			BMessage& responseMessage)
 		{
 			ProtocolListener listener(true);
-			BHttpRequest request(BUrl(url), true, "HTTP", &listener);
+			BUrl link(url);
+			BHttpRequest request(link,true,"HTTP",&listener);
 			request.SetMethod(method);
 
 			if (headers != NULL)

@@ -111,7 +111,7 @@ PreferenceWindow::_InitInterface()
 
 	fDayOfWeekMenu = new BPopUpMenu("DayOfWeekMenu");
 
-	const char* startOfWeekItems[] = {"Locale Based", "Monday",
+	const char* startOfWeekItems[] = {"Locale based", "Monday",
 	"Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", NULL};
 	for (int i = 0; startOfWeekItems[i]; ++i)
 		fDayOfWeekMenu->AddItem(new BMenuItem(startOfWeekItems[i],
@@ -126,10 +126,10 @@ PreferenceWindow::_InitInterface()
 	font.SetFace(B_BOLD_FACE);
 	fPrefCategoryLabel->SetFont(&font, B_FONT_ALL);
 
-	fStartOfWeekLabel = new BStringView("StartOfWeek", "First Day Of Week");
+	fStartOfWeekLabel = new BStringView("StartOfWeek", "First day of week");
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
-		"Show Week Number in Calendar", new BMessage(kShowWeekChangeMessage));
+		"Show week number in Calendar", new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
 	fApplyButton = new BButton("Apply", new BMessage(kApplyPreferencesMessage));

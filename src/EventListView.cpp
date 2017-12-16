@@ -69,7 +69,7 @@ EventListView::Draw(BRect rect)
 		BString string;
 		font.SetSize(font.Size() + 4);
 		SetFont(&font);
-		string = "You don't have any events on this day";
+		string = "You don't have any events on this day!";
 		float strwidth = font.StringWidth(string);
 		GetPreferredSize(&width, &height);
 		MovePenTo(width / 2 - strwidth / 2, height / 2 + font.Size() / 2);

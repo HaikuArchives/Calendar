@@ -106,7 +106,7 @@ CategoryEditWindow::_InitInterface()
 {
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fCategoryText = new BTextControl("CategoryText", NULL,
-		"New Category", new BMessage(kCategoryTextChanged));
+		"New category", new BMessage(kCategoryTextChanged));
 
 	fSaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
 	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
@@ -194,7 +194,7 @@ CategoryEditWindow::_OnDeletePressed()
 		else
 		{
 			BAlert* alert  = new BAlert("Error",
-				"Cannot Delete category. Can't delete a category used by events.",
+				"Cannot delete category. Can't delete a category used by events.",
 				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->Go();
 			return;
@@ -250,7 +250,7 @@ CategoryEditWindow::_OnSavePressed()
 	else
 	{
 		BAlert* alert  = new BAlert("Error",
-			"Cannot Add/Modify category. A category with the same name or color already exists.",
+			"Cannot add/modify category. A category with the same name or color already exists.",
 			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;
