@@ -575,7 +575,8 @@ EventWindow::_UpdateCategoryMenu()
 
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
 		category = ((Category*)fCategoryList->ItemAt(i));
-		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),  B_OK));
+		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),
+			new BMessage)); // TODO: Should this be sending a message?
 		if (category->Equals(*selectedCategory) && (marked == false)) {
 			fCategoryMenu->ItemAt(i)->SetMarked(true);
 			marked = true;
