@@ -376,7 +376,7 @@ SQLiteManager::GetEventsOfWeek(BDate& date)
 	date.AddDays(-date.DayOfWeek()+1);
 	BDateTime startOfDay(date, BTime(0, 0, 0));
 	date.AddDays(6);
-	BDateTime endOfDay(date, BTime(23, 59, 59));;
+	BDateTime endOfDay(date, BTime(23, 59, 59));
 	
 	sqlite3_stmt* stmt;
 	int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
