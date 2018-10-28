@@ -121,12 +121,11 @@ DayView::MessageReceived(BMessage* message)
 
 			break;
 		}
-		case kDayView: case kWeekView:
+		case kDayView:
+		case kWeekView:
 		{
 			mode = message->what;
-			Window()->LockLooper();
 			LoadEvents();
-			Window()->UnlockLooper();
 			break;
 		}
 		default:
