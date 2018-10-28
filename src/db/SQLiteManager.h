@@ -30,6 +30,7 @@ public:
 
 		Event*		GetEvent(const char* id);
 		BList*		GetEventsOfDay(BDate& date);
+		BList*		GetEventsOfWeek(BDate& date);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
 		bool		RemoveCancelledEvents();

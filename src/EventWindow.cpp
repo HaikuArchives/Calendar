@@ -165,8 +165,11 @@ EventWindow::SetEvent(Event* event)
 			fAllDayCheckBox->SetValue(B_CONTROL_ON);
 			fTextStartTime->SetEnabled(false);
 			fTextEndTime->SetEnabled(false);
-			fTextStartTime->SetText("");
-			fTextEndTime->SetText("");
+			fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
+			fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
+			// This is needed for week view
+			fTextStartDate->SetText(GetDateString(fStartDate));
+			fTextEndDate->SetText(GetDateString(fEndDate));
 		}
 
 		else
