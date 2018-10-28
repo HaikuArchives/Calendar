@@ -204,8 +204,8 @@ DayView::_PopulateEvents()
 					B_SHORT_DATE_FORMAT);
 				dateFormat.Format(endDay, event->GetEndDateTime(),
 					B_SHORT_DATE_FORMAT);
-				timePeriod << startDay << ", " << startTime << " - " \
-								       << endDay << ", " << endTime;
+				timePeriod << startTime << ", " << startDay << " - " \
+								       << endTime << ", " << endDay;
 			}
 		}
 
