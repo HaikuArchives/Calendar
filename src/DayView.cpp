@@ -12,6 +12,7 @@
 #include <List.h>
 #include <ScrollView.h>
 #include <TimeFormat.h>
+#include <DateFormat.h>
 
 #include "Event.h"
 #include "EventListItem.h"
@@ -24,7 +25,7 @@ DayView::DayView(const BDate& date)
 	BView("DayView", B_WILL_DRAW)
 {
 	fDate = date;
-
+	mode = kDayView; // start with Day View
 	fEventListView = new EventListView();
 	fEventListView->SetViewColor(B_TRANSPARENT_COLOR);
 	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
@@ -63,8 +64,12 @@ DayView::LoadEvents()
 		fEventList->MakeEmpty();
 		fEventListView->MakeEmpty();
 	}
-
-	fEventList = fDBManager->GetEventsOfDay(fDate);
+	
+	if (mode == kDayView)
+		fEventList = fDBManager->GetEventsOfDay(fDate);
+	else if (mode == kWeekView)
+		fEventList = fDBManager->GetEventsOfWeek(fDate);
+		
 	fEventList->SortItems((int (*)(const void *, const void *))CompareFunc);
 	_PopulateEvents();
 	fEventListView->Invalidate();
@@ -116,7 +121,13 @@ DayView::MessageReceived(BMessage* message)
 
 			break;
 		}
-
+		case kDayView:
+		case kWeekView:
+		{
+			mode = message->what;
+			LoadEvents();
+			break;
+		}
 		default:
 			BView::MessageReceived(message);
 			break;
@@ -155,9 +166,12 @@ DayView::_PopulateEvents()
 	EventListItem* item;
 	BString startTime;
 	BString endTime;
+	BString startDay;
+	BString endDay;
 	BString eventName;
 	BString timePeriod;
 	BTimeFormat timeFormat;
+	BDateFormat dateFormat;
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
@@ -168,14 +182,30 @@ DayView::_PopulateEvents()
 		timePeriod = "";
 
 		if (event->IsAllDay())
-			timePeriod = "All day";
+			if (mode == kDayView)
+				timePeriod = "All day";
+			else {
+				dateFormat.Format(startDay, event->GetStartDateTime(),
+					B_SHORT_DATE_FORMAT);
+				timePeriod << "All day, " << startDay;
+			}
 		else
 		{
 			timeFormat.Format(startTime, event->GetStartDateTime(),
 				B_SHORT_TIME_FORMAT);
 			timeFormat.Format(endTime, event->GetEndDateTime(),
 				B_SHORT_TIME_FORMAT);
-			timePeriod << startTime << " - " << endTime;
+			
+			if (mode == kDayView)
+				timePeriod << startTime << " - " << endTime;
+			else {
+				dateFormat.Format(startDay, event->GetStartDateTime(),
+					B_SHORT_DATE_FORMAT);
+				dateFormat.Format(endDay, event->GetEndDateTime(),
+					B_SHORT_DATE_FORMAT);
+				timePeriod << startTime << ", " << startDay << " - " \
+								<< endTime << ", " << endDay;
+			}
 		}
 
 		eventName << event->GetName();

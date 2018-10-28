@@ -20,6 +20,8 @@ const uint32 kEditEventMessage = 'ksem';
 const uint32 kDeleteEventMessage = 'kdem';
 const uint32 kLaunchEventManagerToModify = 'klem';
 
+static const int 	kDayView 		= 1005;
+static const int 	kWeekView		= 1006;
 
 class DayView: public BView {
 public:
@@ -42,6 +44,8 @@ private:
 		BScrollView*		fEventScroll;
 		BDate			fDate;
 		SQLiteManager*		fDBManager;
+		
+		int32 mode;
 
 };
 

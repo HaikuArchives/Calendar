@@ -368,6 +368,59 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 }
 
 
+
+BList*
+SQLiteManager::GetEventsOfWeek(BDate& date)
+{
+	BList* events = new BList();
+	date.AddDays(-date.DayOfWeek()+1);
+	BDateTime startOfDay(date, BTime(0, 0, 0));
+	date.AddDays(6);
+	BDateTime endOfDay(date, BTime(23, 59, 59));
+	
+	sqlite3_stmt* stmt;
+	int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
+		OR (START < ? AND END > ?)) AND (STATUS=?);", -1, &stmt, NULL);
+
+	if (rc != SQLITE_OK) {
+		fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
+		return events;
+	}
+
+	sqlite3_bind_int(stmt, 1, startOfDay.Time_t());
+	sqlite3_bind_int(stmt, 2, endOfDay.Time_t());
+	sqlite3_bind_int(stmt, 3, startOfDay.Time_t());
+	sqlite3_bind_int(stmt, 4, startOfDay.Time_t());
+	sqlite3_bind_int(stmt, 5, 1);
+
+	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
+		const char* id = (const char*)sqlite3_column_text(stmt, 0);
+		const char* name = (const char*)sqlite3_column_text(stmt, 1);
+		const char* place = (const char*)sqlite3_column_text(stmt, 2);
+		const char* description = (const char*)sqlite3_column_text(stmt, 3);
+		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
+		time_t start = (time_t)sqlite3_column_int(stmt, 5);
+		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+
+		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		if (category == NULL) {
+			fprintf(stderr, "Error: Received NULL category\n");
+			continue;
+		}
+
+		bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
+		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+		bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
+		Event* event = new Event(name, place, description, allday,
+		start, end, category, notified, updated, status, id);
+
+		events->AddItem(event);
+	}
+
+	sqlite3_finalize(stmt);
+	return events;
+}
+
 BList*
 SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 {
