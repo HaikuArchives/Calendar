@@ -207,7 +207,7 @@ MainWindow::_InitInterface()
 	fMainView = new MainView();
 
 	fMenuBar = new BMenuBar("MenuBar");
-	
+
 	fAppMenu = new BMenu("App");
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
