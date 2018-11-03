@@ -89,9 +89,17 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 		}
 		
-		case kWeekView: case kDayView:
+		case kWeekView:
+		case kDayView:
 		{
 			fDayView->MessageReceived(message);
+			break;
+		}
+		
+		case kAgendaView:
+		{
+			fDayView->MessageReceived(message);
+			fSidePanelView->MessageReceived(new BMessage(kSetCalendarToCurrentDate));
 			break;
 		}
 
@@ -229,6 +237,7 @@ MainWindow::_InitInterface()
 	fViewMenu = new BMenu("View");
 	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
 	fViewMenu->AddItem(new BMenuItem("Week view", new BMessage(kWeekView)));
+	fViewMenu->AddItem(new BMenuItem("Agenda view", new BMessage(kAgendaView)));
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
 
@@ -242,9 +251,11 @@ MainWindow::_InitInterface()
 		"Today", "Today", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day view", "Day view", true);
+		"Day", "Day", true);
 	fToolBar->AddAction(new BMessage(kWeekView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Week view", "Week view", true);
+		"Week", "Week", true);
+	fToolBar->AddAction(new BMessage(kAgendaView), this, LoadVectorIcon("ADD_EVENT"),
+		"Agenda", "Agenda", true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
 		"Add event", "Add event", true);

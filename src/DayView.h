@@ -22,6 +22,7 @@ const uint32 kLaunchEventManagerToModify = 'klem';
 
 static const int 	kDayView 		= 1005;
 static const int 	kWeekView		= 1006;
+static const int 	kAgendaView		= 1007;
 
 class DayView: public BView {
 public:

@@ -12,6 +12,7 @@
 #include <List.h>
 #include <ScrollView.h>
 #include <TimeFormat.h>
+#include <DurationFormat.h>
 #include <DateFormat.h>
 
 #include "Event.h"
@@ -65,10 +66,10 @@ DayView::LoadEvents()
 		fEventListView->MakeEmpty();
 	}
 	
-	if (mode == kDayView)
-		fEventList = fDBManager->GetEventsOfDay(fDate);
-	else if (mode == kWeekView)
+	if (mode == kWeekView)
 		fEventList = fDBManager->GetEventsOfWeek(fDate);
+	else
+		fEventList = fDBManager->GetEventsOfDay(fDate); // Day and Agenda views
 		
 	fEventList->SortItems((int (*)(const void *, const void *))CompareFunc);
 	_PopulateEvents();
@@ -123,6 +124,7 @@ DayView::MessageReceived(BMessage* message)
 		}
 		case kDayView:
 		case kWeekView:
+		case kAgendaView:
 		{
 			mode = message->what;
 			LoadEvents();
@@ -170,12 +172,15 @@ DayView::_PopulateEvents()
 	BString endDay;
 	BString eventName;
 	BString timePeriod;
+	BString remaining;
 	BTimeFormat timeFormat;
 	BDateFormat dateFormat;
+	BDateTime now = BDateTime::CurrentDateTime(B_LOCAL_TIME);
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
-
+		
+		remaining = "";
 		eventName = "";
 		startTime = "";
 		endTime = "";
@@ -198,13 +203,27 @@ DayView::_PopulateEvents()
 			
 			if (mode == kDayView)
 				timePeriod << startTime << " - " << endTime;
-			else {
+			else if (mode == kWeekView) {
 				dateFormat.Format(startDay, event->GetStartDateTime(),
 					B_SHORT_DATE_FORMAT);
 				dateFormat.Format(endDay, event->GetEndDateTime(),
 					B_SHORT_DATE_FORMAT);
 				timePeriod << startTime << ", " << startDay << " - " \
 								<< endTime << ", " << endDay;
+			}
+			else {
+				BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
+				if (now.Time_t() > event->GetStartDateTime() && now.Time_t() < event->GetEndDateTime() &&
+					event->GetEndDateTime() - now.Time_t()) {
+					formatter.Format(remaining, 0, (event->GetEndDateTime() - now.Time_t())*1000000);
+					timePeriod << "Now, " << remaining << " left";
+				}
+				else if (now.Time_t() < event->GetStartDateTime()) {
+					formatter.Format(remaining, 0, (event->GetStartDateTime() - now.Time_t())*1000000);
+					timePeriod << "Starts in " << remaining;
+				}
+				else timePeriod = "Finished!";
+				
 			}
 		}
 

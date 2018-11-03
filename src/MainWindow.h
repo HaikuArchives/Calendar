@@ -55,6 +55,7 @@ private:
 	static const int 	kAddEvent 		= 1004;
 	static const int 	kDayView 		= 1005;
 	static const int 	kWeekView		= 1006;
+	static const int 	kAgendaView		= 1007;
 
 
 	static Preferences*	fPreferences;
