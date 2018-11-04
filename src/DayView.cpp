@@ -213,13 +213,12 @@ DayView::_PopulateEvents()
 			}
 			else {
 				BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
-				if (now.Time_t() >= event->GetStartDateTime() && now.Time_t() <= event->GetEndDateTime() &&
-					event->GetEndDateTime() - now.Time_t()) {
-					formatter.Format(remaining, 0, (event->GetEndDateTime() - now.Time_t())*1000000);
+				if (now.Time_t() >= event->GetStartDateTime() && now.Time_t() <= event->GetEndDateTime()) {
+					formatter.Format(remaining, 0, difftime(event->GetEndDateTime(), now.Time_t())*1000000);
 					timePeriod << "Now, " << remaining << " left";
 				}
 				else if (now.Time_t() < event->GetStartDateTime()) {
-					formatter.Format(remaining, 0, (event->GetStartDateTime() - now.Time_t())*1000000);
+					formatter.Format(remaining, 0, difftime(event->GetStartDateTime(), now.Time_t())*1000000);
 					timePeriod << "Starts in " << remaining;
 				}
 				else timePeriod = "Finished!";
