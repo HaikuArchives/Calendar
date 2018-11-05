@@ -194,8 +194,7 @@ DayView::_PopulateEvents()
 					B_SHORT_DATE_FORMAT);
 				timePeriod << "All day, " << startDay;
 			}
-		else
-		{
+		else {
 			timeFormat.Format(startTime, event->GetStartDateTime(),
 				B_SHORT_TIME_FORMAT);
 			timeFormat.Format(endTime, event->GetEndDateTime(),
