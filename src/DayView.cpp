@@ -217,7 +217,8 @@ DayView::_PopulateEvents()
 				} else if (now.Time_t() < event->GetStartDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetStartDateTime(), now.Time_t())*1000000);
 					timePeriod << "Starts in " << remaining;
-				} else timePeriod = "Finished!";	
+				} else
+					timePeriod = "Finished!";
 			}
 		}
 
