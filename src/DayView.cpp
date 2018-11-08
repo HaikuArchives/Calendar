@@ -192,7 +192,9 @@ DayView::_PopulateEvents()
 			else {
 				dateFormat.Format(startDay, event->GetStartDateTime(),
 					B_SHORT_DATE_FORMAT);
-				timePeriod << "All day, " << startDay;
+				BString startday("All day, %startDay%");
+				startday.ReplaceAll("%startDay%", startDay);
+				timePeriod << startday;
 			}
 		else {
 			timeFormat.Format(startTime, event->GetStartDateTime(),
@@ -214,10 +216,14 @@ DayView::_PopulateEvents()
 				if (now.Time_t() >= event->GetStartDateTime() && 
 				    now.Time_t() <= event->GetEndDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetEndDateTime(), now.Time_t())*1000000);
-					timePeriod << "Now, " << remaining << " left";
+					BString timeLeft("Now, %remaining% left");
+					timeLeft.ReplaceAll("%remaining%", remaining);
+					timePeriod << timeLeft;
 				} else if (now.Time_t() < event->GetStartDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetStartDateTime(), now.Time_t())*1000000);
-					timePeriod << "Starts in " << remaining;
+					BString timeLeft("Starts in %remaining%");
+					timeLeft.ReplaceAll("%remaining%", remaining);
+					timePeriod << timeLeft;
 				} else
 					timePeriod = "Finished!";
 			}
