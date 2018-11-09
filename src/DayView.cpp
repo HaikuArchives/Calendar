@@ -211,7 +211,8 @@ DayView::_PopulateEvents()
 								<< endTime << ", " << endDay;
 			} else {
 				BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
-				if (now.Time_t() >= event->GetStartDateTime() && now.Time_t() <= event->GetEndDateTime()) {
+				if (now.Time_t() >= event->GetStartDateTime() && 
+				    now.Time_t() <= event->GetEndDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetEndDateTime(), now.Time_t())*1000000);
 					timePeriod << "Now, " << remaining << " left";
 				} else if (now.Time_t() < event->GetStartDateTime()) {
