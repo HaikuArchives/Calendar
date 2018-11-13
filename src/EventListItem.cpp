@@ -69,9 +69,9 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	// event time period
 
 	if (IsSelected())
-		view->SetHighColor(tint_color(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR), 1-B_DARKEN_1_TINT));
+		view->SetHighColor(tint_color(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR), B_LIGHTEN_1_TINT));
 	else
-		view->SetHighColor(tint_color(ui_color(B_LIST_ITEM_TEXT_COLOR), 1-B_DARKEN_2_TINT));
+		view->SetHighColor(tint_color(ui_color(B_LIST_ITEM_TEXT_COLOR), B_LIGHTEN_2_TINT));
 
 	view->MovePenTo(offset,
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
