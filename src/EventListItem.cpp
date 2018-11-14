@@ -67,11 +67,18 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	offset += spacing + colorRect.Width() + 2;
 
 	// event time period
-
+	rgb_color color;
+	
 	if (IsSelected())
-		view->SetHighColor(tint_color(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR), B_LIGHTEN_1_TINT));
-	else
-		view->SetHighColor(tint_color(ui_color(B_LIST_ITEM_TEXT_COLOR), B_LIGHTEN_2_TINT));
+	{
+		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+		color.alpha = 0.4;
+		view->SetHighColor(color);
+	} else {
+		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
+		color.alpha = 0.4;
+		view->SetHighColor(color);
+	}
 
 	view->MovePenTo(offset,
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
@@ -83,11 +90,17 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->DrawString(timeText.String());
 
 	// event name
-
+	
 	if (IsSelected())
-		view->SetHighColor(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR));
-	else
-		view->SetHighColor(ui_color(B_LIST_ITEM_TEXT_COLOR));
+	{
+		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+		color.alpha = 0.6;
+		view->SetHighColor(color);
+	} else {
+		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
+		color.alpha = 0.6;
+		view->SetHighColor(color);
+	}
 
 	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
