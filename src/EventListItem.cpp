@@ -71,14 +71,12 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	
 	float tint = B_NO_TINT;
 	float lightTime = B_LIGHTEN_2_TINT;
-	float lightEvent = 0;
 	float darkTime = B_DARKEN_3_TINT;
-	float darkEvent = B_DARKEN_4_TINT;
 	
 	if (IsSelected())
-		color = ui_color(B_LIST_SELECTED_BACKGROUND_COLOR);
+		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
 	else
-		color = ui_color(B_LIST_BACKGROUND_COLOR);
+		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
 		
 	tint = color.red + color.green + color.blue > 128 * 3
 			? darkTime : lightTime;
@@ -94,9 +92,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->DrawString(timeText.String());
 
 	// event name
-	tint = color.red + color.green + color.blue > 128 * 3
-			? darkEvent : lightEvent;
-	view->SetHighColor(tint_color(color, tint));
+	view->SetHighColor(color);
 
 	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
