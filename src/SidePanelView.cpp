@@ -49,8 +49,8 @@ SidePanelView::SidePanelView()
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
 
-	fMonthUpButton = new BButton("MonthuUp", ">", new BMessage(kMonthUpMessage));
-	fMonthDownButton = new BButton("MonthDown", "<◄", new BMessage(kMonthDownMessage));
+	fMonthUpButton = new BButton("MonthuUp", "►", new BMessage(kMonthUpMessage));
+	fMonthDownButton = new BButton("MonthDown", "◄", new BMessage(kMonthDownMessage));
 
 	fMonthUpButton->SetFlat(true);
 	fMonthDownButton->SetFlat(true);
