@@ -46,7 +46,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->SetLowColor(bgColor);
 	view->FillRect(rect);
 
-	timefont.SetSize(timefont.Size() + 5);
+	timefont.SetSize(timefont.Size() + 3);
 	timefont.GetHeight(&finfo);
 	view->SetFont(&timefont);
 
@@ -67,35 +67,41 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	offset += spacing + colorRect.Width() + 2;
 
 	// event time period
-
+	rgb_color color;
+	
+	float tint = B_NO_TINT;
+	float lightTime = B_LIGHTEN_2_TINT;
+	float darkTime = B_DARKEN_3_TINT;
+	
 	if (IsSelected())
-		view->SetHighColor(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR));
+		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
 	else
-		view->SetHighColor(ui_color(B_LIST_ITEM_TEXT_COLOR));
-
-	view->MovePenTo(offset, rect.top + ((rect.Height()
+		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
+		
+	tint = color.red + color.green + color.blue > 128 * 3
+			? darkTime : lightTime;
+	view->SetHighColor(tint_color(color, tint));
+	
+	view->MovePenTo(offset,
+		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
-		+ (finfo.ascent + finfo.descent) - timefont.Size() + 2 + 3);
+		+ (finfo.ascent + finfo.descent));
+		
 	BString timeText(fTimeText);
 	view->TruncateString(&timeText, B_TRUNCATE_END,  rect.Width() - offset - 2);
 	view->DrawString(timeText.String());
 
 	// event name
+	view->SetHighColor(color);
 
-	if (IsSelected())
-		view->SetHighColor(tint_color(ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR),
-			0.7));
-	else
-		view->SetHighColor(tint_color(ui_color(B_LIST_ITEM_TEXT_COLOR), 0.6));
-
-	namefont.SetSize(timefont.Size() - 2);
+	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
 	view->SetFont(&namefont);
-
-	view->MovePenTo(offset,
-		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
+	
+	view->MovePenTo(offset, rect.top + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
-		+ (finfo.ascent + finfo.descent));
+		+ (finfo.ascent + finfo.descent) - timefont.Size() + 2);
+		
 	BString name(fName);
 	view->TruncateString(&name, B_TRUNCATE_END, rect.Width() - offset - 2);
 	view->DrawString(name.String());
