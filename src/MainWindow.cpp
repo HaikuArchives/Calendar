@@ -90,13 +90,13 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 		
 		case kWeekView:
-		case kDayView:
 		{
 			fDayView->MessageReceived(message);
 			break;
 		}
 		
 		case kAgendaView:
+		case kDayView:
 		{
 			fDayView->MessageReceived(message);
 			fSidePanelView->MessageReceived(new BMessage(kSetCalendarToCurrentDate));
