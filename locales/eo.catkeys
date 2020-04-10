@@ -1,0 +1,105 @@
+1	Esperanto	application/x-vnd.Calendar	3944203466
+Go to today	MainWindow		Iri hodiaŭen
+Cancel	EventWindow		Nuligi
+Start time:	EventWindow		Komencotempo:
+Confirm delete	CategoryEditWindow		Verigi forigon
+About	MainWindow		Pri
+Enter the time in HH:mm (24 hour) format.	EventWindow		Eniru tempon HH:mm-aranĝe (24 hore).
+Delete	CategoryEditWindow		Forigi
+End date and time	EventWindow		Finotago kaj tempo
+Tuesday	PreferenceWindow		Mardo
+Finished!	DayView		Finita!
+All day	DayView		Tuttage
+Cancel	CategoryEditWindow		Nuligi
+Monday	PreferenceWindow		Lundo
+Today	MainWindow		Hodiaŭ
+End date:	EventWindow		Finotempo:
+Category manager	CategoryWindow		Kategoria redaktilo
+The name must have a length greater than 2.	EventWindow		La nomo devas pligrandi ol 2 literoj.
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Eraris dum ŝaltado de lasttempa sinkroniga datumo.
+Day	MainWindow		Tage
+The name must have a length greater than 2.	CategoryEditWindow		La nomo devas pligrandi ol 2 literoj.
+Cancel	CategoryWindow		Nuligi
+You cannot delete the default category.	CategoryEditWindow		Neeblas forigi la implictan kategorion.
+No Data Available	GoogleEventSyncWindow		Neniu Datumo Havebla
+Description:	EventWindow		Priskribo:
+Add event	MainWindow		Krei okazon
+Apply	PreferenceWindow		Apliki
+First day of week	PreferenceWindow		Unua semajntago
+Revert	PreferenceWindow		Malfari
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Eraris dum konservado de lasttempa sinkroniga datumo.
+Day view	MainWindow		Vidi tage
+Event	MainWindow		Okazo
+Wednesday	PreferenceWindow		Merkredo
+Saturday	PreferenceWindow		Sabato
+Google Calendar	MainWindow		Google Kalendaro
+Monthly	EventWindow		Monate
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Lasta sinkronigo: %status% je %time%.
+Are you sure you want to delete this event?	EventWindow		Ĉu vi certas, ke vi volas forigi ĉi okazon?
+New category	CategoryEditWindow		Nova kategorio
+Google Calendar Sync	GoogleEventSyncWindow		Google Kalendara Sinkronigo
+Cancel	DayView		Nuligi
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Neeblas krei/redakti la kategorion. Jam ekzistas kategorio samnome aŭ samkolore.
+Are you sure you want to delete the selected event?	DayView		Ĉu vi certas, ke vi volas forigi la elektitan okazon?
+Category Edit	CategoryEditWindow		Kategoria Redaktado
+OK	EventWindow		Bone
+Locale based	PreferenceWindow		Laŭlingve
+Agenda view	MainWindow		Vidi agende
+Week	MainWindow		Semajne
+Confirm delete	DayView		Verigi forigon
+Sunday	PreferenceWindow		Dimanĉo
+Category:	EventWindow		Kategorio:
+Save	CategoryEditWindow		Konservi
+Synchronize	MainWindow		Sinkronigi
+Preferences	MainWindow		Agordoj
+A native Calendar application for Haiku.	App		Simpla Kalendara programo por Haiku.
+Event manager	EventWindow		Okazo redaktilo
+Delete	EventWindow		Forigi
+All day, %startDay%	DayView		Tuttage, %startDay%
+Edit categories	MainWindow		Redakti kategoriojn
+%event% is starting at %time%.	NotificationLoop		%event% komencos je %time%.
+Friday	PreferenceWindow		Vendredo
+Agenda	MainWindow		Agendo
+End time:	EventWindow		Finotempo:
+End date	EventWindow		Finotago
+Add	CategoryWindow		Krei
+Quit	MainWindow		Malfermi
+Start date:	EventWindow		Komencotago:
+Please wait while we sync...	GoogleEventSyncWindow		Bonvolu, atendi dum sinkronigo…
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Bedaŭrinde, neeblas krei okazon finontan antaŭ ĝia komenco.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Neeblas forigi kategorion, jam uzatan de okazoj.
+Remove event	MainWindow		Forigi okazon
+Error	CategoryEditWindow		Eraro
+Delete	EventListView		Forigi
+Confirm delete	EventWindow		Verigi forigon
+Yearly	EventWindow		Jare
+Start date and time	EventWindow		Komencotago kaj tempo
+Starts in %remaining%	DayView		Komencos post %remaining%
+You don't have any events on this day!	EventListView		Ne ekzistas okazoj ĉi-tage!
+Error	EventWindow		Eraro
+Edit event	MainWindow		Redakti okazon
+Thursday	PreferenceWindow		Ĵaŭdo
+Default	CategoryEditWindow		Implicita
+OK	GoogleEventSyncWindow		Bone
+Now, %remaining% left	DayView		Nun, %remaining% restas
+OK	DayView		Bone
+Failed	GoogleEventSyncWindow		Fiaskis
+Error	GoogleEventSyncWindow		Eraro
+View	MainWindow		Vido
+Start date	EventWindow		Komencotago
+Show week number in Calendar	PreferenceWindow		Montri semajnnombron Kalendare
+Preferences	PreferenceWindow		Agordoj
+All day:	EventWindow		Tuttage:
+Recurrence	EventWindow		Ripetas
+There was some error in adding the event. Please try again.	EventWindow		Iel eraris dum kreado de okazon. Bonvole reprovu.
+App	MainWindow		Programo
+Edit	EventListView		Redakti
+Reminder	NotificationLoop		Sciigo
+Place:	EventWindow		Loko:
+Calendar	System name		Kalendaro
+OK	CategoryEditWindow		Bone
+Category	MainWindow		Kategorio
+Week view	MainWindow		Vidi semajne
+Are you sure you want to delete the selected category?	CategoryEditWindow		Ĉu vi certas, ke vi volas forigi la elektitan kategorion?
+Name:	EventWindow		Nomo:
+Success	GoogleEventSyncWindow		Sukceso

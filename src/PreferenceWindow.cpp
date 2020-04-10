@@ -9,6 +9,7 @@
 #include <Application.h>
 #include <Box.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <CheckBox.h>
 #include <LayoutBuilder.h>
 #include <PopUpMenu.h>
@@ -21,9 +22,11 @@
 #include "Preferences.h"
 #include "SidePanelView.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "PreferenceWindow"
 
 PreferenceWindow::PreferenceWindow(Preferences* preferences)
-	:BWindow(BRect(), "Preferences", B_TITLED_WINDOW,
+	:BWindow(BRect(), B_TRANSLATE("Preferences"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	fCurrentPreferences = preferences;
@@ -111,8 +114,11 @@ PreferenceWindow::_InitInterface()
 
 	fDayOfWeekMenu = new BPopUpMenu("DayOfWeekMenu");
 
-	const char* startOfWeekItems[] = {"Locale based", "Monday",
-	"Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", NULL};
+	const char* startOfWeekItems[] = {B_TRANSLATE("Locale based"),
+		B_TRANSLATE("Monday"), B_TRANSLATE("Tuesday"),
+		B_TRANSLATE("Wednesday"), B_TRANSLATE("Thursday"),
+		B_TRANSLATE("Friday"), B_TRANSLATE("Saturday"),
+		B_TRANSLATE("Sunday"), NULL};
 	for (int i = 0; startOfWeekItems[i]; ++i)
 		fDayOfWeekMenu->AddItem(new BMenuItem(startOfWeekItems[i],
 			new BMessage(kStartOfWeekChangeMessage)));
@@ -126,14 +132,14 @@ PreferenceWindow::_InitInterface()
 	font.SetFace(B_BOLD_FACE);
 	fPrefCategoryLabel->SetFont(&font, B_FONT_ALL);
 
-	fStartOfWeekLabel = new BStringView("StartOfWeek", "First day of week");
+	fStartOfWeekLabel = new BStringView("StartOfWeek", B_TRANSLATE("First day of week"));
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
-		"Show week number in Calendar", new BMessage(kShowWeekChangeMessage));
+		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
-	fApplyButton = new BButton("Apply", new BMessage(kApplyPreferencesMessage));
-	fRevertButton = new BButton("Revert", new BMessage(kRevertPreferencesMessage));
+	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
+	fRevertButton = new BButton(B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));
 
 	fApplyButton->SetEnabled(false);
 	fRevertButton->SetEnabled(false);

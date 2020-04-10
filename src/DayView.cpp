@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include <Alert.h>
+#include <Catalog.h>
 #include <LayoutBuilder.h>
 #include <List.h>
 #include <ScrollView.h>
@@ -20,6 +21,8 @@
 #include "EventListView.h"
 #include "SQLiteManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "DayView"
 
 DayView::DayView(const BDate& date)
 	:
@@ -102,9 +105,9 @@ DayView::MessageReceived(BMessage* message)
 			if (selection >= 0) {
 				Event* event = ((Event*)fEventList->ItemAt(selection));
 
-				BAlert* alert = new BAlert("Confirm delete",
-					"Are you sure you want to delete the selected event?",
-					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
+					B_TRANSLATE("Are you sure you want to delete the selected event?"),
+					NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 				alert->SetShortcut(1, B_ESCAPE);
 				int32 button_index = alert->Go();
@@ -188,11 +191,11 @@ DayView::_PopulateEvents()
 
 		if (event->IsAllDay())
 			if (mode == kDayView)
-				timePeriod = "All day";
+				timePeriod = B_TRANSLATE("All day");
 			else {
 				dateFormat.Format(startDay, event->GetStartDateTime(),
 					B_SHORT_DATE_FORMAT);
-				BString startday("All day, %startDay%");
+				BString startday(B_TRANSLATE("All day, %startDay%"));
 				startday.ReplaceAll("%startDay%", startDay);
 				timePeriod << startday;
 			}
@@ -216,16 +219,16 @@ DayView::_PopulateEvents()
 				if (now.Time_t() >= event->GetStartDateTime() && 
 				    now.Time_t() <= event->GetEndDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetEndDateTime(), now.Time_t())*1000000);
-					BString timeLeft("Now, %remaining% left");
+					BString timeLeft(B_TRANSLATE("Now, %remaining% left"));
 					timeLeft.ReplaceAll("%remaining%", remaining);
 					timePeriod << timeLeft;
 				} else if (now.Time_t() < event->GetStartDateTime()) {
 					formatter.Format(remaining, 0, difftime(event->GetStartDateTime(), now.Time_t())*1000000);
-					BString timeLeft("Starts in %remaining%");
+					BString timeLeft(B_TRANSLATE("Starts in %remaining%"));
 					timeLeft.ReplaceAll("%remaining%", remaining);
 					timePeriod << timeLeft;
 				} else
-					timePeriod = "Finished!";
+					timePeriod = B_TRANSLATE("Finished!");
 			}
 		}
 

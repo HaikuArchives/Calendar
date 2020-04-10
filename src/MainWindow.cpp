@@ -6,6 +6,7 @@
 #include "MainWindow.h"
 
 #include <Application.h>
+#include <Catalog.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
 #include <Menu.h>
@@ -28,6 +29,8 @@
 
 using BPrivate::BToolBar;
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "MainWindow"
 
 extern int32 NotificationLoop(void* data);
 Preferences* MainWindow::fPreferences = NULL;
@@ -35,7 +38,7 @@ Preferences* MainWindow::fPreferences = NULL;
 
 MainWindow::MainWindow()
 	:
-	BWindow(fPreferences->fMainWindowRect, "Calendar", B_TITLED_WINDOW,
+	BWindow(fPreferences->fMainWindowRect, B_TRANSLATE_SYSTEM_NAME("Calendar"), B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fEventWindow(NULL)
 {
@@ -216,30 +219,30 @@ MainWindow::_InitInterface()
 
 	fMenuBar = new BMenuBar("MenuBar");
 
-	fAppMenu = new BMenu("App");
-	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
+	fAppMenu = new BMenu(B_TRANSLATE("App"));
+	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"), new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem("Preferences", new BMessage(kMenuAppPref)));
-	fSyncMenu = new BMenu("Synchronize");
-	fSyncMenu->AddItem(new BMenuItem("Google Calendar", new BMessage(kMenuSyncGCAL)));
+	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Preferences"), new BMessage(kMenuAppPref)));
+	fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
+	fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
 	fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
-	fAppMenu->AddItem(new BMenuItem("Quit", new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
+	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
-	fEventMenu = new BMenu("Event");
-	fEventMenu->AddItem(new BMenuItem("Add event", new BMessage(kAddEvent)));
-	fEventMenu->AddItem(new BMenuItem("Edit event", new BMessage(kMenuEventEdit)));
-	fEventMenu->AddItem(new BMenuItem("Remove event", new BMessage(kMenuEventDelete)));
+	fEventMenu = new BMenu(B_TRANSLATE("Event"));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Add event"), new BMessage(kAddEvent)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kMenuEventEdit)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kMenuEventDelete)));
 
-	fCategoryMenu = new BMenu("Category");
-	fCategoryMenu->AddItem(new BMenuItem("Edit categories", new BMessage(kMenuCategoryEdit)));
-	fViewMenu = new BMenu("View");
-	fViewMenu->AddItem(new BMenuItem("Day view", new BMessage(kDayView)));
-	fViewMenu->AddItem(new BMenuItem("Week view", new BMessage(kWeekView)));
-	fViewMenu->AddItem(new BMenuItem("Agenda view", new BMessage(kAgendaView)));
+	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
+	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit categories"), new BMessage(kMenuCategoryEdit)));
+	fViewMenu = new BMenu(B_TRANSLATE("View"));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Day view"), new BMessage(kDayView)));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Week view"), new BMessage(kWeekView)));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda view"), new BMessage(kAgendaView)));
 	fViewMenu->AddSeparatorItem();
-	fViewMenu->AddItem(new BMenuItem("Go to today", new BMessage(kSetCalendarToCurrentDate)));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Go to today"), new BMessage(kSetCalendarToCurrentDate)));
 
 	fMenuBar->AddItem(fAppMenu);
 	fMenuBar->AddItem(fEventMenu);
@@ -248,17 +251,17 @@ MainWindow::_InitInterface()
 
 	fToolBar = new BToolBar();
 	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Today", "Today", true);
+		"Today", B_TRANSLATE("Today"), true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day", "Day", true);
+		"Day", B_TRANSLATE("Day"), true);
 	fToolBar->AddAction(new BMessage(kWeekView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Week", "Week", true);
+		"Week", B_TRANSLATE("Week"), true);
 	fToolBar->AddAction(new BMessage(kAgendaView), this, LoadVectorIcon("ADD_EVENT"),
-		"Agenda", "Agenda", true);
+		"Agenda", B_TRANSLATE("Agenda"), true);
 	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
-		"Add event", "Add event", true);
+		"Add event", B_TRANSLATE("Add event"), true);
 	fToolBar->AddGlue();
 
 	fSidePanelView = new SidePanelView();

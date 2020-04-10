@@ -8,6 +8,7 @@
 
 #include <Application.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <LayoutBuilder.h>
 #include <ListView.h>
 #include <ScrollView.h>
@@ -18,10 +19,12 @@
 #include "CategoryListItem.h"
 #include "SQLiteManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "CategoryWindow"
 
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), "Category manager",B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Category manager"),B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
 {
@@ -135,8 +138,10 @@ CategoryWindow::_InitInterface()
 
 	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
 
-	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
-	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
+	fAddButton = new BButton("AddButton", B_TRANSLATE("Add"),
+		new BMessage(kAddPressed));
+	fCancelButton = new BButton("CancelButton", B_TRANSLATE("Cancel"),
+		new BMessage(kCancelPressed));
 
 	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	fCancelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
