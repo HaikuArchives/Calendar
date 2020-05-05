@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include <Alert.h>
+#include <Catalog.h>
 #include <Directory.h>
 #include <Entry.h>
 #include <File.h>
@@ -19,6 +20,8 @@
 #include "Event.h"
 #include "SQLiteManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "SQLiteManager"
 
 const char* kDirectoryName	= "Calendar";
 const char* kDatabaseName	= "events.sql";
@@ -61,23 +64,27 @@ SQLiteManager::_Initialise()
 		sqlite3_free(zErrMsg);
 		sqlite3_close(db);
 
-		BAlert* alert = new BAlert("SQLITE ERROR",
-			"Cannot open database. Your saved events will not be loaded.",
-			"OK", NULL, NULL,
+		BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
+			B_TRANSLATE("Cannot open database. Your saved events will not be loaded."),
+			B_TRANSLATE("OK"), NULL, NULL,
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->Go();
 	}
 
 	if (!exists) {
-		const char *sql =
+		BString sql_tmp = 
 		"CREATE TABLE CATEGORIES(ID TEXT PRIMARY KEY, NAME TEXT NOT NULL UNIQUE, COLOR TEXT NOT NULL UNIQUE);"
 		"CREATE TABLE EVENTS(ID TEXT PRIMARY KEY, NAME TEXT, PLACE TEXT,"
 		"DESCRIPTION TEXT, ALLDAY INTEGER, START INTEGER, END INTEGER, CATEGORY TEXT, EVENT_NOTIFIED INTEGER,"
 		"UPDATED INTEGER, STATUS INTEGER,"
 		"FOREIGN KEY(CATEGORY) REFERENCES CATEGORIES(ID) ON DELETE RESTRICT);"
-		"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', 'Default', '1E90FF');"
-		"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4', 'Birthday', 'C25656');"
+		"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', '%default%', '1E90FF');"
+		"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4', '%birthday%', 'C25656');"
 		"PRAGMA foreign_keys = ON;";
+		sql_tmp.ReplaceAll("%default%", B_TRANSLATE("Default"));
+		sql_tmp.ReplaceAll("%birthday%", B_TRANSLATE("Birthday"));
+
+		const char *sql = sql_tmp.String();
 
 		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
 
@@ -85,9 +92,9 @@ SQLiteManager::_Initialise()
 			sqlite3_free(zErrMsg);
 			sqlite3_close(db);
 
-			BAlert* alert = new BAlert("SQLITE ERROR",
-				"There was a SQLite error",
-				"OK", NULL, NULL,
+			BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
+				B_TRANSLATE("There was a SQLite error"),
+				B_TRANSLATE("OK"), NULL, NULL,
 				B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->Go();
 		}

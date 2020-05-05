@@ -1,4 +1,4 @@
-1	Esperanto	application/x-vnd.Calendar	3944203466
+1	Esperanto	application/x-vnd.Calendar	2172292431
 Go to today	MainWindow		Iri hodiaŭen
 Cancel	EventWindow		Nuligi
 Start time:	EventWindow		Komencotempo:
@@ -33,25 +33,32 @@ Event	MainWindow		Okazo
 Wednesday	PreferenceWindow		Merkredo
 Saturday	PreferenceWindow		Sabato
 Google Calendar	MainWindow		Google Kalendaro
-Monthly	EventWindow		Monate
 Last Sync: %status% at %time%.	GoogleEventSyncWindow		Lasta sinkronigo: %status% je %time%.
+There was a SQLite error	SQLiteManager		Eraris SQLite
+Monthly	EventWindow		Monate
+Google Calendar Sync	GoogleEventSyncWindow		Google Kalendara Sinkronigo
 Are you sure you want to delete this event?	EventWindow		Ĉu vi certas, ke vi volas forigi ĉi okazon?
 New category	CategoryEditWindow		Nova kategorio
-Google Calendar Sync	GoogleEventSyncWindow		Google Kalendara Sinkronigo
+Cannot open database. Your saved events will not be loaded.	SQLiteManager		Neeblas malfermi datumbazon. Viaj konservitaj okzaoj ne ŝaltiĝos.
 Cancel	DayView		Nuligi
 Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Neeblas krei/redakti la kategorion. Jam ekzistas kategorio samnome aŭ samkolore.
 Are you sure you want to delete the selected event?	DayView		Ĉu vi certas, ke vi volas forigi la elektitan okazon?
+Configuration file	Preferences		Agorda dosiero
 Category Edit	CategoryEditWindow		Kategoria Redaktado
 OK	EventWindow		Bone
 Locale based	PreferenceWindow		Laŭlingve
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Neeblis malfermi agordan dosieron ĉar la loko estas nedifinita. Probable tio signifas, ke la programisto eraris iel. Vi ne povas fari ion ajn pri tio. Viaj propraj agordoj ne ŝaltiĝos. Bedaŭron.
 Agenda view	MainWindow		Vidi agende
 Week	MainWindow		Semajne
 Confirm delete	DayView		Verigi forigon
 Sunday	PreferenceWindow		Dimanĉo
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Restas nesufiĉa kvanto de memoro je via sistmo, por ŝalti la agordan dosieron. Se vi deziras ke viaj propraj agordoj ŝaltiĝi, provu malfermi kelkajn programojn, kaj poste restartigi Kalendaron.
 Category:	EventWindow		Kategorio:
 Save	CategoryEditWindow		Konservi
 Synchronize	MainWindow		Sinkronigi
 Preferences	MainWindow		Agordoj
+Birthday	SQLiteManager		Naskiĝtago
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Restas nesufiĉa kvanto de memoro je via sistmo, por ŝalti la agordan dosieron. Se vi deziras ke viaj propraj agordoj ŝaltiĝi, provu malfermi kelkajn programojn, kaj poste restartigi Kalendaron.
 A native Calendar application for Haiku.	App		Simpla Kalendara programo por Haiku.
 Event manager	EventWindow		Okazo redaktilo
 Delete	EventWindow		Forigi
@@ -61,6 +68,8 @@ Edit categories	MainWindow		Redakti kategoriojn
 Friday	PreferenceWindow		Vendredo
 Agenda	MainWindow		Agendo
 End time:	EventWindow		Finotempo:
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Neeblis malfermi la agordan dosieron, ĉar mankas permeso. Tio probable signifas ke vi ne rajtas legi vian agordan dosierujon. Se vi deziras, ke viaj propraj agordoj ŝaltiĝus, referenci vian funkcisisteman helpolibron, pro trovi la dosierujon, kaj provu ŝanĝi viajn rajtojn.
+OK	SQLiteManager		Bone
 End date	EventWindow		Finotago
 Add	CategoryWindow		Krei
 Quit	MainWindow		Malfermi
@@ -74,6 +83,7 @@ Delete	EventListView		Forigi
 Confirm delete	EventWindow		Verigi forigon
 Yearly	EventWindow		Jare
 Start date and time	EventWindow		Komencotago kaj tempo
+Default	SQLiteManager		Implicita
 Starts in %remaining%	DayView		Komencos post %remaining%
 You don't have any events on this day!	EventListView		Ne ekzistas okazoj ĉi-tage!
 Error	EventWindow		Eraro
@@ -101,5 +111,7 @@ OK	CategoryEditWindow		Bone
 Category	MainWindow		Kategorio
 Week view	MainWindow		Vidi semajne
 Are you sure you want to delete the selected category?	CategoryEditWindow		Ĉu vi certas, ke vi volas forigi la elektitan kategorion?
+OK	Preferences		Bone
 Name:	EventWindow		Nomo:
 Success	GoogleEventSyncWindow		Sukceso
+SQLITE ERROR	SQLiteManager		SQLITE ERROR
