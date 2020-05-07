@@ -24,7 +24,8 @@
 
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), B_TRANSLATE("Category manager"),B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Category manager"),
+		B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
 {

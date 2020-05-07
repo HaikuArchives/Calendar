@@ -64,8 +64,13 @@ SQLiteManager::_Initialise()
 		sqlite3_free(zErrMsg);
 		sqlite3_close(db);
 
+		BString openErrorCode;
+		openErrorCode << rc;
+		BString openErrorMsg = 
+			B_TRANSLATE("Cannot open database (%code%). Your saved events will not be loaded.");
+
 		BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
-			B_TRANSLATE("Cannot open database. Your saved events will not be loaded."),
+			openErrorMsg.ReplaceAll("%code%", openErrorCode),
 			B_TRANSLATE("OK"), NULL, NULL,
 			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->Go();
@@ -92,8 +97,12 @@ SQLiteManager::_Initialise()
 			sqlite3_free(zErrMsg);
 			sqlite3_close(db);
 
+			BString creationErrorCode;
+			creationErrorCode << rc;
+			BString creationErrorMsg = B_TRANSLATE("There was an SQLite error (%code%).");
+
 			BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
-				B_TRANSLATE("There was a SQLite error"),
+				creationErrorMsg.ReplaceAll("%code%", creationErrorCode),
 				B_TRANSLATE("OK"), NULL, NULL,
 				B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->Go();
