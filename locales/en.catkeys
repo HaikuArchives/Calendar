@@ -1,4 +1,4 @@
-1	English	application/x-vnd.Calendar	2172292431
+1	English	application/x-vnd.Calendar	3957779383
 Go to today	MainWindow		Go to today
 Cancel	EventWindow		Cancel
 Start time:	EventWindow		Start time:
@@ -34,12 +34,10 @@ Wednesday	PreferenceWindow		Wednesday
 Saturday	PreferenceWindow		Saturday
 Google Calendar	MainWindow		Google Calendar
 Last Sync: %status% at %time%.	GoogleEventSyncWindow		Last Sync: %status% at %time%.
-There was a SQLite error	SQLiteManager		There was a SQLite error
 Monthly	EventWindow		Monthly
 Google Calendar Sync	GoogleEventSyncWindow		Google Calendar Sync
 Are you sure you want to delete this event?	EventWindow		Are you sure you want to delete this event?
 New category	CategoryEditWindow		New category
-Cannot open database. Your saved events will not be loaded.	SQLiteManager		Cannot open database. Your saved events will not be loaded.
 Cancel	DayView		Cancel
 Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Cannot add/modify the category. A category with the same name or color already exists.
 Are you sure you want to delete the selected event?	DayView		Are you sure you want to delete the selected event?
@@ -55,6 +53,7 @@ Sunday	PreferenceWindow		Sunday
 There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.
 Category:	EventWindow		Category:
 Save	CategoryEditWindow		Save
+There was an SQLite error (%code%).	SQLiteManager		There was an SQLite error (%code%).
 Synchronize	MainWindow		Synchronize
 Preferences	MainWindow		Preferences
 Birthday	SQLiteManager		Birthday
@@ -80,6 +79,7 @@ Cannot delete category. Can't delete a category used by events.	CategoryEditWind
 Remove event	MainWindow		Remove event
 Error	CategoryEditWindow		Error
 Delete	EventListView		Delete
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Cannot open database (%code%). Your saved events will not be loaded.
 Confirm delete	EventWindow		Confirm delete
 Yearly	EventWindow		Yearly
 Start date and time	EventWindow		Start date and time
