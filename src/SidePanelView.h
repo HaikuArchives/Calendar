@@ -9,17 +9,10 @@
 #include <View.h>
 
 #include "DateHeaderView.h"
-
+#include "OurCalendarView.h"
 
 class BButton;
 class BStringView;
-
-
-namespace BPrivate {
-	class BCalendarView;
-}
-
-using BPrivate::BCalendarView;
 
 enum {
 	kSelectionMessage,
@@ -48,7 +41,7 @@ private:
 
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;
-		BCalendarView*		fCalendarView;
+		OurCalendarView*	fCalendarView;
 		DateHeaderView*		fDateHeaderView;
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;
