@@ -11,6 +11,7 @@
 #include <Alert.h>
 #include <Box.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <CheckBox.h>
 #include <ColorMenuItem.h>
 #include <DateFormat.h>
@@ -42,14 +43,16 @@
 #include "Preferences.h"
 #include "SQLiteManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "EventWindow"
 
 Preferences* EventWindow::fPreferences = NULL;
 
 
 EventWindow::EventWindow()
 	:
-	BWindow(fPreferences->fEventWindowRect, "Event manager", B_TITLED_WINDOW,
-			B_AUTO_UPDATE_SIZE_LIMITS)
+	BWindow(fPreferences->fEventWindowRect, B_TRANSLATE("Event manager"),
+			B_TITLED_WINDOW, B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
 
@@ -275,9 +278,9 @@ EventWindow::OnSaveClick()
 {
 	if (BString(fTextName->Text()).CountChars() < 3) {
 
-		BAlert* alert  = new BAlert("Error",
-			"The name must have a length greater than 2.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("The name must have a length greater than 2."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->SetShortcut(0, B_ESCAPE);
 		alert->Go();
@@ -306,9 +309,9 @@ EventWindow::OnSaveClick()
 	end = BDateTime(fEndDate, endTime).Time_t();
 
 	if (difftime(start, end) > 0) {
-		BAlert* alert  = new BAlert("Error",
-			"Sorry, you cannot create an event that ends before it starts.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("Sorry, you cannot create an event that ends before it starts."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->SetShortcut(0, B_ESCAPE);
 		alert->Go();
@@ -338,9 +341,9 @@ EventWindow::OnSaveClick()
 
 	else
 	{
-		BAlert* alert  = new BAlert("Error",
-			"There was some error in adding the event. Please try again.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("There was some error in adding the event. Please try again."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;
 	}
@@ -350,9 +353,9 @@ EventWindow::OnSaveClick()
 void
 EventWindow::OnDeleteClick()
 {
-	BAlert* alert = new BAlert("Confirm delete",
-		"Are you sure you want to delete this event?",
-		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
+		B_TRANSLATE("Are you sure you want to delete this event?"),
+		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();
@@ -409,7 +412,7 @@ EventWindow::_InitInterface()
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 
-	const char* tooltip = "Enter the time in HH:mm (24 hour) format.";
+	const char* tooltip = B_TRANSLATE("Enter the time in HH:mm (24 hour) format.");
 	fTextStartTime->SetToolTip(tooltip);
 	fTextEndTime->SetToolTip(tooltip);
 
@@ -420,23 +423,23 @@ EventWindow::_InitInterface()
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 
-	fEveryMonth = new BRadioButton("EveryMonth", "Monthly", new BMessage(kOptEveryMonth));
-	fEveryYear = new BRadioButton("EveryYear", "Yearly", new BMessage(kOptEveryYear));
+	fEveryMonth = new BRadioButton("EveryMonth", B_TRANSLATE("Monthly"), new BMessage(kOptEveryMonth));
+	fEveryYear = new BRadioButton("EveryYear", B_TRANSLATE("Yearly"), new BMessage(kOptEveryYear));
 
-	fNameLabel = new BStringView("NameLabel", "Name:");
-	fPlaceLabel = new BStringView("PlaceLabel", "Place:");
-	fDescriptionLabel = new BStringView("DescriptionLabel", "Description:");
-	fCategoryLabel = new BStringView("CategoryLabel", "Category:");
-	fAllDayLabel = new BStringView("AllDayLabel", "All day:");
-	fEndDateLabel = new BStringView("EndDateLabel", "End date:");
-	fStartDateLabel = new BStringView("StartDateLabel", "Start date:");
-	fStartTimeLabel = new BStringView("StartTimeLabel", "Start time:");
-	fEndTimeLabel = new BStringView("EndTimeLabel", "End time:");
+	fNameLabel = new BStringView("NameLabel", B_TRANSLATE("Name:"));
+	fPlaceLabel = new BStringView("PlaceLabel", B_TRANSLATE("Place:"));
+	fDescriptionLabel = new BStringView("DescriptionLabel", B_TRANSLATE("Description:"));
+	fCategoryLabel = new BStringView("CategoryLabel", B_TRANSLATE("Category:"));
+	fAllDayLabel = new BStringView("AllDayLabel", B_TRANSLATE("All day:"));
+	fEndDateLabel = new BStringView("EndDateLabel", B_TRANSLATE("End date:"));
+	fStartDateLabel = new BStringView("StartDateLabel", B_TRANSLATE("Start date:"));
+	fStartTimeLabel = new BStringView("StartTimeLabel", B_TRANSLATE("Start time:"));
+	fEndTimeLabel = new BStringView("EndTimeLabel", B_TRANSLATE("End time:"));
 
-	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
+	fDeleteButton = new BButton("DeleteButton", B_TRANSLATE("Delete"), new BMessage(kDeletePressed));
 	fDeleteButton->SetEnabled(false);
-	BButton* CancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
-	BButton* SaveButton = new BButton("SaveButton", "OK", new BMessage(kSavePressed));
+	BButton* CancelButton = new BButton("CancelButton", B_TRANSLATE("Cancel"), new BMessage(kCancelPressed));
+	BButton* SaveButton = new BButton("SaveButton", B_TRANSLATE("OK"), new BMessage(kSavePressed));
 
 	BMessage* message = new BMessage(kShowPopUpCalendar);
 	message->AddInt8("which",0);
@@ -464,8 +467,8 @@ EventWindow::_InitInterface()
 	fCategoryMenu->SetLabelFromMarked(true);
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
-	fStartDateEdit = new BMenu("Start date");
-	fEndDateEdit = new BMenu("End date");
+	fStartDateEdit = new BMenu(B_TRANSLATE("Start date"));
+	fEndDateEdit = new BMenu(B_TRANSLATE("End date"));
 
 	fCategoryMenuField = new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
 
@@ -478,7 +481,7 @@ EventWindow::_InitInterface()
 			.Add(fEveryYear)
 		.End()
 	.End();
-	fRecurrenceBox->SetLabel("Recurrence");
+	fRecurrenceBox->SetLabel(B_TRANSLATE("Recurrence"));
 
 	fStartDateBox = new BBox("startdatetime");
 	BLayoutBuilder::Group<>(fStartDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -492,7 +495,7 @@ EventWindow::_InitInterface()
 			.Add(fTextStartTime, 1, 1)
 		.End()
 	.End();
-	fStartDateBox->SetLabel("Start date and time");
+	fStartDateBox->SetLabel(B_TRANSLATE("Start date and time"));
 
 	fEndDateBox = new BBox("enddatetime");
 	BLayoutBuilder::Group<>(fEndDateBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -506,7 +509,7 @@ EventWindow::_InitInterface()
 			.Add(fTextEndTime, 1, 1)
 		.End()
 	.End();
-	fEndDateBox->SetLabel("End date and time");
+	fEndDateBox->SetLabel(B_TRANSLATE("End date and time"));
 
 	BBox* divider = new BBox(BRect(0, 0, 1, 1),
 		B_EMPTY_STRING, B_FOLLOW_ALL_SIDES,

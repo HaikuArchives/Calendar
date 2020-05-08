@@ -6,6 +6,7 @@
 #include "App.h"
 
 #include <AboutWindow.h>
+#include <Catalog.h>
 #include <Directory.h>
 #include <Entry.h>
 #include <File.h>
@@ -21,9 +22,11 @@
 #include "Preferences.h"
 #include "PreferenceWindow.h"
 
-const char* kAppName = "Calendar";
+const char* kAppName = B_TRANSLATE_SYSTEM_NAME("Calendar");
 const char* kSignature = "application/x-vnd.calendar";
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "App"
 
 App::App()
 	:
@@ -65,7 +68,7 @@ void
 App::AboutRequested()
 {
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
-	aboutW->AddDescription("A native Calendar application for Haiku.");
+	aboutW->AddDescription(B_TRANSLATE("A native Calendar application for Haiku."));
 	aboutW->AddCopyright(2017, "Akshay Agarwal");
 	aboutW->SetVersion("1.0");
 	aboutW->Show();
