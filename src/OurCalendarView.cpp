@@ -7,6 +7,7 @@
 
 #include <CalendarView.h>
 #include <DateFormat.h>
+#include <stdlib.h>
 
 #include "SQLiteManager.h"
 

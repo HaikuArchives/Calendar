@@ -30,30 +30,31 @@ APP_MIME_SIG = application/x-vnd.Calendar
 #	Also note that spaces in folder names do not work well with this Makefile.
 SRCS = \
 	 src/App.cpp  \
-	 src/MainWindow.cpp  \
-	 src/MainView.cpp  \
-	 src/DayView.cpp  \
-	 src/DateHeaderView.cpp  \
-	 src/EventWindow.cpp  \
 	 src/CategoryWindow.cpp  \
 	 src/ColorPreview.cpp  \
 	 src/CategoryEditWindow.cpp  \
+	 src/CategoryListItem.cpp \
 	 src/CalendarMenuWindow.cpp  \
-	 src/PreferenceWindow.cpp  \
-	 src/SidePanelView.cpp  \
-	 src/Preferences.cpp  \
+	 src/DateHeaderView.cpp  \
+	 src/DayView.cpp  \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
+	 src/EventWindow.cpp  \
+	 src/PreferenceWindow.cpp  \
 	 src/NotificationLoop.cpp  \
-	 src/CategoryListItem.cpp \
-	 src/utils/ResourceLoader.cpp  \
+	 src/MainWindow.cpp  \
+	 src/MainView.cpp  \
+	 src/OurCalendarView.cpp \
+	 src/Preferences.cpp  \
+	 src/SidePanelView.cpp  \
 	 src/utils/ColorConverter.cpp  \
-	 src/model/Event.cpp \
+	 src/utils/ResourceLoader.cpp  \
 	 src/model/Category.cpp  \
+	 src/model/Event.cpp \
 	 src/db/SQLiteManager.cpp  \
 	 src/plugin/GoogleCalendar/EventSync.cpp \
-	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp  \
-	 src/plugin/GoogleCalendar/EventSyncWindow.cpp
+	 src/plugin/GoogleCalendar/EventSyncWindow.cpp \
+	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp 
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
