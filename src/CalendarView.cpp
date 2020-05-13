@@ -3,7 +3,7 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-#include "OurCalendarView.h"
+#include "CalendarView.h"
 
 #include <CalendarView.h>
 #include <DateFormat.h>
@@ -12,7 +12,7 @@
 #include "SQLiteManager.h"
 
 
-OurCalendarView::OurCalendarView(BRect frame, const char* name,
+CalendarView::CalendarView(BRect frame, const char* name,
 	uint32 resizeMask, uint32 flags)
 	:
 	BCalendarView(frame, name, resizeMask, flags)
@@ -20,21 +20,21 @@ OurCalendarView::OurCalendarView(BRect frame, const char* name,
 	_Init();
 }
 
-OurCalendarView::OurCalendarView (const char* text)
+CalendarView::CalendarView (const char* text)
 	:
 	BCalendarView(text)
 {
 	_Init();
 }
 
-OurCalendarView::OurCalendarView (BMessage* archive)
+CalendarView::CalendarView (BMessage* archive)
 	:
 	BCalendarView(archive)
 {
 	_Init();
 }
 
-OurCalendarView::OurCalendarView (const char* name, uint32 flags)
+CalendarView::CalendarView (const char* name, uint32 flags)
 	:
 	BCalendarView(name, flags)
 {
@@ -42,14 +42,14 @@ OurCalendarView::OurCalendarView (const char* name, uint32 flags)
 }
 
 void
-OurCalendarView::_Init ()
+CalendarView::_Init ()
 {
 	fDBManager = new SQLiteManager();
 }
 
 
 void
-OurCalendarView::DrawDay (BView* owner, BRect frame, const char* text,
+CalendarView::DrawDay (BView* owner, BRect frame, const char* text,
 	bool isSelected, bool isEnabled, bool focus, bool highlight)
 {
 	int drawnYear  = Date().Year();

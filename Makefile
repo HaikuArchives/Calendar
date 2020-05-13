@@ -44,7 +44,7 @@ SRCS = \
 	 src/NotificationLoop.cpp  \
 	 src/MainWindow.cpp  \
 	 src/MainView.cpp  \
-	 src/OurCalendarView.cpp \
+	 src/CalendarView.cpp \
 	 src/Preferences.cpp  \
 	 src/SidePanelView.cpp  \
 	 src/utils/ColorConverter.cpp  \

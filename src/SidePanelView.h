@@ -9,7 +9,7 @@
 #include <View.h>
 
 #include "DateHeaderView.h"
-#include "OurCalendarView.h"
+#include "CalendarView.h"
 
 class BButton;
 class BStringView;
@@ -41,7 +41,7 @@ private:
 
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;
-		OurCalendarView*	fCalendarView;
+		CalendarView*   	fCalendarView;
 		DateHeaderView*		fDateHeaderView;
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;

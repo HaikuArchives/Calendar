@@ -20,12 +20,12 @@ namespace BPrivate {
 using BPrivate::BCalendarView;
 
 
-class OurCalendarView: public BCalendarView {
+class CalendarView: public BCalendarView {
 public:
-					OurCalendarView(BRect, const char*, uint32, uint32);
-					OurCalendarView(BMessage*);
-					OurCalendarView(const char*);
-					OurCalendarView(const char*, uint32);
+					CalendarView(BRect, const char*, uint32, uint32);
+					CalendarView(BMessage*);
+					CalendarView(const char*);
+					CalendarView(const char*, uint32);
 
 		void			DrawDay(BView*, BRect, const char*, bool, bool, bool, bool);
 private:

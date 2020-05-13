@@ -15,7 +15,7 @@
 #include "MainView.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
-#include "OurCalendarView.h"
+#include "CalendarView.h"
 
 
 enum StartOfWeek
@@ -37,7 +37,7 @@ SidePanelView::SidePanelView()
 {
 	SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fCalendarView = new OurCalendarView("calendar");
+	fCalendarView = new CalendarView("calendar");
 	fCalendarView->SetWeekNumberHeaderVisible(false);
 	//fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
 	fCalendarView->SetSelectionMessage(new BMessage(kSelectionMessage));
