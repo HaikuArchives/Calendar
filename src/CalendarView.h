@@ -2,8 +2,8 @@
  * Copyright 2017 Jadedctrl
  * All rights reserved. Distributed under the terms of the MIT license.
  */
-#ifndef OUR_CALENDAR_VIEW_H
-#define OUR_CALENDAR_VIEW_H
+#ifndef CALENDAR_VIEW_H
+#define CALENDAR_VIEW_H
 
 #include <CalendarView.h>
 #include <DateTime.h>
