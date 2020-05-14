@@ -7,7 +7,6 @@
 #include "SidePanelView.h"
 
 #include <Button.h>
-#include <CalendarView.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
@@ -16,9 +15,8 @@
 #include "MainView.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
+#include "CalendarView.h"
 
-
-using BPrivate::BCalendarView;
 
 enum StartOfWeek
 {
@@ -39,7 +37,7 @@ SidePanelView::SidePanelView()
 {
 	SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fCalendarView = new BCalendarView("calendar");
+	fCalendarView = new CalendarView("calendar");
 	fCalendarView->SetWeekNumberHeaderVisible(false);
 	//fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
 	fCalendarView->SetSelectionMessage(new BMessage(kSelectionMessage));
