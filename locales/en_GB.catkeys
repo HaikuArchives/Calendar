@@ -1,0 +1,117 @@
+1	English (British)	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% is starting at %time%.
+Reminder	NotificationLoop		Reminder
+A native Calendar application for Haiku.	App		A native Calendar application for Haiku.
+About	MainWindow		About
+Add event	MainWindow		Add event
+Agenda	MainWindow		Agenda
+Agenda view	MainWindow		Agenda view
+App	MainWindow		App
+Category	MainWindow		Category
+Day	MainWindow		Day
+Day view	MainWindow		Day view
+Edit categories	MainWindow		Edit categories
+Edit event	MainWindow		Edit event
+Event	MainWindow		Event
+Go to today	MainWindow		Go to today
+Google Calendar	MainWindow		Google Calendar
+Preferences	MainWindow		Preferences
+Quit	MainWindow		Quit
+Remove event	MainWindow		Remove event
+Synchronize	MainWindow		Synchronise
+Today	MainWindow		Today
+View	MainWindow		View
+Week	MainWindow		Week
+Week view	MainWindow		Week view
+Add	CategoryWindow		Add
+Cancel	CategoryWindow		Cancel
+Category manager	CategoryWindow		Category manager
+All day	DayView		All day
+All day, %startDay%	DayView		All day, %startDay%
+Are you sure you want to delete the selected event?	DayView		Are you sure you want to delete the selected event?
+Cancel	DayView		Cancel
+Confirm delete	DayView		Confirm delete
+Finished!	DayView		Finished!
+Now, %remaining% left	DayView		Now, %remaining% left
+OK	DayView		OK
+Starts in %remaining%	DayView		Starts in %remaining%
+All day:	EventWindow		All day:
+Are you sure you want to delete this event?	EventWindow		Are you sure you want to delete this event?
+Cancel	EventWindow		Cancel
+Category:	EventWindow		Category:
+Confirm delete	EventWindow		Confirm delete
+Delete	EventWindow		Delete
+Description:	EventWindow		Description:
+End date	EventWindow		End date
+End date and time	EventWindow		End date and time
+End date:	EventWindow		End date:
+End time:	EventWindow		End time:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Enter the time in HH:mm (24 hour) format.
+Error	EventWindow		Error
+Event manager	EventWindow		Event manager
+Monthly	EventWindow		Monthly
+Name:	EventWindow		Name:
+OK	EventWindow		Alright
+Place:	EventWindow		Place:
+Recurrence	EventWindow		Recurrence
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Sorry, you cannot create an event that ends before it starts.
+Start date	EventWindow		Start date
+Start date and time	EventWindow		Start date and time
+Start date:	EventWindow		Start date:
+Start time:	EventWindow		Start time:
+The name must have a length greater than 2.	EventWindow		The name must have a length greater than 2.
+There was some error in adding the event. Please try again.	EventWindow		There was some error in adding the event. Please try again.
+Yearly	EventWindow		Yearly
+Apply	PreferenceWindow		Apply
+First day of week	PreferenceWindow		First day of week
+Friday	PreferenceWindow		Friday
+Locale based	PreferenceWindow		Locale based
+Monday	PreferenceWindow		Monday
+Preferences	PreferenceWindow		Preferences
+Revert	PreferenceWindow		Revert
+Saturday	PreferenceWindow		Saturday
+Show week number in Calendar	PreferenceWindow		Show week number in Calendar
+Sunday	PreferenceWindow		Sunday
+Thursday	PreferenceWindow		Thursday
+Tuesday	PreferenceWindow		Tuesday
+Wednesday	PreferenceWindow		Wednesday
+Are you sure you want to delete the selected category?	CategoryEditWindow		Are you sure you want to delete the selected category?
+Cancel	CategoryEditWindow		Cancel
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Cannot add/modify the category. A category with the same name or colour already exists.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Cannot delete category. Can't delete a category used by events.
+Category Edit	CategoryEditWindow		Category Edit
+Confirm delete	CategoryEditWindow		Confirm delete
+Default	CategoryEditWindow		Default
+Delete	CategoryEditWindow		Delete
+Error	CategoryEditWindow		Error
+New category	CategoryEditWindow		New category
+OK	CategoryEditWindow		Alright
+Save	CategoryEditWindow		Save
+The name must have a length greater than 2.	CategoryEditWindow		The name must have a length greater than 2.
+You cannot delete the default category.	CategoryEditWindow		You cannot delete the default category.
+Birthday	SQLiteManager		Birthday
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Cannot open database (%code%). Your saved events will not be loaded.
+Default	SQLiteManager		Default
+OK	SQLiteManager		Alright
+SQLITE ERROR	SQLiteManager		SQLITE ERROR
+There was an SQLite error (%code%).	SQLiteManager		There was an SQLite error (%code%).
+Calendar	System name		Calendar
+Configuration file	Preferences		Configuration file
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.
+OK	Preferences		Alright
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.
+Delete	EventListView		Delete
+Edit	EventListView		Edit
+You don't have any events on this day!	EventListView		You don't have any events on this day!
+Error	GoogleEventSyncWindow		Error
+Failed	GoogleEventSyncWindow		Failed
+Google Calendar Sync	GoogleEventSyncWindow		Google Calendar Sync
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Last Sync: %status% at %time%.
+No Data Available	GoogleEventSyncWindow		No Data Available
+OK	GoogleEventSyncWindow		Alright
+Please wait while we sync...	GoogleEventSyncWindow		Please wait while we sync...
+Success	GoogleEventSyncWindow		Success
+There was an error in loading the last sync data.	GoogleEventSyncWindow		There was an error in loading the last sync data.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		There was an error in saving the recent sync data.

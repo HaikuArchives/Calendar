@@ -1,0 +1,117 @@
+1	German	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% beginnt um %time%.
+Reminder	NotificationLoop		Erinnerung
+A native Calendar application for Haiku.	App		Ein Kalender für Haiku.
+About	MainWindow		Über
+Add event	MainWindow		Termin hinzufügen
+Agenda	MainWindow		Agenda
+Agenda view	MainWindow		Agenda-Ansicht
+App	MainWindow		Anwendung
+Category	MainWindow		Kategorie
+Day	MainWindow		Tag
+Day view	MainWindow		Tag-Ansicht
+Edit categories	MainWindow		Kategorien bearbeiten
+Edit event	MainWindow		Termin bearbeiten
+Event	MainWindow		Termin
+Go to today	MainWindow		Zu 'Heute' gehen
+Google Calendar	MainWindow		Google Calendar
+Preferences	MainWindow		Einstellungen
+Quit	MainWindow		Beenden
+Remove event	MainWindow		Termin löschen
+Synchronize	MainWindow		Synchronisieren
+Today	MainWindow		Heute
+View	MainWindow		Ansicht
+Week	MainWindow		Woche
+Week view	MainWindow		Wochen-Ansicht
+Add	CategoryWindow		Hinzufügen
+Cancel	CategoryWindow		Abbrechen
+Category manager	CategoryWindow		Kategorieverwaltung
+All day	DayView		Ganzer Tag
+All day, %startDay%	DayView		Ganzer Tag, %startDay%
+Are you sure you want to delete the selected event?	DayView		Soll der ausgewählte Termin tatsächlich gelöscht werden?
+Cancel	DayView		Abbrechen
+Confirm delete	DayView		Löschen bestätigen
+Finished!	DayView		Fertig!
+Now, %remaining% left	DayView		Jetzt, %remaining% übrig
+OK	DayView		OK
+Starts in %remaining%	DayView		Beginnt in %remaining%
+All day:	EventWindow		Ganzer Tag:
+Are you sure you want to delete this event?	EventWindow		Soll dieser Termin tatsächlich gelöscht werden?
+Cancel	EventWindow		Abbrechen
+Category:	EventWindow		Kategorie:
+Confirm delete	EventWindow		Löschen bestätigen
+Delete	EventWindow		Löschen
+Description:	EventWindow		Beschreibung:
+End date	EventWindow		End-Datum
+End date and time	EventWindow		End-Datum und -Zeit
+End date:	EventWindow		End-Datum:
+End time:	EventWindow		End-Zeit:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Zeit im Format HH:mm (24-Stunden) eintragen.
+Error	EventWindow		Fehler
+Event manager	EventWindow		Terminverwaltung
+Monthly	EventWindow		Monatlich
+Name:	EventWindow		Name:
+OK	EventWindow		OK
+Place:	EventWindow		Ort:
+Recurrence	EventWindow		Wiederholung
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Ein Termin kann nicht enden bevor er startet...
+Start date	EventWindow		Start-Datum:
+Start date and time	EventWindow		Start-Datum und -Zeit
+Start date:	EventWindow		Satrt-Datum:
+Start time:	EventWindow		Start-Zeit:
+The name must have a length greater than 2.	EventWindow		Der Name muss länger als 2 Buchstaben sein.
+There was some error in adding the event. Please try again.	EventWindow		Der Termin konnt nicht erstellt werden. Bitte nochmals probieren.
+Yearly	EventWindow		Jährlich
+Apply	PreferenceWindow		Anwenden
+First day of week	PreferenceWindow		Erster Tag der Woche
+Friday	PreferenceWindow		Freitag
+Locale based	PreferenceWindow		Haikus Spracheinstellungen verwenden
+Monday	PreferenceWindow		Montag
+Preferences	PreferenceWindow		Einstellungen
+Revert	PreferenceWindow		Anfangswerte
+Saturday	PreferenceWindow		Samstag
+Show week number in Calendar	PreferenceWindow		Kalenderwoche anzeigen
+Sunday	PreferenceWindow		Sonntag
+Thursday	PreferenceWindow		Donnerstag
+Tuesday	PreferenceWindow		Dienstag
+Wednesday	PreferenceWindow		Mittwoch
+Are you sure you want to delete the selected category?	CategoryEditWindow		Soll die ausgewählte Kategorie tatsächlich gelöscht werden?
+Cancel	CategoryEditWindow		Abbrechen
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Die Kategorie kann nicht hinzugefügt, bzw, geändert werden. Eine Kategorie mit diesem Namen oder Farbe existiert bereits.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Die Kategorie kann nicht gelöscht werden, da sie für einen Termin benutzt wird.
+Category Edit	CategoryEditWindow		Kategorie bearbeiten
+Confirm delete	CategoryEditWindow		Löschen bestätigen
+Default	CategoryEditWindow		Standard
+Delete	CategoryEditWindow		Löschen
+Error	CategoryEditWindow		Fehler
+New category	CategoryEditWindow		Neue Kategorie
+OK	CategoryEditWindow		OK
+Save	CategoryEditWindow		Speichern
+The name must have a length greater than 2.	CategoryEditWindow		Der Name muss länger als 2 Buchstaben sein.
+You cannot delete the default category.	CategoryEditWindow		Die Standardkategorie kann nicht gelöscht werden.
+Birthday	SQLiteManager		Geburtstag
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Die Datenbank konnte nicht geladen werden (%code%). Gespeicherte Termine werden nicht geladen.
+Default	SQLiteManager		Standardwerte
+OK	SQLiteManager		OK
+SQLITE ERROR	SQLiteManager		SQLITE ERROR
+There was an SQLite error (%code%).	SQLiteManager		Ein SQLite Fehler ist aufgetreten (%code%).
+Calendar	System name		Calendar
+Configuration file	Preferences		Konfigurationsdatei
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Die Konfigurationsdatei konnte nicht geladen werden, da der Zugriff verweigert wurde. Normalerweise bedeutet das, dass keine Leserechte auf den Einstellungsordner bestehen. Wenn die persönlichen Einstellungen geladen werden sollen, bitte die Haiku Dokumentation zu Rate ziehen, um zu erfahren welcher Ordner betroffen ist und wie die Zugriffsrechte geändert werden müssen.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Die Konfigurationsdatei konnte nicht geladen werden, da kein Pfad angegeben wurde. Normalerweise bedeutet das, dass der Programmierer einen Fehler gemacht hat. Der Benutzer ist da machtlos. Die persönlichen Einstellungen können leider nicht geladen werden.
+OK	Preferences		OK
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Es setht nicht genügend Speicher zur Verfügung, um die Konfigurationsdatei zu laden. Wenn die persönlichen Einstellungen geladen werden sollen, bitte einige Anwendungen schließen und Calendar erneut starten.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Es steht nicht genügend Speicher zur Verfügung, um die Konfigurationsdatei zu speichern. Wenn die persönlichen Einstellungen gespeichert werden sollen, bitte einige Anwendungen schließen und erneut probieren.
+Delete	EventListView		Löschen
+Edit	EventListView		Bearbeiten
+You don't have any events on this day!	EventListView		Für heute gibt es keine Termine!
+Error	GoogleEventSyncWindow		Fehler
+Failed	GoogleEventSyncWindow		Fehlgeschlagen
+Google Calendar Sync	GoogleEventSyncWindow		Google Calendar Sync
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Letzte Synchronisierung: %status% um %time%.
+No Data Available	GoogleEventSyncWindow		Keine Daten verfügbar
+OK	GoogleEventSyncWindow		OK
+Please wait while we sync...	GoogleEventSyncWindow		Synchronisierung läuft...
+Success	GoogleEventSyncWindow		Erfolg
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Laden der letzten Sync-Daten fehlgeschlagen.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Speichern der letzten Sync-Daten fehlgeschlagen.

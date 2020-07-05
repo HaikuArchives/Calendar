@@ -1,0 +1,117 @@
+1	Spanish	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% comienza en %time%.
+Reminder	NotificationLoop		Recordatorio
+A native Calendar application for Haiku.	App		Una aplicación nativa de calendario para Haiku
+About	MainWindow		Acerca de
+Add event	MainWindow		Agregar evento
+Agenda	MainWindow		Agenda
+Agenda view	MainWindow		Vista de agenda
+App	MainWindow		Aplicación
+Category	MainWindow		Categoría
+Day	MainWindow		Día
+Day view	MainWindow		Vista de día
+Edit categories	MainWindow		Editar categorías
+Edit event	MainWindow		Editar evento
+Event	MainWindow		Evento
+Go to today	MainWindow		Ir a hoy
+Google Calendar	MainWindow		Calendario de Google
+Preferences	MainWindow		Preferencias
+Quit	MainWindow		Salir
+Remove event	MainWindow		Eliminar evento
+Synchronize	MainWindow		Sincronizar
+Today	MainWindow		Hoy
+View	MainWindow		Vista
+Week	MainWindow		Semana
+Week view	MainWindow		Vista de semana
+Add	CategoryWindow		Agregar
+Cancel	CategoryWindow		Cancelar
+Category manager	CategoryWindow		Gestor de categorías
+All day	DayView		Todo el día
+All day, %startDay%	DayView		Todo el día, %startDay%
+Are you sure you want to delete the selected event?	DayView		¿Está usted seguro de borrar el evento seleccionado?
+Cancel	DayView		Cancelar
+Confirm delete	DayView		Confirmar borrado
+Finished!	DayView		¡Finalizado!
+Now, %remaining% left	DayView		Ahora queda %remaining%
+OK	DayView		Aceptar
+Starts in %remaining%	DayView		Comienza en %remaining%
+All day:	EventWindow		Todo el día:
+Are you sure you want to delete this event?	EventWindow		¿Está seguro de borrar este evento?
+Cancel	EventWindow		Cancelar
+Category:	EventWindow		Categoría:
+Confirm delete	EventWindow		Confirmar borrado
+Delete	EventWindow		Eliminar
+Description:	EventWindow		Descripción:
+End date	EventWindow		Fecha de finalización
+End date and time	EventWindow		Fecha y hora de finalización
+End date:	EventWindow		Fecha de finalización:
+End time:	EventWindow		Hora de finalización:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Ingrese la hora en un formato HH:mm (24 horas).
+Error	EventWindow		Error
+Event manager	EventWindow		Gestor de eventos
+Monthly	EventWindow		Mensual
+Name:	EventWindow		Nombre:
+OK	EventWindow		Aceptar
+Place:	EventWindow		Ubicación:
+Recurrence	EventWindow		Repetición
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Disculpe, no puede crear un evento que termina antes de su comienzo.
+Start date	EventWindow		Fecha de inicio
+Start date and time	EventWindow		Fecha y hora de inicio
+Start date:	EventWindow		Fecha de inicio:
+Start time:	EventWindow		Hora de inicio:
+The name must have a length greater than 2.	EventWindow		El nombre debe contar con más de dos caracteres.
+There was some error in adding the event. Please try again.	EventWindow		Ha ocurrido un error al intentar agregar el evento. Por favor intente de nuevo.
+Yearly	EventWindow		Anual
+Apply	PreferenceWindow		Aplicar
+First day of week	PreferenceWindow		Primer día de la semana
+Friday	PreferenceWindow		Viernes
+Locale based	PreferenceWindow		Según la configuración regional
+Monday	PreferenceWindow		Lunes
+Preferences	PreferenceWindow		Preferencias
+Revert	PreferenceWindow		Revertir
+Saturday	PreferenceWindow		Sábado
+Show week number in Calendar	PreferenceWindow		Mostrar el número de semana en Calendar
+Sunday	PreferenceWindow		Domingo
+Thursday	PreferenceWindow		Jueves
+Tuesday	PreferenceWindow		Martes
+Wednesday	PreferenceWindow		Miércoles
+Are you sure you want to delete the selected category?	CategoryEditWindow		¿Está usted seguro de borrar la categoría seleccionada?
+Cancel	CategoryEditWindow		Cancelar
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		No se puede agregar o modificar la categoría. Ya existe una categoría con el mismo nombre o color.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		No se puede borrar la categoría. No está permitido borrar una categoría usada por eventos.
+Category Edit	CategoryEditWindow		Editar categoría
+Confirm delete	CategoryEditWindow		Confirmar borrado
+Default	CategoryEditWindow		Predeterminado
+Delete	CategoryEditWindow		Eliminar
+Error	CategoryEditWindow		Error
+New category	CategoryEditWindow		Nueva categoría
+OK	CategoryEditWindow		Aceptar
+Save	CategoryEditWindow		Guardar
+The name must have a length greater than 2.	CategoryEditWindow		El nombre debe contar con más de dos caracteres.
+You cannot delete the default category.	CategoryEditWindow		No se puede borrar la categoría predeterminada.
+Birthday	SQLiteManager		Cumpleaños
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		No se pudo abrir la base de datos (%code%). Sus eventos guardados no se van a cargar.
+Default	SQLiteManager		Predeterminado
+OK	SQLiteManager		Aceptar
+SQLITE ERROR	SQLiteManager		ERROR DE SQLITE
+There was an SQLite error (%code%).	SQLiteManager		Ha ocurrido un error de SQLite (%code%).
+Calendar	System name		Calendario
+Configuration file	Preferences		Archivo de configuración
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		No se pudo abrir el archivo de configuración debido a que el permiso ha sido denegado. Eso sucede a menudo porque usted no tiene permisos de lectura en su carpeta de configuraciones. Si desea que sus ajustes personales se carguen, compruebe la documentación de su sistema operativo para averiguar cuál carpeta es e intentar cambiar sus permisos.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		No se pudo abrir el archivo de configuración debido a que no se ha especificado una ruta. Esto por lo general significa que el programador cometió un error. No hay nada que usted pueda hacer. Sus ajustes personales no se van a cargar. Lo sentimos.
+OK	Preferences		Aceptar
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		No hay memoria suficiente disponible en su sistema para cargar el archivo de configuración. Si desea cargar sus ajustes personales, intente cerrar algunas aplicaciones y reiniciar Calendar.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		No hay memoria suficiente disponible en su sistema para guardar el archivo de configuración. Si desea guardar sus ajustes personales, intente cerrar algunas aplicaciones e intente de nuevo.
+Delete	EventListView		Eliminar
+Edit	EventListView		Editar
+You don't have any events on this day!	EventListView		No tienes eventos para este día.
+Error	GoogleEventSyncWindow		Error
+Failed	GoogleEventSyncWindow		Falló
+Google Calendar Sync	GoogleEventSyncWindow		Sincronización de Calendario de Google
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Última sincronización: %status% en %time%.
+No Data Available	GoogleEventSyncWindow		No hay datos disponibles
+OK	GoogleEventSyncWindow		Aceptar
+Please wait while we sync...	GoogleEventSyncWindow		Por favor espere mientras sincronizamos...
+Success	GoogleEventSyncWindow		Éxito
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Ha ocurrido un error al cargar los últimos datos de sincronización.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Ha ocurrido un  error al guardar los últimos datos de sincronización.
