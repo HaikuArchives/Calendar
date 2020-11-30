@@ -121,6 +121,8 @@ class Requests {
 			const BHttpResult& result = dynamic_cast<const BHttpResult&>(
 				request->Result());
 
+			delete(request);
+
 			int32 statusCode = result.StatusCode();
 			if (statusCode != 200) {
 				printf("Response code:  %d \n", statusCode);
