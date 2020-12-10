@@ -26,7 +26,7 @@ class BView;
 class Category;
 class Event;
 class Preferences;
-class SQLiteManager;
+class QueryDBManager;
 
 
 static const uint32 kEventWindowQuitting = 'kewq';
@@ -121,7 +121,7 @@ private:
 	Event*			fEvent;
 	BList*			fCategoryList;
 
-	SQLiteManager*		fDBManager;
+	QueryDBManager*	fDBManager;
 };
 
 #endif

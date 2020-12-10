@@ -22,7 +22,7 @@
 #include "CategoryWindow.h"
 #include "ColorPreview.h"
 #include "MainWindow.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "CategoryEditWindow"

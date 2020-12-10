@@ -22,7 +22,7 @@
 #include "Event.h"
 #include "EventSync.h"
 #include "Requests.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 
 // Don't update status property to Google Calendar for active events(status=true)
@@ -123,7 +123,7 @@ EventSync::EventSync()
 	:
 	fAuthCode()
 {
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 	fEvents = new BList();
 	fCancelledEvents = new BStringList();
 }

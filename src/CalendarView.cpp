@@ -9,7 +9,7 @@
 #include <DateFormat.h>
 #include <stdlib.h>
 
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 
 CalendarView::CalendarView(BRect frame, const char* name,
@@ -44,7 +44,7 @@ CalendarView::CalendarView (const char* name, uint32 flags)
 void
 CalendarView::_Init ()
 {
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 }
 
 

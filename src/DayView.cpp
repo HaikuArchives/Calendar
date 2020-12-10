@@ -19,7 +19,7 @@
 #include "Event.h"
 #include "EventListItem.h"
 #include "EventListView.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
@@ -39,7 +39,7 @@ DayView::DayView(const BDate& date)
 		B_WILL_DRAW, false, true);
 	fEventScroll->SetExplicitMinSize(BSize(260, 260));
 
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 	LoadEvents();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)

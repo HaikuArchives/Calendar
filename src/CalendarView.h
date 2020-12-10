@@ -10,7 +10,7 @@
 #include <View.h>
 
 #include "DateHeaderView.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 
 namespace BPrivate {
@@ -30,7 +30,7 @@ public:
 		void			DrawDay(BView*, BRect, const char*, bool, bool, bool, bool);
 private:
 		void			_Init();
-		SQLiteManager*		fDBManager;
+		QueryDBManager*	fDBManager;
 };
 
 #endif

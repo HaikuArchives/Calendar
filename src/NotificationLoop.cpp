@@ -12,7 +12,7 @@
 #include "App.h"
 #include "Event.h"
 #include "ResourceLoader.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "NotificationLoop"
@@ -20,7 +20,7 @@
 int32
 NotificationLoop(void* data)
 {
-	SQLiteManager dbManager;
+	QueryDBManager dbManager;
 	BString notificationContent;
 	BString startTime;
 	BList* events;
