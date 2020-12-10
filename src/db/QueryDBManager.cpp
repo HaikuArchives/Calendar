@@ -23,6 +23,7 @@
 
 #include "Category.h"
 #include "Event.h"
+#include "SQLiteManager.h"
 #include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
@@ -52,11 +53,12 @@ QueryDBManager::_Initialise()
 	BPath eventPath;
 	BPath cancelledPath;
 	BPath categoryPath;
+	BPath sqlPath;
 
 	find_directory(B_USER_SETTINGS_DIRECTORY, &rootPath);
 	rootPath.Append(kDirectoryName);
 
-	// event directory
+	// Event directory
 	eventPath = BPath(rootPath);
 	eventPath.Append(kEventDir);
 	BDirectory* eventDir = new BDirectory(eventPath.Path());
@@ -65,7 +67,7 @@ QueryDBManager::_Initialise()
 		fEventDir->CreateDirectory(eventPath.Path(), fEventDir);
 	}
 
-	// cancelled directory
+	// Cancelled directory
 	cancelledPath = BPath(rootPath);
 	cancelledPath.Append(kCancelledDir);
 	BDirectory* cancelledDir = new BDirectory(cancelledPath.Path());
@@ -74,7 +76,7 @@ QueryDBManager::_Initialise()
 		fCancelledDir->CreateDirectory(cancelledPath.Path(), fCancelledDir);
 	}
 
-	// category directory
+	// Category directory
 	categoryPath = BPath(rootPath);
 	categoryPath.Append(kCategoryDir);
 	BDirectory* categoryDir = new BDirectory(categoryPath.Path());
@@ -97,6 +99,12 @@ QueryDBManager::_Initialise()
 
 	AddCategory(defaultCategory);
 	AddCategory(birthdayCategory);
+
+	// Migrate from SQL, if necessary
+	sqlPath = BPath(rootPath);
+	sqlPath.Append(kDatabaseName);
+	if (BEntry(sqlPath.Path()).Exists())
+		_ImportFromSQL(sqlPath);
 }
 
 
@@ -108,8 +116,12 @@ QueryDBManager::AddEvent(Event* event)
 	if (GetEvent(event->GetName(), event->GetStartDateTime()) != NULL)
 		return false;
 
+	BDirectory* parentDir = fEventDir;
 	BFile* evFile = new BFile();
-	status_t result = _CreateUniqueFile(fEventDir, event->GetName(), evFile);
+	if (!event->GetStatus())
+		parentDir = fCancelledDir;
+
+	status_t result = _CreateUniqueFile(parentDir, event->GetName(), evFile);
 
 	if (_EventStatusSwitch(result) != B_OK)
 		return false;
@@ -839,6 +851,24 @@ QueryDBManager::_AddAttribute(BMessage& msg, const char* name,
 	msg.AddBool( "attr:extra", false );
 	msg.AddBool( "attr:viewable", viewable );
 	msg.AddBool( "attr:editable", true );
+}
+
+
+void
+QueryDBManager::_ImportFromSQL(BPath dbPath)
+{
+	SQLiteManager* sql = new SQLiteManager();
+	BList* events = sql->GetAllEvents();
+	BList* categories = sql->GetAllCategories();
+
+	for (int i = 0; i < categories->CountItems(); i++)
+		AddCategory((Category*)categories->ItemAt(i));
+
+	for (int i = 0; i < events->CountItems(); i++)
+		AddEvent((Event*)events->ItemAt(i));
+
+	delete(sql);
+	BEntry(dbPath.Path()).Rename("events.sql.bak");
 }
 
 
