@@ -41,7 +41,7 @@
 #include "Event.h"
 #include "MainWindow.h"
 #include "Preferences.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "EventWindow"
@@ -453,7 +453,7 @@ EventWindow::_InitInterface()
 	fStartCalButton->SetExplicitMinSize(BSize(height * 2, height));
 	fEndCalButton->SetExplicitMinSize(BSize(height * 2, height));
 
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 
 	fCategoryList = fDBManager->GetAllCategories();
 

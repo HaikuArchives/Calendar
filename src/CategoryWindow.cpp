@@ -17,7 +17,7 @@
 #include "Category.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "CategoryWindow"
@@ -113,7 +113,7 @@ CategoryWindow::LoadCategories()
 }
 
 
-SQLiteManager*
+QueryDBManager*
 CategoryWindow::GetDBManager()
 {
 	return fDBManager;
@@ -133,7 +133,7 @@ CategoryWindow::_InitInterface()
 		B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 	fCategoryList = new BList();
 	LoadCategories();
 

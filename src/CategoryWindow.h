@@ -13,7 +13,7 @@ class BScrollView;
 class BView;
 class Category;
 class CategoryEditWindow;
-class SQLiteManager;
+class QueryDBManager;
 
 
 const uint32 kCategoryWindowQuitting = 'kcwq';
@@ -28,7 +28,7 @@ public:
 	virtual bool		QuitRequested();
 
 	void			LoadCategories();
-	SQLiteManager*		GetDBManager();
+	QueryDBManager*	GetDBManager();
 
 private:
 	void			_InitInterface();
@@ -46,7 +46,7 @@ private:
 	CategoryEditWindow*	fCategoryEditWindow;
 
 	BList*			fCategoryList;
-	SQLiteManager*  	fDBManager;
+	QueryDBManager*	fDBManager;
 
 };
 
