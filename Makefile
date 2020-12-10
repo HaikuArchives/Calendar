@@ -51,6 +51,7 @@ SRCS = \
 	 src/utils/ResourceLoader.cpp  \
 	 src/model/Category.cpp  \
 	 src/model/Event.cpp \
+	 src/db/QueryDBManager.cpp  \
 	 src/db/SQLiteManager.cpp  \
 	 src/plugin/GoogleCalendar/EventSync.cpp \
 	 src/plugin/GoogleCalendar/EventSyncWindow.cpp \
