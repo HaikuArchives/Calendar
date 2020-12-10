@@ -19,6 +19,7 @@ extern const char* kDirectoryName;
 extern const char* kEventDir;
 extern const char* kCancelledDir;
 extern const char* kCategoryDir;
+extern const char* kDatabaseName;
 
 class QueryDBManager {
 public:
@@ -66,6 +67,8 @@ private:
 	
 	status_t		_CategoryStatusSwitch(status_t);
 	status_t		_EventStatusSwitch(status_t);
+
+	void			_ImportFromSQL(BPath dbPath);
 
 	bool			_CategoryMimetype();
 	bool			_EventMimetype();
