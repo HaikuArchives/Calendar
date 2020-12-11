@@ -23,6 +23,7 @@
 
 #include "Category.h"
 #include "Event.h"
+#include "Preferences.h"
 #include "SQLiteManager.h"
 #include "QueryDBManager.h"
 
@@ -53,6 +54,7 @@ QueryDBManager::_Initialise()
 	BPath eventPath;
 	BPath cancelledPath;
 	BPath categoryPath;
+	BPath settingsPath;
 	BPath sqlPath;
 
 	find_directory(B_USER_SETTINGS_DIRECTORY, &rootPath);
@@ -84,6 +86,12 @@ QueryDBManager::_Initialise()
 	if (fCategoryDir->InitCheck() == B_ENTRY_NOT_FOUND) {
 		fCategoryDir->CreateDirectory(categoryPath.Path(), fCategoryDir);
 	}
+
+	// Settings
+	settingsPath = BPath(rootPath);
+	settingsPath.Append("settings");
+	fPreferences = new Preferences();
+	fPreferences->Load(settingsPath.Path());
 
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
@@ -365,7 +373,7 @@ QueryDBManager::GetAllCategories()
 		catFile = new BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(catFile);
 
-		if (category->GetName() == BString(B_TRANSLATE("Default")))
+		if (category->GetName() == fPreferences->fDefaultCategory)
 			categories->AddItem(category, 0);
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);

@@ -11,6 +11,7 @@
 #include <string>
 
 #include <Path.h>
+#include <String.h>
 
 
 class Preferences {
@@ -24,6 +25,7 @@ public:
 
 	int32					fStartOfWeekOffset;
 	bool					fHeaderVisible;
+	BString					fDefaultCategory;
 	BRect					fMainWindowRect;
 	BRect					fEventWindowRect;
 };

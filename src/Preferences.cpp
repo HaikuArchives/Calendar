@@ -11,6 +11,7 @@
 #include <Catalog.h>
 #include <File.h>
 #include <Message.h>
+#include <String.h>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "Preferences"
@@ -65,6 +66,7 @@ Preferences::Load(const char* filename)
 		storage.Unflatten(file);
 	fStartOfWeekOffset = storage.GetInt32("startOfWeekOffset", 0);
 	fHeaderVisible = storage.GetBool("headerVisible", false);
+	fDefaultCategory = storage.GetString("defaultCategory", B_TRANSLATE("Default"));
 	fMainWindowRect = storage.GetRect("mainWindowRect", BRect());
 	fEventWindowRect = storage.GetRect("eventWindowRect", BRect());
 
@@ -120,6 +122,7 @@ Preferences::Save(const char* filename)
 	BMessage storage;
 	storage.AddInt32("startOfWeekOffset", fStartOfWeekOffset);
 	storage.AddBool("headerVisible", fHeaderVisible);
+	storage.AddString("defaultCategory", fDefaultCategory);
 	storage.AddRect("mainWindowRect", fMainWindowRect);
 	storage.AddRect("eventWindowRect", fEventWindowRect);
 
@@ -135,6 +138,7 @@ Preferences::operator =(const Preferences& p)
 	fSettingsPath = p.fSettingsPath;
 	fStartOfWeekOffset = p.fStartOfWeekOffset;
 	fHeaderVisible = p.fHeaderVisible;
+	fDefaultCategory = p.fDefaultCategory;
 	fMainWindowRect = p.fMainWindowRect;
 	fEventWindowRect = p.fEventWindowRect;
 
