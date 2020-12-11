@@ -130,11 +130,13 @@ Preferences::Save(const char* filename)
 
 
 Preferences&
-Preferences::operator =(Preferences p)
+Preferences::operator =(const Preferences& p)
 {
 	fSettingsPath = p.fSettingsPath;
 	fStartOfWeekOffset = p.fStartOfWeekOffset;
 	fHeaderVisible = p.fHeaderVisible;
 	fMainWindowRect = p.fMainWindowRect;
 	fEventWindowRect = p.fEventWindowRect;
+
+	return *this;
 }
