@@ -21,6 +21,7 @@ extern const char* kCancelledDir;
 extern const char* kCategoryDir;
 extern const char* kDatabaseName;
 
+
 class QueryDBManager {
 public:
 					QueryDBManager();
@@ -56,7 +57,7 @@ private:
 	entry_ref		_GetCategoryRef(const char* name);
 
 	BList*			_GetEventsOfInterval(time_t start, time_t end);
-	status_t		_GetItemOfId(const char* id, BFile* file);
+	status_t		_GetFileOfId(const char* id, BFile* file);
 
 	Category*		_FileToCategory(BFile* file);
 	Event*			_FileToEvent(BFile* file);
