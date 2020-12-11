@@ -92,13 +92,15 @@ QueryDBManager::_Initialise()
 	_EventMimetype();
 	_AddIndices();
 
-	Category* defaultCategory =
-		new Category(B_TRANSLATE("Default"), BString("1E90FF"), "1f1e4ffd-527d-4796-953f-df2e2c600a09");
-	Category* birthdayCategory =
-		new Category(B_TRANSLATE("Birthday"), BString("C25656"), "47c30a47-7c79-4d45-883a-8f45b9ddcff4");
-
-	AddCategory(defaultCategory);
-	AddCategory(birthdayCategory);
+	// Create default categories if need be
+	if (GetAllCategories()->CountItems() == 0) {
+		Category* defaultCategory =
+			new Category(B_TRANSLATE("Default"), BString("1E90FF"), "1f1e4ffd-527d-4796-953f-df2e2c600a09");
+		Category* birthdayCategory =
+			new Category(B_TRANSLATE("Birthday"), BString("C25656"), "47c30a47-7c79-4d45-883a-8f45b9ddcff4");
+		AddCategory(defaultCategory);
+		AddCategory(birthdayCategory);
+	}
 
 	// Migrate from SQL, if necessary
 	sqlPath = BPath(rootPath);
@@ -146,7 +148,7 @@ bool
 QueryDBManager::UpdateNotifiedEvent(const char* id)
 {
 	BFile* evFile = new BFile();
-	_GetItemOfId(id, evFile);
+	_GetFileOfId(id, evFile);
 	if (_EventStatusSwitch(evFile->InitCheck()) != B_OK)
 		return NULL;
 
@@ -195,6 +197,7 @@ QueryDBManager::RemoveCancelledEvents()
 		RemoveEvent(ref);
 	}
 
+	delete(query);
 	return true;
 }
 
@@ -203,7 +206,7 @@ Event*
 QueryDBManager::GetEvent(const char* id)
 {
 	BFile* evFile;
-	_GetItemOfId(id, evFile);
+	_GetFileOfId(id, evFile);
 	if (evFile->InitCheck() != B_OK)
 		return NULL;
 
@@ -479,7 +482,7 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 
 
 status_t
-QueryDBManager::_GetItemOfId(const char* id, BFile* file)
+QueryDBManager::_GetFileOfId(const char* id, BFile* file)
 {
 	BQuery* query = new BQuery();
 	query->SetVolume(&fQueryVolume);
@@ -582,7 +585,7 @@ QueryDBManager::_CategoryToFile(Category* category, BFile* file)
 	BString color = category->GetHexColor();
 	file->WriteAttr("Category:Color", B_STRING_TYPE, 0, color.String(),
 						color.CountChars() + 1);
-	
+
 	return true;
 }
 
@@ -668,6 +671,7 @@ QueryDBManager::_ReplaceCategory(BString oldCategory, BString newCategory)
 		evFile->WriteAttr("Event:Category", B_STRING_TYPE, 0,
 						newCategory.String(), newCategory.CountChars() + 1);
 	}
+	delete(query);
 }
 
 
