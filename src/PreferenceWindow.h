@@ -15,6 +15,7 @@ class BMenuField;
 class BStringView;
 class BView;
 class Preferences;
+class QueryDBManager;
 
 
 const uint32 kPreferenceWindowQuitting	= 'kpwq';
@@ -34,24 +35,32 @@ private:
 		void				_SyncPreferences(Preferences* preferences);
 		void				_PreferencesModified();
 
-		static const int		kStartOfWeekChangeMessage 	= 1000;
-		static const int 		kShowWeekChangeMessage		= 1001;
-		static const int		kApplyPreferencesMessage	= 1002;
-		static const int		kRevertPreferencesMessage	= 1003;
+		static const int		kStartOfWeekChangeMessage 		= 1000;
+		static const int 		kShowWeekChangeMessage			= 1001;
+		static const int		kApplyPreferencesMessage		= 1002;
+		static const int		kRevertPreferencesMessage		= 1003;
+		static const int		kDefaultCategoryChangeMessage 	= 1004;
 
 		BView*				fMainView;
 		BCheckBox*			fWeekNumberHeaderCB;
-		BStringView*			fPrefCategoryLabel;
+		BStringView*			fWeekCategoryLabel;
+		BStringView*			fOrgCategoryLabel;
 		BStringView*			fStartOfWeekLabel;
+		BStringView*			fDefaultCatLabel;
 		BPopUpMenu*			fDayOfWeekMenu;
+		BPopUpMenu*			fDefaultCatMenu;
 		BMenuField*			fDayOfWeekMenuField;
+		BMenuField*			fDefaultCatMenuField;
 		BBox*				fWeekPreferencesBox;
+		BBox*				fOrgPreferencesBox;
 		BButton*			fApplyButton;
 		BButton*			fRevertButton;
 
 		Preferences*			fStartPreferences;
 		Preferences*			fCurrentPreferences;
 		Preferences*			fTempPreferences;
+
+		QueryDBManager*		fDBManager;
 };
 
 #endif
