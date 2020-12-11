@@ -29,13 +29,14 @@ PreferenceWindow::PreferenceWindow(Preferences* preferences)
 	:BWindow(BRect(), B_TRANSLATE("Preferences"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
 {
-	fCurrentPreferences = preferences;
-
+	
+	fCurrentPreferences = new Preferences();
 	fStartPreferences = new Preferences();
-	*fStartPreferences = *fCurrentPreferences;
-
 	fTempPreferences = new Preferences();
-	*fTempPreferences = *fCurrentPreferences;
+
+	fCurrentPreferences->Copy(preferences);
+	fStartPreferences->Copy(fCurrentPreferences);
+	fTempPreferences->Copy(fCurrentPreferences);
 
 	_InitInterface();
 	CenterOnScreen();
@@ -75,7 +76,7 @@ PreferenceWindow::MessageReceived(BMessage* message)
 
 		case kApplyPreferencesMessage:
 		{
-			*fCurrentPreferences = *fTempPreferences;
+			fCurrentPreferences = fTempPreferences;
 			fApplyButton->SetEnabled(false);
 			BMessage changed(kAppPreferencesChanged);
 			be_app->PostMessage(&changed);
@@ -84,7 +85,7 @@ PreferenceWindow::MessageReceived(BMessage* message)
 
 		case kRevertPreferencesMessage:
 		{
-			*fTempPreferences = *fStartPreferences;
+			fTempPreferences->Copy(fStartPreferences);
 			fRevertButton->SetEnabled(false);
 			fApplyButton->SetEnabled(true);
 			_SyncPreferences(fTempPreferences);

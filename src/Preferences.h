@@ -18,6 +18,7 @@ public:
 	void					Load(const char* filename);
 	void					Save(const char* filename);
 
+	void					Copy(Preferences* p);
 	Preferences&			operator =(Preferences p);
 
 	BPath					fSettingsPath;

@@ -129,6 +129,17 @@ Preferences::Save(const char* filename)
 }
 
 
+void
+Preferences::Copy(Preferences* p)
+{
+	fSettingsPath = p->fSettingsPath;
+	fStartOfWeekOffset = p->fStartOfWeekOffset;
+	fHeaderVisible = p->fHeaderVisible;
+	fMainWindowRect = p->fMainWindowRect;
+	fEventWindowRect = p->fEventWindowRect;
+}
+
+
 Preferences&
 Preferences::operator =(Preferences p)
 {
