@@ -14,6 +14,7 @@
 #include <MenuBar.h>
 #include <ToolBar.h>
 
+#include "App.h"
 #include "CategoryEditWindow.h"
 #include "DayView.h"
 #include "Event.h"
@@ -33,12 +34,12 @@ using BPrivate::BToolBar;
 #define B_TRANSLATION_CONTEXT "MainWindow"
 
 extern int32 NotificationLoop(void* data);
-Preferences* MainWindow::fPreferences = NULL;
 
 
 MainWindow::MainWindow()
 	:
-	BWindow(fPreferences->fMainWindowRect, B_TRANSLATE_SYSTEM_NAME("Calendar"), B_TITLED_WINDOW,
+	BWindow(((App*)be_app)->GetPreferences()->fMainWindowRect,
+		B_TRANSLATE_SYSTEM_NAME("Calendar"), B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fEventWindow(NULL)
 {
@@ -46,7 +47,7 @@ MainWindow::MainWindow()
 
 	_InitInterface();
 
-	if (fPreferences->fMainWindowRect == BRect()) {
+	if (((App*)be_app)->GetPreferences()->fMainWindowRect == BRect()) {
 		ResizeTo(640, 360);
 		CenterOnScreen();
 	}
@@ -143,8 +144,10 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 
 		case B_LOCALE_CHANGED:
-		{	fSidePanelView->MessageReceived(message);
-			fSidePanelView->SetStartOfWeek(fPreferences->fStartOfWeekOffset);
+		{
+			Preferences* preferences = ((App*)be_app)->GetPreferences();
+			fSidePanelView->MessageReceived(message);
+			fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 			_UpdateDayView();
 			break;
 		}
@@ -182,13 +185,6 @@ MainWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
-}
-
-
-void
-MainWindow::SetPreferences(Preferences* preferences)
-{
-	fPreferences = preferences;
 }
 
 
@@ -315,13 +311,15 @@ MainWindow::_SetEventListPopUpEnabled(bool state)
 void
 MainWindow::_SyncWithPreferences()
 {
-	if (fPreferences != NULL) {
-		if(fPreferences->fHeaderVisible == true)
+	Preferences* preferences = ((App*)be_app)->GetPreferences();
+
+	if (preferences != NULL) {
+		if(preferences->fHeaderVisible == true)
 			fSidePanelView->ShowWeekHeader(true);
 		else
 			fSidePanelView->ShowWeekHeader(false);
 
-		fSidePanelView->SetStartOfWeek(fPreferences->fStartOfWeekOffset);
+		fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 	}
 }
 

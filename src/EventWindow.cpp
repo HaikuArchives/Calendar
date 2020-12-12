@@ -46,18 +46,19 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "EventWindow"
 
-Preferences* EventWindow::fPreferences = NULL;
-
 
 EventWindow::EventWindow()
 	:
-	BWindow(fPreferences->fEventWindowRect, B_TRANSLATE("Event manager"),
+	BWindow(((App*)be_app)->GetPreferences()->fEventWindowRect,
+			B_TRANSLATE("Event manager"),
 			B_TITLED_WINDOW, B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
 
-	if (fPreferences->fEventWindowRect == BRect()) {
-		fPreferences->fEventWindowRect = Frame();
+	Preferences* preferences = ((App*)be_app)->GetPreferences();
+
+	if (preferences->fEventWindowRect == BRect()) {
+		preferences->fEventWindowRect = Frame();
 		CenterOnScreen();
 	}
 
@@ -133,7 +134,7 @@ EventWindow::MessageReceived(BMessage* message)
 void
 EventWindow::FrameMoved(BPoint newPosition)
 {
-	fPreferences->fEventWindowRect.OffsetTo(newPosition);
+	((App*)be_app)->GetPreferences()->fEventWindowRect.OffsetTo(newPosition);
 }
 
 
@@ -263,13 +264,6 @@ EventWindow::QuitRequested()
 {
 	((App*)be_app)->mainWindow()->PostMessage(kEventWindowQuitting);
 	return true;
-}
-
-
-void
-EventWindow::SetPreferences(Preferences* preferences)
-{
-	fPreferences = preferences;
 }
 
 

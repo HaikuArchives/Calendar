@@ -49,9 +49,6 @@ App::App()
 	fPreferences->Load(fPreferencesFile.Path());
 	fPreferences->fSettingsPath = settingsPath;
 
-	MainWindow::SetPreferences(fPreferences);
-	EventWindow::SetPreferences(fPreferences);
-
 	fMainWindow = new MainWindow();
 	fMainWindow->Show();
 }
@@ -83,6 +80,13 @@ App::QuitRequested()
 	if (fMainWindow->Lock())
 		fMainWindow->Quit();
 	return true;
+}
+
+
+Preferences*
+App::GetPreferences()
+{
+	return fPreferences;
 }
 
 
@@ -120,7 +124,6 @@ App::MessageReceived(BMessage* message)
 		{
 			if (fCategoryWindow == NULL) {
 				fCategoryWindow = new CategoryWindow();
-				fCategoryWindow->SetPreferences(fPreferences);
 				fCategoryWindow->Show();
 			}
 
