@@ -21,6 +21,7 @@
 #include <StringList.h>
 #include <VolumeRoster.h>
 
+#include "App.h"
 #include "Category.h"
 #include "Event.h"
 #include "Preferences.h"
@@ -86,12 +87,6 @@ QueryDBManager::_Initialise()
 	if (fCategoryDir->InitCheck() == B_ENTRY_NOT_FOUND) {
 		fCategoryDir->CreateDirectory(categoryPath.Path(), fCategoryDir);
 	}
-
-	// Settings
-	settingsPath = BPath(rootPath);
-	settingsPath.Append("settings");
-	fPreferences = new Preferences();
-	fPreferences->Load(settingsPath.Path());
 
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
@@ -401,12 +396,13 @@ QueryDBManager::GetAllCategories()
 
 	BFile* catFile;
 	Category* category;
+	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
 
 	while (query->GetNextRef(&ref) == B_OK) {
 		catFile = new BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(catFile);
 
-		if (category->GetName() == fPreferences->fDefaultCategory)
+		if (category->GetName() == defaultCat)
 			categories->AddItem(category, 0);
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);

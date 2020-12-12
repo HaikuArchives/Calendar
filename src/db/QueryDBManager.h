@@ -87,7 +87,5 @@ private:
 	BDirectory*		fCancelledDir;
 	BDirectory*		fCategoryDir;
 	BVolume			fQueryVolume;
-
-	Preferences*	fPreferences;
 };
 #endif // _QDB_MANAGER_H_

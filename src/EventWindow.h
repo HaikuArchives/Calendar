@@ -48,8 +48,6 @@ public:
 	void			SetStartDate(BDate& date);
 	void			SetEndDate(BDate& date);
 
-	static void		SetPreferences(Preferences* preferences);
-
 	void			OnCheckBoxToggle();
 	void			OnSaveClick();
 	void			OnDeleteClick();
@@ -72,8 +70,6 @@ private:
 	static const uint32	kAllDayPressed	= 1003;
 	static const uint32	kOptEveryMonth	= 1004;
 	static const uint32	kOptEveryYear	= 1005;
-
-	static Preferences*	fPreferences;
 
 	BTextControl*		fTextName;
 	BTextControl*		fTextPlace;

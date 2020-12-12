@@ -29,6 +29,7 @@ public:
 
 	void			AboutRequested();
 	bool			QuitRequested();
+	Preferences*	GetPreferences();
 	void			MessageReceived(BMessage* message);
 	MainWindow*		mainWindow();
 	CategoryWindow*		categoryWindow();

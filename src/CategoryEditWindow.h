@@ -15,7 +15,6 @@ class BTextControl;
 class BView;
 class Category;
 class ColorPreview;
-class Preferences;
 
 
 const uint32 kCategoryEditQuitting = 'kceq';
@@ -32,7 +31,6 @@ public:
 	virtual bool		QuitRequested();
 
 	void			SetCategory(Category* category);
-	void			SetPreferences(Preferences* preferences);
 
 private:
 	void			_InitInterface();
@@ -55,8 +53,6 @@ private:
 	BButton*		fDeleteButton;
 
 	Category*		fCategory;
-	Preferences*	fPreferences;
-
 };
 
 

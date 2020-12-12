@@ -13,7 +13,6 @@ class BScrollView;
 class BView;
 class Category;
 class CategoryEditWindow;
-class Preferences;
 class QueryDBManager;
 
 
@@ -31,8 +30,6 @@ public:
 	void			LoadCategories();
 	QueryDBManager*	GetDBManager();
 
-	void			SetPreferences(Preferences* preferences);
-
 private:
 	void			_InitInterface();
 	void			_OpenCategoryWindow(Category* category);
@@ -49,7 +46,6 @@ private:
 	CategoryEditWindow*	fCategoryEditWindow;
 
 	BList*			fCategoryList;
-	Preferences*	fPreferences;
 	QueryDBManager*	fDBManager;
 
 };

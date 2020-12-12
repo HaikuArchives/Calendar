@@ -37,8 +37,6 @@ public:
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 
-	static void		SetPreferences(Preferences* preferences);
-
 	void			StartNotificationThread();
 	void			StopNotificationThread();
 private:
@@ -57,8 +55,6 @@ private:
 	static const int 	kWeekView		= 1006;
 	static const int 	kAgendaView		= 1007;
 
-
-	static Preferences*	fPreferences;
 
 	MainView*		fMainView;
 	EventWindow*		fEventWindow;
