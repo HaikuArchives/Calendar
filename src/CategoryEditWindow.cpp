@@ -22,6 +22,7 @@
 #include "CategoryWindow.h"
 #include "ColorPreview.h"
 #include "MainWindow.h"
+#include "Preferences.h"
 #include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
@@ -105,6 +106,13 @@ CategoryEditWindow::SetCategory(Category* category)
 
 
 void
+CategoryEditWindow::SetPreferences(Preferences* preferences)
+{
+	fPreferences = preferences;
+}
+
+
+void
 CategoryEditWindow::_InitInterface()
 {
 	fMainView = new BView("MainView", B_WILL_DRAW);
@@ -172,7 +180,7 @@ CategoryEditWindow::_CategoryModified()
 void
 CategoryEditWindow::_OnDeletePressed()
 {
-	if (BString(fCategoryText->Text()) == BString(B_TRANSLATE("Default"))) {
+	if (BString(fCategoryText->Text()) == fPreferences->fDefaultCategory) {
 		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
 			B_TRANSLATE("You cannot delete the default category."),
 			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);

@@ -120,6 +120,7 @@ App::MessageReceived(BMessage* message)
 		{
 			if (fCategoryWindow == NULL) {
 				fCategoryWindow = new CategoryWindow();
+				fCategoryWindow->SetPreferences(fPreferences);
 				fCategoryWindow->Show();
 			}
 

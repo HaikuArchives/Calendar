@@ -36,6 +36,7 @@ public:
 		Event*		GetEvent(const char* name, time_t startTime);
 		BList*		GetEventsOfDay(BDate& date);
 		BList*		GetEventsOfWeek(BDate& date);
+		BList*		GetEventsOfCategory(Category* category);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
 		bool		RemoveEvent(entry_ref eventRef);
