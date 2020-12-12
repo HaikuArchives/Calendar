@@ -121,6 +121,13 @@ CategoryWindow::GetDBManager()
 
 
 void
+CategoryWindow::SetPreferences(Preferences* preferences)
+{
+	fPreferences = preferences;
+}
+
+
+void
 CategoryWindow::_InitInterface()
 {
 	fMainView = new BView("MainView", B_WILL_DRAW);
@@ -167,6 +174,7 @@ CategoryWindow::_OpenCategoryWindow(Category* category)
 {
 	if (fCategoryEditWindow == NULL) {
 		fCategoryEditWindow = new CategoryEditWindow();
+		fCategoryEditWindow->SetPreferences(fPreferences);
 		fCategoryEditWindow->SetCategory(category);
 		fCategoryEditWindow->Show();
 	}

@@ -257,6 +257,39 @@ QueryDBManager::GetEventsOfWeek(BDate& date)
 
 
 BList*
+QueryDBManager::GetEventsOfCategory(Category* category)
+{
+	BList* events = new BList();
+	BQuery* query = new BQuery();
+	query->SetVolume(&fQueryVolume);
+
+	query->PushAttr("Event:Category");
+	query->PushString(category->GetName());
+	query->PushOp(B_EQ);
+
+	query->PushAttr("Event:Status");
+	query->PushString("Cancelled");
+	query->PushOp(B_NE);
+	query->PushOp(B_AND);
+
+	query->Fetch();
+	entry_ref ref;
+
+	BFile* evFile;
+	Event* event;
+
+	while (query->GetNextRef(&ref) == B_OK) {
+		evFile = new BFile(&ref, B_READ_WRITE);
+		event = _FileToEvent(evFile);
+		events->AddItem(event);
+	}
+
+	delete(query);
+	return events;
+}
+
+
+BList*
 QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 {
 	BList* events = new BList();
@@ -399,7 +432,9 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	BString catName = BString();
 	BNode(&entry).ReadAttrString("Category:Name", &catName);
 
-	_ReplaceCategory(catName, BString(B_TRANSLATE("Default")));
+	BList* ev = GetEventsOfCategory(new Category(catName, BString("FFFFFF")));
+	if (ev->CountItems() > 0)
+		return false;
 
 	if (_CategoryStatusSwitch(entry.Remove()) == B_OK)
 		return true;
