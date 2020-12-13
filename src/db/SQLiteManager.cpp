@@ -386,7 +386,7 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 
 
 BList*
-SQLiteManager::GetEventsOfWeek(BDate& date)
+SQLiteManager::GetEventsOfWeek(BDate date)
 {
 	BList* events = new BList();
 	date.AddDays(-date.DayOfWeek()+1);
