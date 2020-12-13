@@ -32,6 +32,7 @@ public:
 
 		void			SetDate(const BDate& date);
 		void			LoadEvents();
+		void			SetMode(int32 mode);
 		void			SetEventListPopUpEnabled(bool state);
 		static	int		CompareFunc(const void* a, const void* b);
 

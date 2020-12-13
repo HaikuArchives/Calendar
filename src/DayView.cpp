@@ -61,6 +61,11 @@ DayView::SetDate(const BDate& date)
 	fDate = date;
 }
 
+void DayView::SetMode(int32 mode)
+{
+	this->mode = mode;
+}
+
 void
 DayView::LoadEvents()
 {

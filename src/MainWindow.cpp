@@ -357,6 +357,7 @@ MainWindow::_UpdateDayView()
 {
 	BDate date = _GetSelectedCalendarDate();
 	fDayView->SetDate(date);
+	fDayView->SetMode(kDayView);
 	LockLooper();
 	fDayView->LoadEvents();
 	UnlockLooper();
