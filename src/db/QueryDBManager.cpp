@@ -122,16 +122,16 @@ QueryDBManager::AddEvent(Event* event)
 		return false;
 
 	BDirectory* parentDir = fEventDir;
-	BFile* evFile = new BFile();
+	BFile evFile;
 	if (!event->GetStatus())
 		parentDir = fCancelledDir;
 
-	status_t result = _CreateUniqueFile(parentDir, event->GetName(), evFile);
+	status_t result = _CreateUniqueFile(parentDir, event->GetName(), &evFile);
 
 	if (_EventStatusSwitch(result) != B_OK)
 		return false;
 
-	return _EventToFile(event, evFile);
+	return _EventToFile(event, &evFile);
 }
 
 
@@ -139,26 +139,26 @@ bool
 QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 {
 	entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
-	BFile* evFile = new BFile(&ref, B_READ_WRITE);
-	if (_EventStatusSwitch(evFile->InitCheck()) != B_OK)
+	BFile evFile = BFile(&ref, B_READ_WRITE);
+	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
 
-	return _EventToFile(newEvent, evFile);
+	return _EventToFile(newEvent, &evFile);
 }
 
 
 bool
 QueryDBManager::UpdateNotifiedEvent(const char* id)
 {
-	BFile* evFile = new BFile();
-	_GetFileOfId(id, evFile);
-	if (_EventStatusSwitch(evFile->InitCheck()) != B_OK)
+	BFile evFile = BFile();
+	_GetFileOfId(id, &evFile);
+	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
 
-	Event* event = _FileToEvent(evFile);
+	Event* event = _FileToEvent(&evFile);
 
 	event->SetNotified(true);
-	return _EventToFile(event, evFile);
+	return _EventToFile(event, &evFile);
 }
 
 
@@ -183,24 +183,22 @@ QueryDBManager::RemoveEvent(entry_ref eventRef)
 bool
 QueryDBManager::RemoveCancelledEvents()
 {
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Event:Status");
-	query->PushString("Cancelled");
-	query->PushOp(B_EQ);
+	query.PushAttr("Event:Status");
+	query.PushString("Cancelled");
+	query.PushOp(B_EQ);
 
-	query->Fetch();
+	query.Fetch();
 	entry_ref ref;
 
-	BFile* evFile;
 	Event* event;
 
-	while (query->GetNextRef(&ref) == B_OK) {
+	while (query.GetNextRef(&ref) == B_OK) {
 		RemoveEvent(ref);
 	}
 
-	delete(query);
 	return true;
 }
 
@@ -208,12 +206,12 @@ QueryDBManager::RemoveCancelledEvents()
 Event*
 QueryDBManager::GetEvent(const char* id)
 {
-	BFile* evFile;
-	_GetFileOfId(id, evFile);
-	if (evFile->InitCheck() != B_OK)
+	BFile evFile = BFile();
+	_GetFileOfId(id, &evFile);
+	if (evFile.InitCheck() != B_OK)
 		return NULL;
 
-	return _FileToEvent(evFile);
+	return _FileToEvent(&evFile);
 }
 
 
@@ -221,11 +219,11 @@ Event*
 QueryDBManager::GetEvent(const char* name, time_t startTime)
 {
 	entry_ref ref = _GetEventRef(name, startTime);
-	BFile* evFile = new BFile(&ref, B_READ_ONLY);
-	if (evFile->InitCheck() != B_OK)
+	BFile evFile = BFile(&ref, B_READ_ONLY);
+	if (evFile.InitCheck() != B_OK)
 		return NULL;
 
-	return _FileToEvent(evFile);
+	return _FileToEvent(&evFile);
 }
 
 
@@ -255,31 +253,30 @@ BList*
 QueryDBManager::GetEventsOfCategory(Category* category)
 {
 	BList* events = new BList();
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Event:Category");
-	query->PushString(category->GetName());
-	query->PushOp(B_EQ);
+	query.PushAttr("Event:Category");
+	query.PushString(category->GetName());
+	query.PushOp(B_EQ);
 
-	query->PushAttr("Event:Status");
-	query->PushString("Cancelled");
-	query->PushOp(B_NE);
-	query->PushOp(B_AND);
+	query.PushAttr("Event:Status");
+	query.PushString("Cancelled");
+	query.PushOp(B_NE);
+	query.PushOp(B_AND);
 
-	query->Fetch();
+	query.Fetch();
 	entry_ref ref;
 
-	BFile* evFile;
+	BFile evFile;
 	Event* event;
 
-	while (query->GetNextRef(&ref) == B_OK) {
-		evFile = new BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(evFile);
+	while (query.GetNextRef(&ref) == B_OK) {
+		evFile = BFile(&ref, B_READ_WRITE);
+		event = _FileToEvent(&evFile);
 		events->AddItem(event);
 	}
 
-	delete(query);
 	return events;
 }
 
@@ -288,33 +285,32 @@ BList*
 QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 {
 	BList* events = new BList();
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
 	time_t time = dateTime.Time_t();
 
-	query->PushAttr("Event:Start");
-	query->PushUInt32(time);
-	query->PushOp(B_LE);
+	query.PushAttr("Event:Start");
+	query.PushUInt32(time);
+	query.PushOp(B_LE);
 
-	query->PushAttr("Event:Status");
-	query->PushString("Unnotified");
-	query->PushOp(B_EQ);
-	query->PushOp(B_AND);
+	query.PushAttr("Event:Status");
+	query.PushString("Unnotified");
+	query.PushOp(B_EQ);
+	query.PushOp(B_AND);
 
-	query->Fetch();
+	query.Fetch();
 	entry_ref ref;
 
-	BFile* evFile;
+	BFile evFile;
 	Event* event;
 
-	while (query->GetNextRef(&ref) == B_OK) {
-		evFile = new BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(evFile);
+	while (query.GetNextRef(&ref) == B_OK) {
+		evFile = BFile(&ref, B_READ_WRITE);
+		event = _FileToEvent(&evFile);
 		events->AddItem(event);
 	}
 
-	delete(query);
 	return events;
 }
 
@@ -327,14 +323,14 @@ QueryDBManager::AddCategory(Category* category)
 	if (GetCategory(category->GetName()) != NULL)
 		return false;
 
-	BFile* catFile = new BFile();
+	BFile catFile = BFile();
 	status_t result =
-		_CreateUniqueFile(fCategoryDir, category->GetName(), catFile);
+		_CreateUniqueFile(fCategoryDir, category->GetName(), &catFile);
 
 	if (_CategoryStatusSwitch(result) != B_OK)
 		return false;
 
-	return _CategoryToFile(category, catFile);
+	return _CategoryToFile(category, &catFile);
 }
 
 
@@ -342,14 +338,14 @@ bool
 QueryDBManager::UpdateCategory(Category* category, Category* newCategory)
 {
 	entry_ref ref = _GetCategoryRef(category->GetName());
-	BFile* catFile = new BFile(&ref, B_READ_WRITE);
-	if (_CategoryStatusSwitch(catFile->InitCheck()) != B_OK)
+	BFile catFile = BFile(&ref, B_READ_WRITE);
+	if (_CategoryStatusSwitch(catFile.InitCheck()) != B_OK)
 		return NULL;
 
 	if (category->GetName() != newCategory->GetName())
 		_ReplaceCategory(category->GetName(), newCategory->GetName());
 
-	return _CategoryToFile(newCategory, catFile);
+	return _CategoryToFile(newCategory, &catFile);
 }
 
 
@@ -357,12 +353,12 @@ Category*
 QueryDBManager::GetCategory(const char* name)
 {
 	entry_ref ref = _GetCategoryRef(name);
-	BFile* catFile = new BFile(&ref, B_READ_ONLY);
+	BFile catFile = BFile(&ref, B_READ_ONLY);
 
-	if (catFile->InitCheck() != B_OK)
+	if (catFile.InitCheck() != B_OK)
 		return NULL;
 
-	return _FileToCategory(catFile);
+	return _FileToCategory(&catFile);
 }
 
 
@@ -384,23 +380,23 @@ BList*
 QueryDBManager::GetAllCategories()
 {
 	BList* categories = new BList();
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Category:Name");
-	query->PushString("*");
-	query->PushOp(B_EQ);
+	query.PushAttr("Category:Name");
+	query.PushString("*");
+	query.PushOp(B_EQ);
 
 	entry_ref ref;
-	query->Fetch();
+	query.Fetch();
 
-	BFile* catFile;
+	BFile catFile;
 	Category* category;
 	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
 
-	while (query->GetNextRef(&ref) == B_OK) {
-		catFile = new BFile(&ref, B_READ_ONLY);
-		category = _FileToCategory(catFile);
+	while (query.GetNextRef(&ref) == B_OK) {
+		catFile = BFile(&ref, B_READ_ONLY);
+		category = _FileToCategory(&catFile);
 
 		if (category->GetName() == defaultCat)
 			categories->AddItem(category, 0);
@@ -408,7 +404,6 @@ QueryDBManager::GetAllCategories()
 			categories->AddItem(category);
 	}
 
-	delete(query);
 	return categories;
 }
 
@@ -441,24 +436,23 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 entry_ref
 QueryDBManager::_GetEventRef(const char* name, time_t startDate)
 {
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Event:Name");
-	query->PushString(name);
-	query->PushOp(B_EQ);
+	query.PushAttr("Event:Name");
+	query.PushString(name);
+	query.PushOp(B_EQ);
 
-	query->PushAttr("Event:Start");
-	query->PushUInt32(startDate);
-	query->PushOp(B_EQ);
-	query->PushOp(B_AND);
+	query.PushAttr("Event:Start");
+	query.PushUInt32(startDate);
+	query.PushOp(B_EQ);
+	query.PushOp(B_AND);
 
 	entry_ref ref;
 
-	if (query->Fetch() == B_OK)
-		query->GetNextRef(&ref);
+	if (query.Fetch() == B_OK)
+		query.GetNextRef(&ref);
 
-	delete(query);
 	return ref;
 }
 
@@ -466,19 +460,18 @@ QueryDBManager::_GetEventRef(const char* name, time_t startDate)
 entry_ref
 QueryDBManager::_GetCategoryRef(const char* name)
 {
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Category:Name");
-	query->PushString(name);
-	query->PushOp(B_EQ);
+	query.PushAttr("Category:Name");
+	query.PushString(name);
+	query.PushOp(B_EQ);
 
 	entry_ref ref;
 
-	if (query->Fetch() == B_OK)
-		query->GetNextRef(&ref);
+	if (query.Fetch() == B_OK)
+		query.GetNextRef(&ref);
 
-	delete(query);
 	return ref;
 }
 
@@ -487,35 +480,34 @@ BList*
 QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 {
 	BList* events = new BList();
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Event:End");
-	query->PushUInt32(start);
-	query->PushOp(B_GE);
-	query->PushAttr("Event:Start");
-	query->PushUInt32(end);
-	query->PushOp(B_LE);
-	query->PushOp(B_AND);
+	query.PushAttr("Event:End");
+	query.PushUInt32(start);
+	query.PushOp(B_GE);
+	query.PushAttr("Event:Start");
+	query.PushUInt32(end);
+	query.PushOp(B_LE);
+	query.PushOp(B_AND);
 
-	query->PushAttr("Event:Status");
-	query->PushString("Cancelled");
-	query->PushOp(B_NE);
-	query->PushOp(B_AND);
+	query.PushAttr("Event:Status");
+	query.PushString("Cancelled");
+	query.PushOp(B_NE);
+	query.PushOp(B_AND);
 
-	query->Fetch();
+	query.Fetch();
 	entry_ref ref;
 
-	BFile* evFile;
+	BFile evFile;
 	Event* event;
 
-	while (query->GetNextRef(&ref) == B_OK) {
-		evFile = new BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(evFile);
+	while (query.GetNextRef(&ref) == B_OK) {
+		evFile = BFile(&ref, B_READ_WRITE);
+		event = _FileToEvent(&evFile);
 		events->AddItem(event);
 	}
 
-	delete(query);
 	return events;
 }
 
@@ -523,25 +515,24 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 status_t
 QueryDBManager::_GetFileOfId(const char* id, BFile* file)
 {
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Calendar:ID");
-	query->PushString(id);
-	query->PushOp(B_EQ);
+	query.PushAttr("Calendar:ID");
+	query.PushString(id);
+	query.PushOp(B_EQ);
 
 	entry_ref ref;
-	status_t result = query->Fetch();
+	status_t result = query.Fetch();
 
 	if (result == B_OK) {
 		entry_ref ref;
-		result = query->GetNextRef(&ref);
+		result = query.GetNextRef(&ref);
 
 		if (result == B_OK)
 			*file = BFile(&ref, B_READ_WRITE);
 	}
 
-	delete(query);
 	return result;
 }
 
@@ -692,25 +683,24 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 void
 QueryDBManager::_ReplaceCategory(BString oldCategory, BString newCategory)
 {
-	BQuery* query = new BQuery();
-	query->SetVolume(&fQueryVolume);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
 
-	query->PushAttr("Event:Category");
-	query->PushString(oldCategory.String());
-	query->PushOp(B_EQ);
+	query.PushAttr("Event:Category");
+	query.PushString(oldCategory.String());
+	query.PushOp(B_EQ);
 
-	query->Fetch();
+	query.Fetch();
 	entry_ref ref;
 
-	BFile* evFile;
+	BFile evFile;
 	Event* event;
 
-	while (query->GetNextRef(&ref) == B_OK) {
-		evFile = new BFile(&ref, B_WRITE_ONLY);
-		evFile->WriteAttr("Event:Category", B_STRING_TYPE, 0,
-						newCategory.String(), newCategory.CountChars() + 1);
+	while (query.GetNextRef(&ref) == B_OK) {
+		evFile = BFile(&ref, B_WRITE_ONLY);
+		evFile.WriteAttr("Event:Category", B_STRING_TYPE, 0,
+			newCategory.String(), newCategory.CountChars() + 1);
 	}
-	delete(query);
 }
 
 
