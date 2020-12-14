@@ -53,7 +53,7 @@ public:
 
 private:
 
-	void			_Initialise();
+	void			_Initialize();
 
 	entry_ref		_GetEventRef(const char* name, time_t startDate);
 	entry_ref		_GetCategoryRef(const char* name);

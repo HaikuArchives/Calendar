@@ -38,7 +38,7 @@ const char* kCategoryDir	= "categories";
 
 QueryDBManager::QueryDBManager()
 {
-	_Initialise();
+	_Initialize();
 }
 
 
@@ -49,7 +49,7 @@ QueryDBManager::~QueryDBManager()
 
 
 void
-QueryDBManager::_Initialise()
+QueryDBManager::_Initialize()
 {
 	BPath rootPath;
 	BPath eventPath;
