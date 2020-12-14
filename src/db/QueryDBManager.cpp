@@ -98,9 +98,9 @@ QueryDBManager::_Initialise()
 	// Create default categories if need be
 	if (GetAllCategories()->CountItems() == 0) {
 		Category* defaultCategory =
-			new Category(B_TRANSLATE("Default"), BString("1E90FF"), "1f1e4ffd-527d-4796-953f-df2e2c600a09");
+			new Category(B_TRANSLATE("Default"), BString("1E90FF"));
 		Category* birthdayCategory =
-			new Category(B_TRANSLATE("Birthday"), BString("C25656"), "47c30a47-7c79-4d45-883a-8f45b9ddcff4");
+			new Category(B_TRANSLATE("Birthday"), BString("C25656"));
 		AddCategory(defaultCategory);
 		AddCategory(birthdayCategory);
 	}
