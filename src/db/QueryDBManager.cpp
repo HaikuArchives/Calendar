@@ -547,11 +547,13 @@ Category*
 QueryDBManager::_FileToCategory(BFile* file)
 {
 	BString name = BString();
-	BString color = BString();
 	BString idStr = BString();
 	file->ReadAttrString("Category:Name", &name);
-	file->ReadAttrString("Category:Color", &color);
 	file->ReadAttrString("Calendar:ID", &idStr);
+
+	rgb_color color = {28, 144, 255};
+	file->ReadAttr("Category:Color", B_RGB_COLOR_TYPE, 0, &color,
+		sizeof(rgb_color));
 
 	return new Category(name, color, idStr.String());
 }
@@ -618,9 +620,9 @@ QueryDBManager::_CategoryToFile(Category* category, BFile* file)
 	file->WriteAttr("Calendar:ID", B_STRING_TYPE, 0, id.String(),
 						id.CountChars() + 1);
 
-	BString color = category->GetHexColor();
-	file->WriteAttr("Category:Color", B_STRING_TYPE, 0, color.String(),
-						color.CountChars() + 1);
+	rgb_color color = category->GetColor();
+	file->WriteAttr("Category:Color", B_RGB_COLOR_TYPE, 0, &color,
+		sizeof(rgb_color));
 
 	return true;
 }
@@ -814,7 +816,7 @@ QueryDBManager::_CategoryMimetype()
 	mime.SetLongDescription("Category of calendar events");
 
 	_AddAttribute(info, "Category:Name",	"Name", B_STRING_TYPE, true, 300);
-	_AddAttribute(info, "Category:Color",	"Color", B_STRING_TYPE, true, 100);
+	_AddAttribute(info, "Category:Color",	"Color", B_RGB_COLOR_TYPE, false, 100);
 	_AddAttribute(info, "Calendar:ID",		"ID", B_STRING_TYPE, true, 100);
 
 	return mime.SetAttrInfo( &info );
