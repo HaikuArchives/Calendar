@@ -323,6 +323,12 @@ QueryDBManager::AddCategory(Category* category)
 	if (GetCategory(category->GetName()) != NULL)
 		return false;
 
+	BString color = category->GetHexColor();
+	BList* categories = GetAllCategories();
+	for (int i = 0; i < categories->CountItems(); i++)
+		if (color == ((Category*)categories->ItemAt(i))->GetHexColor())
+			return false;
+
 	BFile catFile = BFile();
 	status_t result =
 		_CreateUniqueFile(fCategoryDir, category->GetName(), &catFile);
@@ -866,7 +872,6 @@ QueryDBManager::_AddIndices()
 		fs_create_index(device, "Event:Status",		B_STRING_TYPE, 0);
 		fs_create_index(device, "Calendar:ID",		B_STRING_TYPE, 0);
 		fs_create_index(device, "Category:Name",	B_STRING_TYPE, 0);
-		fs_create_index(device, "Category:Color",	B_STRING_TYPE, 0);
 	}
 }
 
