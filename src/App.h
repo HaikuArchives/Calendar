@@ -27,10 +27,13 @@ public:
 				App();
 				~App();
 
+	void			ArgvReceived(int32 argc, char** argv);
+	void			MessageReceived(BMessage* message);
+	void			RefsReceived(BMessage* message);
+
 	void			AboutRequested();
 	bool			QuitRequested();
 	Preferences*	GetPreferences();
-	void			MessageReceived(BMessage* message);
 	MainWindow*		mainWindow();
 	CategoryWindow*		categoryWindow();
 

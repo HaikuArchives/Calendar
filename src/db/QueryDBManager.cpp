@@ -219,6 +219,14 @@ Event*
 QueryDBManager::GetEvent(const char* name, time_t startTime)
 {
 	entry_ref ref = _GetEventRef(name, startTime);
+
+	return GetEvent(ref);
+}
+
+
+Event*
+QueryDBManager::GetEvent(entry_ref ref)
+{
 	BFile evFile = BFile(&ref, B_READ_ONLY);
 	if (evFile.InitCheck() != B_OK)
 		return NULL;
@@ -359,6 +367,14 @@ Category*
 QueryDBManager::GetCategory(const char* name)
 {
 	entry_ref ref = _GetCategoryRef(name);
+
+	return GetCategory(ref);
+}
+
+
+Category*
+QueryDBManager::GetCategory(entry_ref ref)
+{
 	BFile catFile = BFile(&ref, B_READ_ONLY);
 
 	if (catFile.InitCheck() != B_OK)
@@ -814,6 +830,7 @@ QueryDBManager::_CategoryMimetype()
 
 	mime.SetShortDescription("Calendar Category");
 	mime.SetLongDescription("Category of calendar events");
+	mime.SetPreferredApp("application/x-vnd.calendar");
 
 	_AddAttribute(info, "Category:Name",	"Name", B_STRING_TYPE, true, 300);
 	_AddAttribute(info, "Category:Color",	"Color", B_RGB_COLOR_TYPE, false, 100);
@@ -835,6 +852,7 @@ QueryDBManager::_EventMimetype()
 
 	mime.SetShortDescription("Calendar Event");
 	mime.SetLongDescription("Generic calendar event");
+	mime.SetPreferredApp("application/x-vnd.calendar");
 
 	_AddAttribute(info, "Event:Name",	"Name",		B_STRING_TYPE, true, 300);
 	_AddAttribute(info, "Event:Start",	"Start",	B_TIME_TYPE, true, 150);

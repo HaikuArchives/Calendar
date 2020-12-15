@@ -21,6 +21,11 @@ resource app_version {
 	long_info  = "A native Calendar Application for Haiku."
 };
 
+resource file_types message {
+	"types" = "application/x-calendar-category",
+	"types" = "application/x-calendar-event"
+};
+
 resource(1, "ADD_EVENT") #'VICN' array {
 	$"6E6369660404006603800000020006020000003C6000C000000000004C000048"
 	$"A00000FFABABFFD90000020016020000003B3FFFC000000000004C000048A000"

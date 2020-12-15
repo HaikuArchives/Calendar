@@ -34,6 +34,7 @@ public:
 
 		Event*		GetEvent(const char* id);
 		Event*		GetEvent(const char* name, time_t startTime);
+		Event*		GetEvent(entry_ref ref);
 		BList*		GetEventsOfDay(BDate& date);
 		BList*		GetEventsOfWeek(BDate& date);
 		BList*		GetEventsOfCategory(Category* category);
@@ -46,6 +47,7 @@ public:
 		bool		UpdateCategory(Category* category,
 						Category* newCategory);
 		Category*	GetCategory(const char* name);
+		Category*	GetCategory(entry_ref ref);
 		Category*	EnsureCategory(const char* name);
 		BList*		GetAllCategories();
 		bool		RemoveCategory(Category* category);
