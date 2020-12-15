@@ -31,4 +31,6 @@ SynchronizationLoop(void* data)
 		statusMessage.AddBool("status", true);
 
 	msgr.SendMessage(&statusMessage);
+
+	return B_OK;
 }
