@@ -12,6 +12,7 @@
 #include <Menu.h>
 #include <MenuItem.h>
 #include <MenuBar.h>
+#include <NodeInfo.h>
 #include <ToolBar.h>
 
 #include "App.h"
@@ -149,6 +150,33 @@ MainWindow::MessageReceived(BMessage* message)
 			fSidePanelView->MessageReceived(message);
 			fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 			_UpdateDayView();
+			break;
+		}
+
+		case B_REFS_RECEIVED:
+		{
+			int i = 0;
+			entry_ref ref;
+			BFile file;
+			BNodeInfo info;
+			char type[B_FILE_NAME_LENGTH];
+			QueryDBManager DBManager;
+
+			while (message->HasRef("refs", i)) {
+				message->FindRef("refs", i++, &ref);
+
+				file.SetTo(&ref, B_READ_ONLY);
+				info.SetTo(&file);
+				info.GetType(type);
+
+				if (BString(type) == BString("application/x-calendar-event"))
+					_LaunchEventManager(DBManager.GetEvent(ref));
+				else {
+					BMessage msg = BMessage(B_REFS_RECEIVED);
+					msg.AddRef("refs", &ref);
+					((App*)be_app)->PostMessage(&msg);
+				}
+			}
 			break;
 		}
 
