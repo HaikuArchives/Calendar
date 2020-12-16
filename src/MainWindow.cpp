@@ -14,8 +14,10 @@
 #include <MenuBar.h>
 #include <NodeInfo.h>
 #include <ToolBar.h>
+#include <vector>
 
 #include "App.h"
+#include "Button.h"
 #include "CategoryEditWindow.h"
 #include "DayView.h"
 #include "Event.h"
@@ -97,12 +99,14 @@ MainWindow::MessageReceived(BMessage* message)
 		case kWeekView:
 		case kDayView:
 		{
+			_ToggleEventViewButton(message->what);
 			fDayView->MessageReceived(message);
 			break;
 		}
 		
 		case kAgendaView:
 		{
+			_ToggleEventViewButton(message->what);
 			fDayView->MessageReceived(message);
 			fSidePanelView->MessageReceived(new BMessage(kSetCalendarToCurrentDate));
 			break;
@@ -127,6 +131,7 @@ MainWindow::MessageReceived(BMessage* message)
 
 		case kSetCalendarToCurrentDate:
 			fSidePanelView->MessageReceived(message);
+			fDayView->MessageReceived(message);
 			break;
 
 		case kSelectedDateChanged:
@@ -291,6 +296,8 @@ MainWindow::_InitInterface()
 	fSidePanelView = new SidePanelView();
 	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));
 
+	_ToggleEventViewButton(kDayView);
+
 	fMainView->StartWatchingAll(fSidePanelView);
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
@@ -357,7 +364,6 @@ MainWindow::_UpdateDayView()
 {
 	BDate date = _GetSelectedCalendarDate();
 	fDayView->SetDate(date);
-	fDayView->SetMode(kDayView);
 	LockLooper();
 	fDayView->LoadEvents();
 	UnlockLooper();
@@ -368,4 +374,25 @@ BDate
 MainWindow::_GetSelectedCalendarDate() const
 {
 	return fSidePanelView->GetSelectedDate();
+}
+
+void
+MainWindow::_ToggleEventViewButton(int selectedButtonId)
+{
+	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
+			kAgendaView };
+
+	for (int buttonName : skEventViewButtonIds) {
+		BButton* button = fToolBar->FindButton(buttonName);
+		BMessage* message = button->Message();
+		if (message != NULL) {
+			button->SetValue(message->what == (uint32)selectedButtonId);
+		}
+
+		BMenuItem* item = fViewMenu->FindItem(buttonName);
+		message = button->Message();
+		if (message != NULL) {
+			item->SetMarked(message->what == (uint32)selectedButtonId);
+		}
+	}
 }

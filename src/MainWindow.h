@@ -46,6 +46,7 @@ private:
 	void			_UpdateDayView();
 	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
+	void			_ToggleEventViewButton(int selectedButton);
 
 	static const int	kMenuAppQuit		= 1000;
 	static const int 	kMenuEventEdit 		= 1002;

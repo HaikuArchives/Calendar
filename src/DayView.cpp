@@ -20,6 +20,7 @@
 #include "EventListItem.h"
 #include "EventListView.h"
 #include "QueryDBManager.h"
+#include "SidePanelView.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
@@ -59,11 +60,6 @@ void
 DayView::SetDate(const BDate& date)
 {
 	fDate = date;
-}
-
-void DayView::SetMode(int32 mode)
-{
-	this->mode = mode;
 }
 
 void
@@ -133,11 +129,12 @@ DayView::MessageReceived(BMessage* message)
 		case kDayView:
 		case kWeekView:
 		case kAgendaView:
-		{
 			mode = message->what;
+
+		case kSetCalendarToCurrentDate:
 			LoadEvents();
 			break;
-		}
+
 		default:
 			BView::MessageReceived(message);
 			break;
