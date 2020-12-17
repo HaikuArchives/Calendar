@@ -246,7 +246,7 @@ QueryDBManager::GetEventsOfDay(BDate& date)
 
 
 BList*
-QueryDBManager::GetEventsOfWeek(BDate& date)
+QueryDBManager::GetEventsOfWeek(BDate date)
 {
 	date.AddDays(-date.DayOfWeek()+1);
 	time_t weekStart = BDateTime(date, BTime(0, 0, 0)).Time_t();
