@@ -108,7 +108,6 @@ MainWindow::MessageReceived(BMessage* message)
 		{
 			_ToggleEventViewButton(message->what);
 			fDayView->MessageReceived(message);
-			fSidePanelView->MessageReceived(new BMessage(kSetCalendarToCurrentDate));
 			break;
 		}
 
