@@ -116,6 +116,7 @@ private:
 
 	Event*			fEvent;
 	BList*			fCategoryList;
+	bool			fNew;
 
 	QueryDBManager*	fDBManager;
 };

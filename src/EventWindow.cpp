@@ -62,6 +62,7 @@ EventWindow::EventWindow()
 		CenterOnScreen();
 	}
 
+	fNew = true;
 	_DisableControls();
 }
 
@@ -183,9 +184,11 @@ EventWindow::SetEvent(Event* event)
 			fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
 		}
 
+		if (fDBManager->GetEvent(event->GetName(), event->GetStartDateTime()))
+			fNew = false;
 
-		fDeleteButton->SetEnabled(true);
-
+		if (fNew == false)
+			fDeleteButton->SetEnabled(true);
 	}
 
 }
@@ -324,11 +327,11 @@ EventWindow::OnSaveClick()
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
 		start, end, category, notified);
 
-	if ((fEvent == NULL) && (fDBManager->AddEvent(&newEvent))) {
+	if ((fNew == true) && (fDBManager->AddEvent(&newEvent))) {
 		CloseWindow();
 	}
 
-	else if ((fEvent != NULL) && (fDBManager->UpdateEvent(fEvent, &newEvent)))
+	else if ((fNew == false) && (fDBManager->UpdateEvent(fEvent, &newEvent)))
 	{
 		CloseWindow();
 	}
