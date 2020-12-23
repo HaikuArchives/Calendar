@@ -23,7 +23,8 @@ resource app_version {
 
 resource file_types message {
 	"types" = "application/x-calendar-category",
-	"types" = "application/x-calendar-event"
+	"types" = "application/x-calendar-event",
+	"types" = "text/calendar"
 };
 
 resource(1, "ADD_EVENT") #'VICN' array {

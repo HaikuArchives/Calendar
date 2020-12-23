@@ -48,6 +48,7 @@ SRCS = \
 	 src/Preferences.cpp  \
 	 src/SidePanelView.cpp  \
 	 src/utils/ColorConverter.cpp  \
+	 src/utils/ICal.cpp  \
 	 src/utils/ResourceLoader.cpp  \
 	 src/model/Category.cpp  \
 	 src/model/Event.cpp \

@@ -37,6 +37,7 @@ using BPrivate::BToolBar;
 #define B_TRANSLATION_CONTEXT "MainWindow"
 
 extern int32 NotificationLoop(void* data);
+extern int32 ImportICalEvents(void* icalFilePtr);
 
 
 MainWindow::MainWindow()
@@ -173,9 +174,17 @@ MainWindow::MessageReceived(BMessage* message)
 				info.SetTo(&file);
 				info.GetType(type);
 
+
 				if (BString(type) == BString("application/x-calendar-event"))
 					_LaunchEventManager(DBManager.GetEvent(ref));
-				else {
+
+				else if (BString(type) == BString("text/calendar")) {
+					thread_id icalThread = spawn_thread(ImportICalEvents,
+						"ICal import thread", B_NORMAL_PRIORITY,
+						new BFile(&ref, B_READ_ONLY));
+					resume_thread(icalThread);
+
+				} else {
 					BMessage msg = BMessage(B_REFS_RECEIVED);
 					msg.AddRef("refs", &ref);
 					((App*)be_app)->PostMessage(&msg);
@@ -375,6 +384,7 @@ MainWindow::_GetSelectedCalendarDate() const
 {
 	return fSidePanelView->GetSelectedDate();
 }
+
 
 void
 MainWindow::_ToggleEventViewButton(int selectedButtonId)

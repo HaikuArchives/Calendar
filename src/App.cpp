@@ -197,7 +197,8 @@ App::RefsReceived(BMessage* message)
 		info.SetTo(&file);
 		info.GetType(type);
 
-		if (BString(type) == BString("application/x-calendar-event"))
+		if (BString(type) == BString("application/x-calendar-event") ||
+			BString(type) == BString("text/calendar"))
 			fMainWindow->PostMessage(&msg);
 		else if (BString(type) == BString("application/x-calendar-category")) {
 			MessageReceived(new BMessage(kMenuCategoryEdit));
