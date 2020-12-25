@@ -37,8 +37,6 @@ public:
 	virtual void		MessageReceived(BMessage* message);
 	virtual bool		QuitRequested();
 
-	static void		SetPreferences(Preferences* preferences);
-
 	void			StartNotificationThread();
 	void			StopNotificationThread();
 private:
@@ -48,6 +46,7 @@ private:
 	void			_UpdateDayView();
 	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
+	void			_ToggleEventViewButton(int selectedButton);
 
 	static const int	kMenuAppQuit		= 1000;
 	static const int 	kMenuEventEdit 		= 1002;
@@ -57,8 +56,6 @@ private:
 	static const int 	kWeekView		= 1006;
 	static const int 	kAgendaView		= 1007;
 
-
-	static Preferences*	fPreferences;
 
 	MainView*		fMainView;
 	EventWindow*		fEventWindow;

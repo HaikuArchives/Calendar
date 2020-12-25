@@ -11,6 +11,7 @@
 #include <string>
 
 #include <Path.h>
+#include <String.h>
 
 
 class Preferences {
@@ -18,12 +19,13 @@ public:
 	void					Load(const char* filename);
 	void					Save(const char* filename);
 
-	Preferences&			operator =(Preferences p);
+	Preferences&			operator =(const Preferences& p);
 
 	BPath					fSettingsPath;
 
 	int32					fStartOfWeekOffset;
 	bool					fHeaderVisible;
+	BString					fDefaultCategory;
 	BRect					fMainWindowRect;
 	BRect					fEventWindowRect;
 };

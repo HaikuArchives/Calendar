@@ -1,0 +1,117 @@
+1	Friulian	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% al tache aes %time%.
+Reminder	NotificationLoop		Pro memoria
+A native Calendar application for Haiku.	App		Une aplicazion pal Calendari native par Haiku.
+About	MainWindow		Informazions
+Add event	MainWindow		Zonte event
+Agenda	MainWindow		Agjende
+Agenda view	MainWindow		Viodude agjende
+App	MainWindow		Aplicazion
+Category	MainWindow		Categorie
+Day	MainWindow		Dì
+Day view	MainWindow		Viodude zornaliere
+Edit categories	MainWindow		Modifiche categoriis
+Edit event	MainWindow		Modifiche event
+Event	MainWindow		Event
+Go to today	MainWindow		Va a vuê
+Google Calendar	MainWindow		Google Calendar
+Preferences	MainWindow		Preferencis
+Quit	MainWindow		Jes
+Remove event	MainWindow		Gjave event
+Synchronize	MainWindow		Sincronize
+Today	MainWindow		Vuê
+View	MainWindow		Viodude
+Week	MainWindow		Setemane
+Week view	MainWindow		Viodude setemanâl
+Add	CategoryWindow		Zonte
+Cancel	CategoryWindow		Anule
+Category manager	CategoryWindow		Gjestôr categoriis
+All day	DayView		Dut il dì
+All day, %startDay%	DayView		Dut il dì, %startDay%
+Are you sure you want to delete the selected event?	DayView		Eliminâ pardabon l'event selezionât?
+Cancel	DayView		Anule
+Confirm delete	DayView		Conferme eliminazion
+Finished!	DayView		Finît!
+Now, %remaining% left	DayView		Cumò, a mancjin %remaining%
+OK	DayView		Va ben
+Starts in %remaining%	DayView		Al tache tra %remaining%
+All day:	EventWindow		Dut il dì:
+Are you sure you want to delete this event?	EventWindow		Eliminâ pardabon chest event?
+Cancel	EventWindow		Anule
+Category:	EventWindow		Categorie:
+Confirm delete	EventWindow		Conferme eliminazion
+Delete	EventWindow		Elimine
+Description:	EventWindow		Descrizion:
+End date	EventWindow		Date de fin
+End date and time	EventWindow		Date e ore de fin
+End date:	EventWindow		Date de fin:
+End time:	EventWindow		Ore de fin:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Inserìs la ore intal formât HH:mm (24 oris).
+Error	EventWindow		Erôr
+Event manager	EventWindow		Gjestôr events
+Monthly	EventWindow		Mensîl
+Name:	EventWindow		Non:
+OK	EventWindow		Va ben
+Place:	EventWindow		Lûc:
+Recurrence	EventWindow		Inovâl
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Nus displâs, no tu puedis creâ un event che al finìs ancjemò prime che al tachi.
+Start date	EventWindow		Date di inizi
+Start date and time	EventWindow		Date e ore di inizi
+Start date:	EventWindow		Date di inizi:
+Start time:	EventWindow		Ore di inizi:
+The name must have a length greater than 2.	EventWindow		La lungjece dal non e scugne jessi plui grande di 2.
+There was some error in adding the event. Please try again.	EventWindow		Si à vût cualchi erôr tal zontâ l'event. Par plasê torne prove.
+Yearly	EventWindow		Anuâl
+Apply	PreferenceWindow		Apliche
+First day of week	PreferenceWindow		Prin dì de setemane
+Friday	PreferenceWindow		Vinars
+Locale based	PreferenceWindow		Basât su Localizazion di Haiku
+Monday	PreferenceWindow		Lunis
+Preferences	PreferenceWindow		Preferencis
+Revert	PreferenceWindow		Torne indaûr
+Saturday	PreferenceWindow		Sabide
+Show week number in Calendar	PreferenceWindow		Mostre il numar de setemane in Calendari
+Sunday	PreferenceWindow		Domenie
+Thursday	PreferenceWindow		Joibe
+Tuesday	PreferenceWindow		Martars
+Wednesday	PreferenceWindow		Miercus
+Are you sure you want to delete the selected category?	CategoryEditWindow		Eliminâ pardabon la categorie selezionade?
+Cancel	CategoryEditWindow		Anule
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Impussibil zontâ/modificâ la categorie. E esist za une categorie cul stes non o colôr.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Impussibil eliminâ la categorie. No si pues elimnâ une categorie doprade dai events.
+Category Edit	CategoryEditWindow		Modifiche categorie
+Confirm delete	CategoryEditWindow		Conferme eliminazion
+Default	CategoryEditWindow		Predefinît
+Delete	CategoryEditWindow		Elimine
+Error	CategoryEditWindow		Erôr
+New category	CategoryEditWindow		Gnove categorie
+OK	CategoryEditWindow		Va ben
+Save	CategoryEditWindow		Salve
+The name must have a length greater than 2.	CategoryEditWindow		La lungjece dal non e scugne jessi plui grande di 2.
+You cannot delete the default category.	CategoryEditWindow		No tu puedis eliminâ la categorie predefinide.
+Birthday	SQLiteManager		Complean
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Impussibil vierzi la base di dâts (%code%). I tiei events salvâts no vignaran cjariâts.
+Default	SQLiteManager		Predefinît
+OK	SQLiteManager		Va ben
+SQLITE ERROR	SQLiteManager		ERÔR SQLITE
+There was an SQLite error (%code%).	SQLiteManager		Si à vût un erôr di SQLite (%code%).
+Calendar	System name		Calendari
+Configuration file	Preferences		File di configurazion
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Impussibil vierzi il file di configurazion parvie che il permès al è stât dineât. Di solit al significhe che no tu âs i permès di leture ae tô cartele des impostazions. Se tu desideris che lis tôs impostazions personâls a vegnin cjariadis, controle la documentazion dal SO par cjatâ di cuale cartele che si trate e prove a cambiâ i siei permès.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Impussibil vierzi il file di configurazion par vie che il percors nol è specificât. Di solit al significhe che il programadôr al à fat un erôr. No tu puedis fâ nuie in merit. Lis tôs impostazions personâls no vignaran cjariadis. Nus displâs.
+OK	Preferences		Va ben
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		No si à vonde memorie libare sul sisteme par cjariâ il file di configurazion. Se tu desideris vê cjariadis lis tôs impostazions personâls, prove a sierâ cualchi aplicazion e torne invie Calendari.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		No si à vonde memorie libare sul sisteme par salvâ il file di configurazion. Se tu desideris vê salvadis lis tôs impostazions personâls, prove a sierâ cualchi aplicazion e torne prove.
+Delete	EventListView		Elimine
+Edit	EventListView		Modifiche
+You don't have any events on this day!	EventListView		No tu âs nissun event in cheste zornade!
+Error	GoogleEventSyncWindow		Erôr
+Failed	GoogleEventSyncWindow		Falît
+Google Calendar Sync	GoogleEventSyncWindow		Google Calendar Sync
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Ultime sincronizazion: %status% aes %time%.
+No Data Available	GoogleEventSyncWindow		Nissun dât disponibil
+OK	GoogleEventSyncWindow		Va ben
+Please wait while we sync...	GoogleEventSyncWindow		Par plasê spiete intant che o sincronizìn...
+Success	GoogleEventSyncWindow		Sucès
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Si à vût un erôr intal cjariâ i ultins dâts di sincronizazion.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Si à vût un erôr intal salvâ i dâts di sincronizazion resints.

@@ -10,7 +10,7 @@
 
 class BList;
 class Event;
-class SQLiteManager;
+class QueryDBManager;
 
 
 #define CLIENT_SECRET "sH095g9EzY5BxwI-DHIlqVXr"
@@ -68,7 +68,7 @@ class EventSync {
 		BString 					fToken;
 		BString 					fRefreshToken;
 		BString						fAuthCode;
-		SQLiteManager*				fDBManager;
+		QueryDBManager*				fDBManager;
 		BString						fLastSyncToken;
 		BList*						fEvents;
 		BStringList*				fCancelledEvents;

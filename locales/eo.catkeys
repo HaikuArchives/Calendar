@@ -1,0 +1,117 @@
+1	Esperanto	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% komencos je %time%.
+Reminder	NotificationLoop		Sciigo
+A native Calendar application for Haiku.	App		Simpla Kalendara programo por Haiku.
+About	MainWindow		Pri
+Add event	MainWindow		Krei okazon
+Agenda	MainWindow		Agendo
+Agenda view	MainWindow		Vidi agende
+App	MainWindow		Programo
+Category	MainWindow		Kategorio
+Day	MainWindow		Tage
+Day view	MainWindow		Vidi tage
+Edit categories	MainWindow		Redakti kategoriojn
+Edit event	MainWindow		Redakti okazon
+Event	MainWindow		Okazo
+Go to today	MainWindow		Iri hodiaŭen
+Google Calendar	MainWindow		Google Kalendaro
+Preferences	MainWindow		Agordoj
+Quit	MainWindow		Malfermi
+Remove event	MainWindow		Forigi okazon
+Synchronize	MainWindow		Sinkronigi
+Today	MainWindow		Hodiaŭ
+View	MainWindow		Vido
+Week	MainWindow		Semajne
+Week view	MainWindow		Vidi semajne
+Add	CategoryWindow		Krei
+Cancel	CategoryWindow		Nuligi
+Category manager	CategoryWindow		Kategoria redaktilo
+All day	DayView		Tuttage
+All day, %startDay%	DayView		Tuttage, %startDay%
+Are you sure you want to delete the selected event?	DayView		Ĉu vi certas, ke vi volas forigi la elektitan okazon?
+Cancel	DayView		Nuligi
+Confirm delete	DayView		Verigi forigon
+Finished!	DayView		Finita!
+Now, %remaining% left	DayView		Nun, %remaining% restas
+OK	DayView		Bone
+Starts in %remaining%	DayView		Komencos post %remaining%
+All day:	EventWindow		Tuttage:
+Are you sure you want to delete this event?	EventWindow		Ĉu vi certas, ke vi volas forigi ĉi okazon?
+Cancel	EventWindow		Nuligi
+Category:	EventWindow		Kategorio:
+Confirm delete	EventWindow		Verigi forigon
+Delete	EventWindow		Forigi
+Description:	EventWindow		Priskribo:
+End date	EventWindow		Finotago
+End date and time	EventWindow		Finotago kaj tempo
+End date:	EventWindow		Finotempo:
+End time:	EventWindow		Finotempo:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Eniru tempon HH:mm-aranĝe (24 hore).
+Error	EventWindow		Eraro
+Event manager	EventWindow		Okazo redaktilo
+Monthly	EventWindow		Monate
+Name:	EventWindow		Nomo:
+OK	EventWindow		Bone
+Place:	EventWindow		Loko:
+Recurrence	EventWindow		Ripetas
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Bedaŭrinde, neeblas krei okazon finontan antaŭ ĝia komenco.
+Start date	EventWindow		Komencotago
+Start date and time	EventWindow		Komencotago kaj tempo
+Start date:	EventWindow		Komencotago:
+Start time:	EventWindow		Komencotempo:
+The name must have a length greater than 2.	EventWindow		La nomo devas pligrandi ol 2 literoj.
+There was some error in adding the event. Please try again.	EventWindow		Iel eraris dum kreado de okazon. Bonvole reprovu.
+Yearly	EventWindow		Jare
+Apply	PreferenceWindow		Apliki
+First day of week	PreferenceWindow		Unua semajntago
+Friday	PreferenceWindow		Vendredo
+Locale based	PreferenceWindow		Laŭlingve
+Monday	PreferenceWindow		Lundo
+Preferences	PreferenceWindow		Agordoj
+Revert	PreferenceWindow		Malfari
+Saturday	PreferenceWindow		Sabato
+Show week number in Calendar	PreferenceWindow		Montri semajnnombron Kalendare
+Sunday	PreferenceWindow		Dimanĉo
+Thursday	PreferenceWindow		Ĵaŭdo
+Tuesday	PreferenceWindow		Mardo
+Wednesday	PreferenceWindow		Merkredo
+Are you sure you want to delete the selected category?	CategoryEditWindow		Ĉu vi certas, ke vi volas forigi la elektitan kategorion?
+Cancel	CategoryEditWindow		Nuligi
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Neeblas krei/redakti la kategorion. Jam ekzistas kategorio samnome aŭ samkolore.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Neeblas forigi kategorion, jam uzatan de okazoj.
+Category Edit	CategoryEditWindow		Kategoria Redaktado
+Confirm delete	CategoryEditWindow		Verigi forigon
+Default	CategoryEditWindow		Implicita
+Delete	CategoryEditWindow		Forigi
+Error	CategoryEditWindow		Eraro
+New category	CategoryEditWindow		Nova kategorio
+OK	CategoryEditWindow		Bone
+Save	CategoryEditWindow		Konservi
+The name must have a length greater than 2.	CategoryEditWindow		La nomo devas pligrandi ol 2 literoj.
+You cannot delete the default category.	CategoryEditWindow		Neeblas forigi la implictan kategorion.
+Birthday	SQLiteManager		Naskiĝtago
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Neeblas malfermi datumbazon (%code%). Viaj konservitaj okazoj ne ŝaltiĝos.
+Default	SQLiteManager		Implicita
+OK	SQLiteManager		Bone
+SQLITE ERROR	SQLiteManager		SQLITE ERROR
+There was an SQLite error (%code%).	SQLiteManager		Eraris SQLite (%code%).
+Calendar	System name		Kalendaro
+Configuration file	Preferences		Agorda dosiero
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Neeblis malfermi la agordan dosieron, ĉar mankas permeso. Tio probable signifas ke vi ne rajtas legi vian agordan dosierujon. Se vi deziras, ke viaj propraj agordoj ŝaltiĝus, referenci vian funkcisisteman helpolibron, pro trovi la dosierujon, kaj provu ŝanĝi viajn rajtojn.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Neeblis malfermi agordan dosieron ĉar la loko estas nedifinita. Probable tio signifas, ke la programisto eraris iel. Vi ne povas fari ion ajn pri tio. Viaj propraj agordoj ne ŝaltiĝos. Bedaŭron.
+OK	Preferences		Bone
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Restas nesufiĉa kvanto de memoro je via sistmo, por ŝalti la agordan dosieron. Se vi deziras ke viaj propraj agordoj ŝaltiĝi, provu malfermi kelkajn programojn, kaj poste restartigi Kalendaron.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Restas nesufiĉa kvanto de memoro je via sistmo, por ŝalti la agordan dosieron. Se vi deziras ke viaj propraj agordoj ŝaltiĝi, provu malfermi kelkajn programojn, kaj poste restartigi Kalendaron.
+Delete	EventListView		Forigi
+Edit	EventListView		Redakti
+You don't have any events on this day!	EventListView		Ne ekzistas okazoj ĉi-tage!
+Error	GoogleEventSyncWindow		Eraro
+Failed	GoogleEventSyncWindow		Fiaskis
+Google Calendar Sync	GoogleEventSyncWindow		Google Kalendara Sinkronigo
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Lasta sinkronigo: %status% je %time%.
+No Data Available	GoogleEventSyncWindow		Neniu Datumo Havebla
+OK	GoogleEventSyncWindow		Bone
+Please wait while we sync...	GoogleEventSyncWindow		Bonvolu, atendi dum sinkronigo…
+Success	GoogleEventSyncWindow		Sukceso
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Eraris dum ŝaltado de lasttempa sinkroniga datumo.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Eraris dum konservado de lasttempa sinkroniga datumo.

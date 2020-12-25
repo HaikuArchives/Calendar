@@ -26,7 +26,7 @@ class BView;
 class Category;
 class Event;
 class Preferences;
-class SQLiteManager;
+class QueryDBManager;
 
 
 static const uint32 kEventWindowQuitting = 'kewq';
@@ -47,8 +47,6 @@ public:
 	void			SetEventDate(BDate& date);
 	void			SetStartDate(BDate& date);
 	void			SetEndDate(BDate& date);
-
-	static void		SetPreferences(Preferences* preferences);
 
 	void			OnCheckBoxToggle();
 	void			OnSaveClick();
@@ -72,8 +70,6 @@ private:
 	static const uint32	kAllDayPressed	= 1003;
 	static const uint32	kOptEveryMonth	= 1004;
 	static const uint32	kOptEveryYear	= 1005;
-
-	static Preferences*	fPreferences;
 
 	BTextControl*		fTextName;
 	BTextControl*		fTextPlace;
@@ -121,7 +117,7 @@ private:
 	Event*			fEvent;
 	BList*			fCategoryList;
 
-	SQLiteManager*		fDBManager;
+	QueryDBManager*	fDBManager;
 };
 
 #endif

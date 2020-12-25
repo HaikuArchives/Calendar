@@ -13,7 +13,7 @@ class BScrollView;
 class BList;
 class Event;
 class EventListView;
-class SQLiteManager;
+class QueryDBManager;
 
 
 const uint32 kEditEventMessage = 'ksem';
@@ -32,6 +32,7 @@ public:
 
 		void			SetDate(const BDate& date);
 		void			LoadEvents();
+		void			SetMode(int32 mode);
 		void			SetEventListPopUpEnabled(bool state);
 		static	int		CompareFunc(const void* a, const void* b);
 
@@ -41,10 +42,10 @@ private:
 		static const uint32 kInvokationMessage = 1000;
 
 		BList*			fEventList;
-		EventListView*		fEventListView;
-		BScrollView*		fEventScroll;
+		EventListView*	fEventListView;
+		BScrollView*	fEventScroll;
 		BDate			fDate;
-		SQLiteManager*		fDBManager;
+		QueryDBManager*	fDBManager;
 		
 		int32 mode;
 

@@ -15,7 +15,7 @@ NAME = Calendar
 TYPE = APP
 
 # 	If you plan to use localization, specify the application's MIME signature.
-APP_MIME_SIG =
+APP_MIME_SIG = application/x-vnd.Calendar
 
 #	The following lines tell Pe and Eddie where the SRCS, RDEFS, and RSRCS are
 #	so that Pe and Eddie can fill them in for you.
@@ -30,30 +30,32 @@ APP_MIME_SIG =
 #	Also note that spaces in folder names do not work well with this Makefile.
 SRCS = \
 	 src/App.cpp  \
-	 src/MainWindow.cpp  \
-	 src/MainView.cpp  \
-	 src/DayView.cpp  \
-	 src/DateHeaderView.cpp  \
-	 src/EventWindow.cpp  \
 	 src/CategoryWindow.cpp  \
 	 src/ColorPreview.cpp  \
 	 src/CategoryEditWindow.cpp  \
+	 src/CategoryListItem.cpp \
 	 src/CalendarMenuWindow.cpp  \
-	 src/PreferenceWindow.cpp  \
-	 src/SidePanelView.cpp  \
-	 src/Preferences.cpp  \
+	 src/DateHeaderView.cpp  \
+	 src/DayView.cpp  \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
+	 src/EventWindow.cpp  \
+	 src/PreferenceWindow.cpp  \
 	 src/NotificationLoop.cpp  \
-	 src/CategoryListItem.cpp \
-	 src/utils/ResourceLoader.cpp  \
+	 src/MainWindow.cpp  \
+	 src/MainView.cpp  \
+	 src/CalendarView.cpp \
+	 src/Preferences.cpp  \
+	 src/SidePanelView.cpp  \
 	 src/utils/ColorConverter.cpp  \
-	 src/model/Event.cpp \
+	 src/utils/ResourceLoader.cpp  \
 	 src/model/Category.cpp  \
+	 src/model/Event.cpp \
+	 src/db/QueryDBManager.cpp  \
 	 src/db/SQLiteManager.cpp  \
 	 src/plugin/GoogleCalendar/EventSync.cpp \
-	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp  \
-	 src/plugin/GoogleCalendar/EventSyncWindow.cpp
+	 src/plugin/GoogleCalendar/EventSyncWindow.cpp \
+	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp 
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
@@ -86,7 +88,7 @@ RSRCS = \
 #	- 	if your library does not follow the standard library naming scheme,
 #		you need to specify the path to the library and it's name.
 #		(e.g. for mylib.a, specify "mylib.a" or "path/mylib.a")
-LIBS = be tracker shared sqlite3 bnetapi network $(STDCPPLIBS)
+LIBS = be tracker shared localestub sqlite3 bnetapi network $(STDCPPLIBS)
 
 #	Specify additional paths to directories following the standard libXXX.so
 #	or libXXX.a naming scheme. You can specify full paths or paths relative
@@ -117,7 +119,7 @@ OPTIMIZE := FULL
 # 	will recreate only the "locales/en.catkeys" file. Use it as a template
 # 	for creating catkeys for other languages. All localization files must be
 # 	placed in the "locales" subdirectory.
-LOCALES =
+LOCALES = ca de en_GB en eo es fur it ro sv
 
 #	Specify all the preprocessor symbols to be defined. The symbols will not
 #	have their values set automatically; you must supply the value (if any) to

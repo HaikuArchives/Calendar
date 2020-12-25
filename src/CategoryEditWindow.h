@@ -53,7 +53,6 @@ private:
 	BButton*		fDeleteButton;
 
 	Category*		fCategory;
-
 };
 
 

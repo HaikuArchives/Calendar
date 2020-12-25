@@ -3,6 +3,7 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
+#include <Catalog.h>
 #include <List.h>
 #include <Notification.h>
 #include <String.h>
@@ -11,20 +12,22 @@
 #include "App.h"
 #include "Event.h"
 #include "ResourceLoader.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "NotificationLoop"
 
 int32
 NotificationLoop(void* data)
 {
-	SQLiteManager dbManager;
+	QueryDBManager dbManager;
 	BString notificationContent;
 	BString startTime;
 	BList* events;
 	Event* event;
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 	notification.SetGroup(kAppName);
-	notification.SetTitle("Reminder");
+	notification.SetTitle(B_TRANSLATE("Reminder"));
 	notification.SetIcon(LoadVectorIcon("BEOS:ICON", 32, 32));
 
 	while (true)
@@ -33,12 +36,12 @@ NotificationLoop(void* data)
 		for (int32 i = 0; i < events->CountItems(); i++) {
 			event = ((Event*)events->ItemAt(i));
 			startTime = "";
-			notificationContent = "";
+			notificationContent = B_TRANSLATE("%event% is starting at %time%.");
 			if (!event->IsNotified()) {
 				BTimeFormat().Format(startTime, event->GetStartDateTime(),
 					B_SHORT_TIME_FORMAT);
-				notificationContent.SetToFormat("%s is starting at %s.",
-					event->GetName(), startTime.String());
+				notificationContent.ReplaceAll("%event%", event->GetName());
+				notificationContent.ReplaceAll("%time%", startTime.String());
 				notification.SetContent(notificationContent);
 				notification.Send();
 				dbManager.UpdateNotifiedEvent(event->GetId());

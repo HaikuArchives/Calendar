@@ -8,20 +8,26 @@
 
 #include <Application.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <LayoutBuilder.h>
 #include <ListView.h>
+#include <NodeInfo.h>
 #include <ScrollView.h>
 #include <View.h>
 
+#include "App.h"
 #include "Category.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "CategoryWindow"
 
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), "Category manager",B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Category manager"),
+		B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
 {
@@ -64,6 +70,33 @@ CategoryWindow::MessageReceived(BMessage* message)
 		case kCategoryEditQuitting:
 			fCategoryEditWindow = NULL;
 			break;
+
+		case B_REFS_RECEIVED:
+		{
+			int i = 0;
+			entry_ref ref;
+			BFile file;
+			BNodeInfo info;
+			char type[B_FILE_NAME_LENGTH];
+			QueryDBManager DBManager;
+
+			while (message->HasRef("refs", i)) {
+				message->FindRef("refs", i++, &ref);
+
+				file.SetTo(&ref, B_READ_ONLY);
+				info.SetTo(&file);
+				info.GetType(type);
+
+				if (BString(type) == BString("application/x-calendar-category"))
+					_OpenCategoryWindow(fDBManager->GetCategory(ref));
+				else {
+					BMessage msg = BMessage(B_REFS_RECEIVED);
+					msg.AddRef("refs", &ref);
+					((App*)be_app)->PostMessage(&msg);
+				}
+			}
+			break;
+		}
 
 		default:
 			BWindow::MessageReceived(message);
@@ -109,7 +142,7 @@ CategoryWindow::LoadCategories()
 }
 
 
-SQLiteManager*
+QueryDBManager*
 CategoryWindow::GetDBManager()
 {
 	return fDBManager;
@@ -129,14 +162,16 @@ CategoryWindow::_InitInterface()
 		B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 	fCategoryList = new BList();
 	LoadCategories();
 
 	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
 
-	fAddButton = new BButton("AddButton", "Add", new BMessage(kAddPressed));
-	fCancelButton = new BButton("CancelButton", "Cancel", new BMessage(kCancelPressed));
+	fAddButton = new BButton("AddButton", B_TRANSLATE("Add"),
+		new BMessage(kAddPressed));
+	fCancelButton = new BButton("CancelButton", B_TRANSLATE("Cancel"),
+		new BMessage(kCancelPressed));
 
 	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	fCancelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));

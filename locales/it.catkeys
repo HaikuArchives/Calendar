@@ -1,0 +1,117 @@
+1	Italian	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% inizia alle %time%.
+Reminder	NotificationLoop		Promemoria
+A native Calendar application for Haiku.	App		Un calendario nativo per Haiku.
+About	MainWindow		Informazioni
+Add event	MainWindow		Aggiungi evento
+Agenda	MainWindow		Agenda
+Agenda view	MainWindow		Vista agenda
+App	MainWindow		Applicazione
+Category	MainWindow		Categoria
+Day	MainWindow		Giorno
+Day view	MainWindow		Vista giornaliera
+Edit categories	MainWindow		Modifica categorie
+Edit event	MainWindow		Modifica evento
+Event	MainWindow		Evento
+Go to today	MainWindow		Vai alla giornata di oggi
+Google Calendar	MainWindow		Google Calendar
+Preferences	MainWindow		Impostazioni
+Quit	MainWindow		Chiudi
+Remove event	MainWindow		Rimuovi evento
+Synchronize	MainWindow		Sincronizza
+Today	MainWindow		Oggi
+View	MainWindow		Vista
+Week	MainWindow		Settimana
+Week view	MainWindow		Vista settimanale
+Add	CategoryWindow		Aggiungi
+Cancel	CategoryWindow		Annulla
+Category manager	CategoryWindow		Gestione categorie
+All day	DayView		Tutto il giorno
+All day, %startDay%	DayView		Tutto il giorno, %startDay%
+Are you sure you want to delete the selected event?	DayView		Sei sicuro di voler eliminare l'evento selezionato?
+Cancel	DayView		Annulla
+Confirm delete	DayView		Conferma cancellazione
+Finished!	DayView		Finito!
+Now, %remaining% left	DayView		Restano %remaining%, ora
+OK	DayView		OK
+Starts in %remaining%	DayView		Inizia in %remaining%
+All day:	EventWindow		Tutto il giorno:
+Are you sure you want to delete this event?	EventWindow		Sei sicuro di voler eliminare questo evento?
+Cancel	EventWindow		Annulla
+Category:	EventWindow		Categoria:
+Confirm delete	EventWindow		Confefrma cancellazione
+Delete	EventWindow		Cancella
+Description:	EventWindow		Descrizione:
+End date	EventWindow		Data termine
+End date and time	EventWindow		Data e ora termine
+End date:	EventWindow		Data termine:
+End time:	EventWindow		Ora temrine:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Inserisci l'orario nel formato HH:mm (24 ore).
+Error	EventWindow		Errore
+Event manager	EventWindow		Gestione eventi
+Monthly	EventWindow		Mensile
+Name:	EventWindow		Nome:
+OK	EventWindow		OK
+Place:	EventWindow		Luogo:
+Recurrence	EventWindow		Ricorrenza
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Mi dispiace, non è possibile creare un evento la cui data di termine è antecedente alla data di inizio.
+Start date	EventWindow		Data inizio
+Start date and time	EventWindow		Data e ora inizio
+Start date:	EventWindow		Data inizio:
+Start time:	EventWindow		Ora inizio:
+The name must have a length greater than 2.	EventWindow		Il nome deve essere lungo almeno due caratteri.
+There was some error in adding the event. Please try again.	EventWindow		Si è verificato un errore nella creazione dell'evento. Per favore, riprova.
+Yearly	EventWindow		Annuale
+Apply	PreferenceWindow		Applica
+First day of week	PreferenceWindow		Primo giorno della settimana
+Friday	PreferenceWindow		Venerdì
+Locale based	PreferenceWindow		Basato sulla lingua di sistema
+Monday	PreferenceWindow		Lunedì
+Preferences	PreferenceWindow		Impostazioni
+Revert	PreferenceWindow		Ripristina
+Saturday	PreferenceWindow		Sabato
+Show week number in Calendar	PreferenceWindow		Mostra numero della settimana in Calendario
+Sunday	PreferenceWindow		Domenica
+Thursday	PreferenceWindow		Giovedì
+Tuesday	PreferenceWindow		Martedì
+Wednesday	PreferenceWindow		Mercoledì
+Are you sure you want to delete the selected category?	CategoryEditWindow		Sei sicuro di voler eliminare la categoria selezionata?
+Cancel	CategoryEditWindow		Annulla
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Impossibile aggiungere/modificare la categoria. Una categoria con lo stesso nome o colore esiste già.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Impossibile liminare la categoria. Non è possibile cancellare una categoria utilizzata da eventi.
+Category Edit	CategoryEditWindow		Modifica Categoria
+Confirm delete	CategoryEditWindow		Conferma cancellazione
+Default	CategoryEditWindow		Predefiniti
+Delete	CategoryEditWindow		Cancella
+Error	CategoryEditWindow		Errore
+New category	CategoryEditWindow		Nuova categoria
+OK	CategoryEditWindow		OK
+Save	CategoryEditWindow		Salva
+The name must have a length greater than 2.	CategoryEditWindow		Il nome deve essere lungo almeno due caratteri
+You cannot delete the default category.	CategoryEditWindow		Impossibile cancellare la cateforia predefinita
+Birthday	SQLiteManager		Compleanno
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Impossibile aprire il database (%code%). I tuoi eventi salvati non potranno essere importati.
+Default	SQLiteManager		Predefinito
+OK	SQLiteManager		OK
+SQLITE ERROR	SQLiteManager		ERRORE SQLITE
+There was an SQLite error (%code%).	SQLiteManager		C'è stato un errore SQLite (%code%).
+Calendar	System name		Calendario
+Configuration file	Preferences		File di configurazione
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Impossibile aprire il file di configurazione per via di un permesso negato. Normalmente, ciò significa che non hai i permessi in lettura nella tua cartella delle impostazioni. Se vuoi importare le tue impostazioni personali, controlla la documentazione per determinare la posizione di questa cartella e prova a cambiarne i permessi.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Impossibile aprire il file di configurazione perché il percorso non è stato specificato. Normalmente, ciò significa che l'autore dell'applicazione ha fatto un errore. Non puoi farci niente. I tuoi dati personali non saranno importani. Mi dispiace!
+OK	Preferences		OK
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Non c'è abbastanza memoria disponibile sul sistema per importare le tue impostazioni personali. Per procedere, prova a chiudere qualche applicazione e riavvia Calendario.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Non c'è abbastanza memoria disponibile sul sistema per salvare le tue impostazioni personali. Per procedere, prova a chiuddere alcune applicazioni e riprova.
+Delete	EventListView		Cancella
+Edit	EventListView		Modifica
+You don't have any events on this day!	EventListView		In questo giorno non hai alcun evento!
+Error	GoogleEventSyncWindow		Errore
+Failed	GoogleEventSyncWindow		Fallito
+Google Calendar Sync	GoogleEventSyncWindow		Sincronizzazione con Google Calendar
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Ultima sincronizzazione: %status% alle %time%.
+No Data Available	GoogleEventSyncWindow		Nessun dato disponibile
+OK	GoogleEventSyncWindow		OK
+Please wait while we sync...	GoogleEventSyncWindow		Sincronizzazione in corso...
+Success	GoogleEventSyncWindow		Completata con successo
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Si è verificato un errore nel caricamento degli ultimi dati di sincronizzazione.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Si è verificato un errore nel salvataggio dei dati di sincronizzazione recenti.

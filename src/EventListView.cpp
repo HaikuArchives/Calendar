@@ -7,6 +7,7 @@
 
 #include "EventListView.h"
 
+#include <Catalog.h>
 #include <MenuItem.h>
 #include <PopUpMenu.h>
 #include <String.h>
@@ -15,6 +16,8 @@
 #include "MainWindow.h"
 #include "DayView.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "EventListView"
 
 class PopUpMenu : public BPopUpMenu {
 public:
@@ -69,7 +72,7 @@ EventListView::Draw(BRect rect)
 		BString string;
 		font.SetSize(font.Size() + 4);
 		SetFont(&font);
-		string = "You don't have any events on this day!";
+		string = B_TRANSLATE("You don't have any events on this day!");
 		float strwidth = font.StringWidth(string);
 		GetPreferredSize(&width, &height);
 		MovePenTo(width / 2 - strwidth / 2, height / 2 + font.Size() / 2);
@@ -204,10 +207,10 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	PopUpMenu* menu = new PopUpMenu("PopUpMenu", this);
 
 	BMenuItem* item;
-	item = new BMenuItem("Edit",
+	item = new BMenuItem(B_TRANSLATE("Edit"),
 			new BMessage(kEditActionInvoked), 'E');
 	menu->AddItem(item);
-	item = new BMenuItem("Delete",
+	item = new BMenuItem(B_TRANSLATE("Delete"),
 			new BMessage(kDeleteActionInvoked), 'D');
 	menu->AddItem(item);
 

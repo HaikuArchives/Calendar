@@ -22,7 +22,7 @@
 #include "Event.h"
 #include "EventSync.h"
 #include "Requests.h"
-#include "SQLiteManager.h"
+#include "QueryDBManager.h"
 
 
 // Don't update status property to Google Calendar for active events(status=true)
@@ -123,7 +123,7 @@ EventSync::EventSync()
 	:
 	fAuthCode()
 {
-	fDBManager = new SQLiteManager();
+	fDBManager = new QueryDBManager();
 	fEvents = new BList();
 	fCancelledEvents = new BStringList();
 }
@@ -470,6 +470,8 @@ EventSync::AddEvent(Event* event)
 	if (Requests::Request(url, B_HTTP_POST, headers, NULL, &jsonString, reply)
 		== B_ERROR)
 		return B_ERROR;
+
+	return B_OK;
 }
 
 
@@ -484,6 +486,8 @@ EventSync::DeleteEvent(Event* event)
 	if (Requests::Request(endpoint, B_HTTP_DELETE, NULL, NULL, NULL, reply)
 		== B_ERROR)
 		return B_ERROR;
+
+	return B_OK;
 }
 
 
@@ -541,7 +545,7 @@ EventSync::RFC3339ToTime(const char* timeString, EventDateType type)
 	}
 
 	else if (static_cast<EventDateType>(type) == kEventUpdateDate) {
-		sscanf (timeString, "%d-%d-%dT%d:%d:%d.%d'Z'", &year, &month, &day,
+		sscanf (timeString, "%d-%d-%dT%d:%d:%d.%*d'Z'", &year, &month, &day,
            &hour, &minute, &second);
 	}
 

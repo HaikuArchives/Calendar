@@ -8,6 +8,7 @@
 #include <Alert.h>
 #include <Application.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <ColorControl.h>
 #include <LayoutBuilder.h>
 #include <ListView.h>
@@ -21,12 +22,15 @@
 #include "CategoryWindow.h"
 #include "ColorPreview.h"
 #include "MainWindow.h"
-#include "SQLiteManager.h"
+#include "Preferences.h"
+#include "QueryDBManager.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "CategoryEditWindow"
 
 CategoryEditWindow::CategoryEditWindow()
 	:
-	BWindow(BRect(), "Category Edit", B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Category Edit"), B_TITLED_WINDOW,
 			B_NOT_RESIZABLE | B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
@@ -106,10 +110,12 @@ CategoryEditWindow::_InitInterface()
 {
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fCategoryText = new BTextControl("CategoryText", NULL,
-		"New category", new BMessage(kCategoryTextChanged));
+		B_TRANSLATE("New category"), new BMessage(kCategoryTextChanged));
 
-	fSaveButton = new BButton("SaveButton", "Save", new BMessage(kSavePressed));
-	fDeleteButton = new BButton("DeleteButton", "Delete", new BMessage(kDeletePressed));
+	fSaveButton = new BButton("SaveButton", B_TRANSLATE("Save"),
+		new BMessage(kSavePressed));
+	fDeleteButton = new BButton("DeleteButton", B_TRANSLATE("Delete"),
+		new BMessage(kDeletePressed));
 
 
 	BRect wellrect(0, 0, 49, 49);
@@ -167,18 +173,21 @@ CategoryEditWindow::_CategoryModified()
 void
 CategoryEditWindow::_OnDeletePressed()
 {
-	if (BString(fCategoryText->Text()) == BString("Default")) {
-		BAlert* alert  = new BAlert("Error",
-			"You cannot delete the default category.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
+
+	if (BString(fCategoryText->Text()) == defaultCat) {
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("You cannot delete the default category."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->Go();
 		return;
 	}
 
-	BAlert* alert = new BAlert("Confirm delete",
-		"Are you sure you want to delete the selected category?",
-		NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
+		B_TRANSLATE("Are you sure you want to delete the selected category?"),
+		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"),
+		B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();
@@ -193,9 +202,9 @@ CategoryEditWindow::_OnDeletePressed()
 		}
 		else
 		{
-			BAlert* alert  = new BAlert("Error",
-				"Cannot delete category. Can't delete a category used by events.",
-				NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+				B_TRANSLATE("Cannot delete category. Can't delete a category used by events."),
+				NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 			alert->Go();
 			return;
 		}
@@ -223,9 +232,9 @@ CategoryEditWindow::_OnSavePressed()
 {
 	if (BString(fCategoryText->Text()).CountChars() < 3) {
 
-		BAlert* alert  = new BAlert("Error",
-			"The name must have a length greater than 2.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("The name must have a length greater than 2."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->Go();
 		return;
@@ -249,9 +258,9 @@ CategoryEditWindow::_OnSavePressed()
 
 	else
 	{
-		BAlert* alert  = new BAlert("Error",
-			"Cannot add/modify the category. A category with the same name or color already exists.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("Cannot add/modify the category. A category with the same name or color already exists."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;
 

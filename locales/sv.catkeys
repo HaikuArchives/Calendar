@@ -1,0 +1,117 @@
+1	Swedish	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% börjar vid %time%.
+Reminder	NotificationLoop		Påminnelse
+A native Calendar application for Haiku.	App		En kalenderapplikation för Haiku.
+About	MainWindow		Om
+Add event	MainWindow		Lägg till händelse
+Agenda	MainWindow		Dagordning
+Agenda view	MainWindow		Dagordnings view
+App	MainWindow		App
+Category	MainWindow		Kategori
+Day	MainWindow		Dag
+Day view	MainWindow		Dagsvy
+Edit categories	MainWindow		Redigera kategorier
+Edit event	MainWindow		Redigera händelse
+Event	MainWindow		Händelse
+Go to today	MainWindow		Gå till idag
+Google Calendar	MainWindow		Google Calendar
+Preferences	MainWindow		Inställningar
+Quit	MainWindow		Sluta med
+Remove event	MainWindow		Ta bort händelsen
+Synchronize	MainWindow		Synkronisera
+Today	MainWindow		I dag
+View	MainWindow		Se
+Week	MainWindow		Vecka
+Week view	MainWindow		Veckovy
+Add	CategoryWindow		Lägg till
+Cancel	CategoryWindow		Avbryt
+Category manager	CategoryWindow		Kategorihanterare
+All day	DayView		Hela dagen
+All day, %startDay%	DayView		Hela dagen, %startDay%
+Are you sure you want to delete the selected event?	DayView		Är du säker på att du vill ta bort det valda evenemanget?
+Cancel	DayView		Avbryt
+Confirm delete	DayView		Bekräfta radering
+Finished!	DayView		Färdiga!
+Now, %remaining% left	DayView		Nu finns det %remaining% kvar
+OK	DayView		OK
+Starts in %remaining%	DayView		Startar om %remaining%
+All day:	EventWindow		Hela dagen :
+Are you sure you want to delete this event?	EventWindow		Är du säker på att du vill ta bort den här händelsen?
+Cancel	EventWindow		Avbryt
+Category:	EventWindow		Kategori:
+Confirm delete	EventWindow		Bekräfta radering
+Delete	EventWindow		Radera
+Description:	EventWindow		Beskrivning:
+End date	EventWindow		Slutdatum
+End date and time	EventWindow		Slutdatum och tid
+End date:	EventWindow		Slutdatum:
+End time:	EventWindow		Sluttid:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Ange tiden i HH: mm (24 timmars) format.
+Error	EventWindow		Fel
+Event manager	EventWindow		Händelse hanterare
+Monthly	EventWindow		En gång i månaden
+Name:	EventWindow		Namn:
+OK	EventWindow		OK
+Place:	EventWindow		Plats:
+Recurrence	EventWindow		Upprepning
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Du kan tyvärr inte skapa en händelse som slutar innan den startar.
+Start date	EventWindow		Start datum
+Start date and time	EventWindow		Startdatum och tid
+Start date:	EventWindow		Start datum:
+Start time:	EventWindow		Starttid:
+The name must have a length greater than 2.	EventWindow		Namnet måste ha en längd större än 2.
+There was some error in adding the event. Please try again.	EventWindow		Det var något fel i att lägga till händelsen. Var god försök igen.
+Yearly	EventWindow		Årlig
+Apply	PreferenceWindow		Tillämpa
+First day of week	PreferenceWindow		Första veckodagen
+Friday	PreferenceWindow		Fredag
+Locale based	PreferenceWindow		Lokal baserad
+Monday	PreferenceWindow		Måndag
+Preferences	PreferenceWindow		Inställningar
+Revert	PreferenceWindow		Ångra
+Saturday	PreferenceWindow		Lördag
+Show week number in Calendar	PreferenceWindow		Visa veckonummer i kalender
+Sunday	PreferenceWindow		Söndag
+Thursday	PreferenceWindow		Torsdag
+Tuesday	PreferenceWindow		Tisdag
+Wednesday	PreferenceWindow		Onsdag
+Are you sure you want to delete the selected category?	CategoryEditWindow		Är du säker på att du vill ta bort den valda kategorin?
+Cancel	CategoryEditWindow		Avbryt
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Kan inte lägga till / ändra kategorin. En kategori med samma namn eller färg finns redan.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Kan inte ta bort kategori. Det går inte att ta bort en kategori som används av händelser.
+Category Edit	CategoryEditWindow		Kategori Redigera
+Confirm delete	CategoryEditWindow		Bekräfta radering
+Default	CategoryEditWindow		Standard
+Delete	CategoryEditWindow		Radera
+Error	CategoryEditWindow		Fel
+New category	CategoryEditWindow		Ny kategori
+OK	CategoryEditWindow		OK
+Save	CategoryEditWindow		Spara
+The name must have a length greater than 2.	CategoryEditWindow		Namnet måste ha en längd större än 2.
+You cannot delete the default category.	CategoryEditWindow		Du kan inte ta bort standardkategorin.
+Birthday	SQLiteManager		Födelsedag
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Det går inte att öppna databasen (%code%). Dina sparade händelser laddas inte.
+Default	SQLiteManager		Standard
+OK	SQLiteManager		OK
+SQLITE ERROR	SQLiteManager		SQLITE Fel
+There was an SQLite error (%code%).	SQLiteManager		Det uppstod ett SQLite-fel (%code%).
+Calendar	System name		Kalender
+Configuration file	Preferences		Konfigurationsfil
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Det gick inte att öppna konfigurationsfilen eftersom tillstånd nekades. Det betyder vanligtvis att du inte har läsbehörigheter till din inställningskatalog. Om du vill ha dina personliga inställningar laddade, kontrollera din OS-dokumentation för att ta reda på vilken katalog det är och prova att ändra dess behörigheter.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Det gick inte att öppna konfigurationsfilen eftersom sökvägen inte är angiven. Det betyder vanligtvis att programmeraren gjorde ett misstag. Det är ingenting du kan göra åt det. Dina personliga inställningar laddas inte. Förlåt.
+OK	Preferences		OK
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Det finns inte tillräckligt med minne på ditt system för att ladda konfigurationsfilen. Om du vill ha dina personliga inställningar laddade kan du prova att stänga några program och starta om kalendern.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Det finns inte tillräckligt med minne på ditt system för att spara konfigurationsfilen. Om du vill ha dina personliga inställningar sparade, försök stänga några program och försök igen.
+Delete	EventListView		Radera
+Edit	EventListView		Redigera
+You don't have any events on this day!	EventListView		Du har inga evenemang den här dagen!
+Error	GoogleEventSyncWindow		Fel
+Failed	GoogleEventSyncWindow		Misslyckades
+Google Calendar Sync	GoogleEventSyncWindow		Google Calendar Sync
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Senaste synkronisering: %status% vid %time%.
+No Data Available	GoogleEventSyncWindow		Ingen data tillgänglig
+OK	GoogleEventSyncWindow		OK
+Please wait while we sync...	GoogleEventSyncWindow		Vänta medan vi synkroniserar...
+Success	GoogleEventSyncWindow		Framgång
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Det gick inte att ladda de senaste synkroniseringsdata.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Det gick ett fel i att spara de senaste synkroniseringsdata.

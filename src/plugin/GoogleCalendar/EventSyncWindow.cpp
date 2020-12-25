@@ -7,6 +7,7 @@
 
 #include <Application.h>
 #include <Button.h>
+#include <Catalog.h>
 #include <DateFormat.h>
 #include <Directory.h>
 #include <Entry.h>
@@ -19,13 +20,15 @@
 #include "App.h"
 #include "EventSync.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "GoogleEventSyncWindow"
 
 extern int32 SynchronizationLoop(void* data);
 
 
 EventSyncWindow::EventSyncWindow()
 	:
-	BWindow(BRect(), "Google Calendar Sync", B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Google Calendar Sync"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE),
 	fSynchronizationThread(-1)
 {
@@ -96,7 +99,7 @@ EventSyncWindow::_InitInterface()
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
 	fStatusLabel = new BStringView("Status Label",
-		"No Data Available");
+		B_TRANSLATE("No Data Available"));
 	fSyncButton = new BButton(NULL, "Sync", new BMessage(kSyncPressed));
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -114,7 +117,7 @@ EventSyncWindow::_InitInterface()
 void
 EventSyncWindow::_Sync()
 {
-	fStatusLabel->SetText("Please wait while we sync...");
+	fStatusLabel->SetText(B_TRANSLATE("Please wait while we sync..."));
 	_StartSynchronizationThread();
 }
 
@@ -146,15 +149,16 @@ EventSyncWindow::_StopSynchronizationThread()
 void
 EventSyncWindow::_SetStatusLabel(bool status, time_t syncTime)
 {
-	BString statusText;
-	BString statusString = (status)? "Success" : "Failed";
+	BString statusText(B_TRANSLATE("Last Sync: %status% at %time%."));
+	BString statusString = (status)? B_TRANSLATE("Success") : B_TRANSLATE("Failed");
 
-	statusText << "Last Sync: " << statusString;
 
 	BString timeString;
 	BDateTimeFormat().Format(timeString, syncTime, B_SHORT_DATE_FORMAT,
 		B_SHORT_TIME_FORMAT);
-	statusText << " at " << timeString << ".";
+	
+	statusText.ReplaceAll("%status%", statusString);
+	statusText.ReplaceAll("%time%", timeString);
 
 	fStatusLabel->SetText(statusText);
 }
@@ -181,9 +185,9 @@ EventSyncWindow::_LoadSyncData()
 
 	else
 	{
-		BAlert* alert  = new BAlert("Error",
-			"There was an error in loading the last sync data.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("There was an error in loading the last sync data."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 	}
 
 
@@ -210,9 +214,9 @@ EventSyncWindow::_SaveSyncData(bool status)
 
 	else
 	{
-		BAlert* alert  = new BAlert("Error",
-			"There was an error in saving the recent sync data.",
-			NULL, "OK",NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("There was an error in saving the recent sync data."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	}
 

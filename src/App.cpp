@@ -6,11 +6,13 @@
 #include "App.h"
 
 #include <AboutWindow.h>
+#include <Catalog.h>
 #include <Directory.h>
 #include <Entry.h>
 #include <File.h>
 #include <FindDirectory.h>
 #include <LocaleRoster.h>
+#include <NodeInfo.h>
 
 #include <locale.h>
 
@@ -21,9 +23,11 @@
 #include "Preferences.h"
 #include "PreferenceWindow.h"
 
-const char* kAppName = "Calendar";
+const char* kAppName = B_TRANSLATE_SYSTEM_NAME("Calendar");
 const char* kSignature = "application/x-vnd.calendar";
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "App"
 
 App::App()
 	:
@@ -46,9 +50,6 @@ App::App()
 	fPreferences->Load(fPreferencesFile.Path());
 	fPreferences->fSettingsPath = settingsPath;
 
-	MainWindow::SetPreferences(fPreferences);
-	EventWindow::SetPreferences(fPreferences);
-
 	fMainWindow = new MainWindow();
 	fMainWindow->Show();
 }
@@ -65,7 +66,7 @@ void
 App::AboutRequested()
 {
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
-	aboutW->AddDescription("A native Calendar application for Haiku.");
+	aboutW->AddDescription(B_TRANSLATE("A native Calendar application for Haiku."));
 	aboutW->AddCopyright(2017, "Akshay Agarwal");
 	aboutW->SetVersion("1.0");
 	aboutW->Show();
@@ -80,6 +81,13 @@ App::QuitRequested()
 	if (fMainWindow->Lock())
 		fMainWindow->Quit();
 	return true;
+}
+
+
+Preferences*
+App::GetPreferences()
+{
+	return fPreferences;
 }
 
 
@@ -151,6 +159,10 @@ App::MessageReceived(BMessage* message)
 			fMainWindow->PostMessage(message);
 			break;
 
+		case B_REFS_RECEIVED:
+			RefsReceived(message);
+			break;
+
 		case B_LOCALE_CHANGED:
 			fMainWindow->PostMessage(message);
 			break;
@@ -160,6 +172,50 @@ App::MessageReceived(BMessage* message)
 			break;
 		}
 	}
+}
+
+
+void
+App::RefsReceived(BMessage* message)
+{
+	int i = 0;
+	entry_ref ref;
+	BFile file;
+	BNodeInfo info;
+	char type[B_FILE_NAME_LENGTH];
+
+	while (message->HasRef("refs", i)) {
+		BMessage msg = BMessage(B_REFS_RECEIVED);
+		message->FindRef("refs", i++, &ref);
+		msg.AddRef("refs", &ref);
+
+		file.SetTo(&ref, B_READ_ONLY);
+		info.SetTo(&file);
+		info.GetType(type);
+
+		if (BString(type) == BString("application/x-calendar-event"))
+			fMainWindow->PostMessage(&msg);
+		else if (BString(type) == BString("application/x-calendar-category")) {
+			MessageReceived(new BMessage(kMenuCategoryEdit));
+			fCategoryWindow->PostMessage(&msg);
+		}
+	}
+}
+
+
+void
+App::ArgvReceived(int32 argc, char** argv)
+{
+	BMessage message(B_REFS_RECEIVED);
+
+	for (int32 i = 1; i < argc; i++) {
+		BEntry entry(argv[i]);
+		entry_ref ref;
+		if (entry.Exists() && entry.GetRef(&ref) == B_OK)
+			message.AddRef("refs", &ref);
+	}
+
+	RefsReceived(&message);
 }
 
 

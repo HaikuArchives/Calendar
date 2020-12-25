@@ -93,37 +93,41 @@ class Requests {
 		{
 			ProtocolListener listener(true);
 			BUrl link(url);
-			BHttpRequest request(link, true, "HTTP", &listener);
-			request.SetMethod(method);
+			BUrlRequest* request = BUrlProtocolRoster::MakeRequest( link, &listener );
+			BHttpRequest* hRequest = dynamic_cast<BHttpRequest *>(request);
+
+			hRequest->SetMethod(method);
 
 			if (headers != NULL)
-				request.SetHeaders(*headers);
+				hRequest->SetHeaders(*headers);
 
 			if (form != NULL)
-				request.SetPostFields(*form);
+				hRequest->SetPostFields(*form);
 
 			if (jsonString != NULL) {
 				BMemoryIO* data = new BMemoryIO(
 				jsonString->String(), jsonString->Length() - 1);
-				request.AdoptInputData(data, jsonString->Length() - 1);
+				hRequest->AdoptInputData(data, jsonString->Length() - 1);
 			}
 
 			BMallocIO replyData;
 			listener.SetDownloadIO(&replyData);
 
-			thread_id thread = request.Run();
+			thread_id thread = request->Run();
 			wait_for_thread(thread, NULL);
 
 			BString responseJson;
 
 			const BHttpResult& result = dynamic_cast<const BHttpResult&>(
-				request.Result());
+				request->Result());
 
 			int32 statusCode = result.StatusCode();
 			if (statusCode != 200) {
 				printf("Response code:  %d \n", statusCode);
 				return B_ERROR;
 			}
+
+			delete(request);
 
 			responseJson.SetTo(static_cast<const char*>(replyData.Buffer()),
 				replyData.BufferLength());
