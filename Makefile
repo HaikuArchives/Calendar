@@ -49,6 +49,8 @@ SRCS = \
 	 src/SidePanelView.cpp  \
 	 src/utils/ColorConverter.cpp  \
 	 src/utils/ResourceLoader.cpp  \
+	 src/utils/TimeInfo.cpp  \
+	 src/utils/TimeLine.cpp  \
 	 src/model/Category.cpp  \
 	 src/model/Event.cpp \
 	 src/db/QueryDBManager.cpp  \

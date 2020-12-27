@@ -66,6 +66,8 @@ Preferences::Load(const char* filename)
 		storage.Unflatten(file);
 	fStartOfWeekOffset = storage.GetInt32("startOfWeekOffset", 0);
 	fHeaderVisible = storage.GetBool("headerVisible", false);
+	fShowbottomVisible = storage.GetBool("showbottomVisible", true);
+	fUseRightSide = storage.GetBool("useRightSide", true);	
 	fDefaultCategory = storage.GetString("defaultCategory", B_TRANSLATE("Default"));
 	fMainWindowRect = storage.GetRect("mainWindowRect", BRect());
 	fEventWindowRect = storage.GetRect("eventWindowRect", BRect());
@@ -122,6 +124,8 @@ Preferences::Save(const char* filename)
 	BMessage storage;
 	storage.AddInt32("startOfWeekOffset", fStartOfWeekOffset);
 	storage.AddBool("headerVisible", fHeaderVisible);
+	storage.AddBool("showbottomVisible", fShowbottomVisible);
+	storage.AddBool("useRightSide", fUseRightSide);	
 	storage.AddString("defaultCategory", fDefaultCategory);
 	storage.AddRect("mainWindowRect", fMainWindowRect);
 	storage.AddRect("eventWindowRect", fEventWindowRect);
@@ -138,6 +142,8 @@ Preferences::operator =(const Preferences& p)
 	fSettingsPath = p.fSettingsPath;
 	fStartOfWeekOffset = p.fStartOfWeekOffset;
 	fHeaderVisible = p.fHeaderVisible;
+	fShowbottomVisible = p.fShowbottomVisible;
+	fUseRightSide = p.fUseRightSide;
 	fDefaultCategory = p.fDefaultCategory;
 	fMainWindowRect = p.fMainWindowRect;
 	fEventWindowRect = p.fEventWindowRect;
