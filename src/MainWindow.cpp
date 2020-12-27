@@ -409,7 +409,7 @@ MainWindow::_GetSelectedCalendarDate() const
 void
 MainWindow::_ToggleEventViewButton(int selectedButtonId)
 {
-/*	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
+	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
 			kAgendaView };
 
 	for (int buttonName : skEventViewButtonIds) {
@@ -424,5 +424,5 @@ MainWindow::_ToggleEventViewButton(int selectedButtonId)
 		if (message != NULL) {
 			item->SetMarked(message->what == (uint32)selectedButtonId);
 		}
-	}*/
+	}
 }
