@@ -72,7 +72,6 @@ App::AboutRequested()
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
 	aboutW->AddDescription(B_TRANSLATE("A native Calendar application for Haiku."));
 	aboutW->AddCopyright(2017, "Akshay Agarwal");
-	aboutW->SetVersion("1.0");
 	aboutW->AddAuthors(authors);	
 	aboutW->Show();
 }

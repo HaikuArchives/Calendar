@@ -66,7 +66,7 @@ private:
 	BToolBar*		fToolBar;
 	SidePanelView*		fSidePanelView;
 	DayView*		fDayView;
-	thread_id		fNotificationThread;	
+	thread_id		fNotificationThread;
 };
 
 #endif

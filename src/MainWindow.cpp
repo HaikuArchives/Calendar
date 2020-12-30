@@ -293,7 +293,7 @@ MainWindow::_InitInterface()
 	fToolBar->AddGlue();
 
 	fSidePanelView = new SidePanelView();
-	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));	
+	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));
 
 	_ToggleEventViewButton(kDayView);
 
@@ -363,7 +363,7 @@ MainWindow::_SyncWithPreferences()
 		if(preferences->fHeaderVisible == true)
 			fSidePanelView->ShowWeekHeader(true);
 		else
-			fSidePanelView->ShowWeekHeader(false);			
+			fSidePanelView->ShowWeekHeader(false);
 
 		fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 	}
@@ -390,7 +390,7 @@ MainWindow::_GetSelectedCalendarDate() const
 void
 MainWindow::_ToggleEventViewButton(int selectedButtonId)
 {
-/*	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
+	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
 			kAgendaView };
 
 	for (int buttonName : skEventViewButtonIds) {
@@ -405,5 +405,5 @@ MainWindow::_ToggleEventViewButton(int selectedButtonId)
 		if (message != NULL) {
 			item->SetMarked(message->what == (uint32)selectedButtonId);
 		}
-	}*/
+	}
 }
