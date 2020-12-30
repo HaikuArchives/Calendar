@@ -160,7 +160,7 @@ PreferenceWindow::_InitInterface()
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
 		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
-	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);	
+	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
 	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
 	fRevertButton = new BButton(B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));

@@ -8,6 +8,7 @@
 #include <DateTime.h>
 #include <Window.h>
 
+
 class BMenu;
 class BMenuBar;
 class DayView;
@@ -17,6 +18,7 @@ class MainView;
 class Preferences;
 class PreferenceWindow;
 class SidePanelView;
+
 
 namespace BPrivate {
 	class BToolBar;
@@ -53,6 +55,7 @@ private:
 	static const int 	kDayView 		= 1005;
 	static const int 	kWeekView		= 1006;
 	static const int 	kAgendaView		= 1007;
+
 
 	MainView*		fMainView;
 	EventWindow*		fEventWindow;
