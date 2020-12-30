@@ -75,7 +75,7 @@ PreferenceWindow::MessageReceived(BMessage* message)
 			fTempPreferences->fHeaderVisible = state;
 			_PreferencesModified();
 			break;
-		}		
+		}
 
 		case kApplyPreferencesMessage:
 		{
@@ -160,7 +160,7 @@ PreferenceWindow::_InitInterface()
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
 		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
-	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);		
+	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);	
 
 	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
 	fRevertButton = new BButton(B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));
@@ -217,7 +217,7 @@ PreferenceWindow::_SyncPreferences(Preferences* preferences)
 	}
 
 	BMenuItem* item = fDayOfWeekMenu->ItemAt(preferences->fStartOfWeekOffset);
-	item->SetMarked(true);	
+	item->SetMarked(true);
 }
 
 

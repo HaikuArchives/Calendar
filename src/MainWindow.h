@@ -10,7 +10,6 @@
 
 class BMenu;
 class BMenuBar;
-class BSplitView;
 class DayView;
 class Event;
 class EventWindow;
