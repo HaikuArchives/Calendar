@@ -66,7 +66,6 @@ void
 App::AboutRequested()
 {
 	const char* authors[] = {
-		"Maurice Michalski (Date at the bottom).",
 		"Fredrik Modéen.",
 		NULL
 	};

@@ -29,7 +29,6 @@
 #include "PreferenceWindow.h"
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
-#include "TimeInfo.h"
 
 
 using BPrivate::BToolBar;
@@ -248,7 +247,7 @@ MainWindow::_InitInterface()
 
 	fMenuBar = new BMenuBar("MenuBar");
 
-	fAppMenu = new BMenu(B_TRANSLATE("App"));
+	fAppMenu = new BMenu(B_TRANSLATE("Calendar"));
 	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"), new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
@@ -294,13 +293,9 @@ MainWindow::_InitInterface()
 	fToolBar->AddGlue();
 
 	fSidePanelView = new SidePanelView();
-	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));
-	
-	fSplitView = new BSplitView(B_HORIZONTAL);
+	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));	
 
 	_ToggleEventViewButton(kDayView);
-
-	fTimeTL = new TimeLine();
 
 	fMainView->StartWatchingAll(fSidePanelView);
 
@@ -314,29 +309,20 @@ MainWindow::_InitInterface()
 			.Add(fMenuBar)
 			.Add(fToolBar)
 			.AddGroup(B_HORIZONTAL, 0)
-				.AddSplit(fSplitView)			
-					.Add(fSidePanelView, 1)
-					.Add(fMainView, 5)
-				.End()
+				.Add(fSidePanelView, 1)
+				.Add(fMainView, 5)
 			.End()
-			.Add(fTimeTL)
 		.End();
 	} else {
  		BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 			.Add(fMenuBar)
 			.Add(fToolBar)
 			.AddGroup(B_HORIZONTAL, 0)
-				.AddSplit(fSplitView)	
-					.Add(fMainView, 5)
-					.Add(fSidePanelView, 1)
-				.End()
+				.Add(fMainView, 5)
+				.Add(fSidePanelView, 1)
 			.End()
-			.Add(fTimeTL)
 		.End();	
 	}
-	
-	fSplitView->SetCollapsible(0, false);
-	fSplitView->SetCollapsible(1, false);
 }
 
 
@@ -377,12 +363,7 @@ MainWindow::_SyncWithPreferences()
 		if(preferences->fHeaderVisible == true)
 			fSidePanelView->ShowWeekHeader(true);
 		else
-			fSidePanelView->ShowWeekHeader(false);
-			
-		if (preferences->fShowbottomVisible == true)
-			fTimeTL->ShowBottom(true);
-		else
-			fTimeTL->ShowBottom(false);
+			fSidePanelView->ShowWeekHeader(false);			
 
 		fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 	}
@@ -409,7 +390,7 @@ MainWindow::_GetSelectedCalendarDate() const
 void
 MainWindow::_ToggleEventViewButton(int selectedButtonId)
 {
-	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
+/*	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
 			kAgendaView };
 
 	for (int buttonName : skEventViewButtonIds) {
@@ -424,5 +405,5 @@ MainWindow::_ToggleEventViewButton(int selectedButtonId)
 		if (message != NULL) {
 			item->SetMarked(message->what == (uint32)selectedButtonId);
 		}
-	}
+	}*/
 }

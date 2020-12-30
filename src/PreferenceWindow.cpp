@@ -75,15 +75,7 @@ PreferenceWindow::MessageReceived(BMessage* message)
 			fTempPreferences->fHeaderVisible = state;
 			_PreferencesModified();
 			break;
-		}
-		
-		case kShowbottomMessage:
-		{
-			bool state = fShowbottomVisibleCB->Value() == B_CONTROL_ON;
-			fTempPreferences->fShowbottomVisible = state;
-			_PreferencesModified();
-			break;
-		}
+		}		
 		
 		case kUseRightSide:
 		{
@@ -176,11 +168,7 @@ PreferenceWindow::_InitInterface()
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
 		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
-	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
-	
-	fShowbottomVisibleCB = new BCheckBox("ShowDateInBottom",
-		B_TRANSLATE("Show date in bottom"), new BMessage(kShowbottomMessage));
-	fShowbottomVisibleCB->SetValue(B_CONTROL_OFF);
+	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);	
 	
 	fUseRightSideCB = new BCheckBox("UseRightSide",
 		B_TRANSLATE("Show Date on Left side (Restart app needed)"), new BMessage(kUseRightSide));
@@ -202,7 +190,6 @@ PreferenceWindow::_InitInterface()
 			.Add(fDayOfWeekMenuField)
 			.AddStrut(B_USE_HALF_ITEM_SPACING)
 			.Add(fWeekNumberHeaderCB)
-			.Add(fShowbottomVisibleCB)
 			.Add(fUseRightSideCB)
 	.End();
 	fWeekPreferencesBox->SetLabel(fWeekCategoryLabel);
@@ -243,15 +230,9 @@ PreferenceWindow::_SyncPreferences(Preferences* preferences)
 	}
 
 	BMenuItem* item = fDayOfWeekMenu->ItemAt(preferences->fStartOfWeekOffset);
-	item->SetMarked(true);
+	item->SetMarked(true);	
 	
-	if (preferences->fShowbottomVisible == true) {
-		fShowbottomVisibleCB->SetValue(B_CONTROL_ON);
-	} else {
-		fShowbottomVisibleCB->SetValue(B_CONTROL_OFF);
-	}
-	
-		if (preferences->fUseRightSide == true) {
+	if (preferences->fUseRightSide == true) {
 		fUseRightSideCB->SetValue(B_CONTROL_ON);
 	} else {
 		fUseRightSideCB->SetValue(B_CONTROL_OFF);

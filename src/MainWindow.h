@@ -7,7 +7,6 @@
 
 #include <DateTime.h>
 #include <Window.h>
-#include "TimeLine.h"
 
 class BMenu;
 class BMenuBar;
@@ -19,7 +18,6 @@ class MainView;
 class Preferences;
 class PreferenceWindow;
 class SidePanelView;
-class TimeLine;
 
 namespace BPrivate {
 	class BToolBar;
@@ -46,7 +44,7 @@ private:
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();
 	void			_SetEventListPopUpEnabled(bool state);
-	BDate			_GetSelectedCalendarDate() const;
+	BDate		_GetSelectedCalendarDate() const;
 	void			_ToggleEventViewButton(int selectedButton);
 
 	static const int	kMenuAppQuit		= 1000;
@@ -57,7 +55,6 @@ private:
 	static const int 	kWeekView		= 1006;
 	static const int 	kAgendaView		= 1007;
 
-	BSplitView*		fSplitView;
 	MainView*		fMainView;
 	EventWindow*		fEventWindow;
 	BMenuBar*		fMenuBar;
@@ -69,8 +66,7 @@ private:
 	BToolBar*		fToolBar;
 	SidePanelView*		fSidePanelView;
 	DayView*		fDayView;
-	thread_id		fNotificationThread;
-	TimeLine*		fTimeTL;
+	thread_id		fNotificationThread;	
 };
 
 #endif
