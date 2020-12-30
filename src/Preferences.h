@@ -25,7 +25,6 @@ public:
 
 	int32					fStartOfWeekOffset;
 	bool					fHeaderVisible;
-	bool					fUseRightSide;
 	BString				fDefaultCategory;
 	BRect					fMainWindowRect;
 	BRect					fEventWindowRect;

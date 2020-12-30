@@ -40,13 +40,10 @@ private:
 		static const int		kApplyPreferencesMessage		= 1002;
 		static const int		kRevertPreferencesMessage		= 1003;
 		static const int		kDefaultCategoryChangeMessage 	= 1004;
-		static const int 		kUseRightSide		= 1005;
 		
 		
 		BView*				fMainView;
 		BCheckBox*			fWeekNumberHeaderCB;
-		BCheckBox*			fShowbottomVisibleCB;
-		BCheckBox*			fUseRightSideCB;
 		BStringView*			fWeekCategoryLabel;
 		BStringView*			fOrgCategoryLabel;
 		BStringView*			fStartOfWeekLabel;

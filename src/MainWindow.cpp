@@ -304,25 +304,14 @@ MainWindow::_InitInterface()
 	.End();
 	
 	Preferences* preferences = ((App*)be_app)->GetPreferences();
-	if (preferences->fUseRightSide == true)  {
- 		BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
-			.Add(fMenuBar)
-			.Add(fToolBar)
-			.AddGroup(B_HORIZONTAL, 0)
-				.Add(fSidePanelView, 1)
-				.Add(fMainView, 5)
-			.End()
-		.End();
-	} else {
- 		BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
-			.Add(fMenuBar)
-			.Add(fToolBar)
-			.AddGroup(B_HORIZONTAL, 0)
-				.Add(fMainView, 5)
-				.Add(fSidePanelView, 1)
-			.End()
-		.End();	
-	}
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
+		.Add(fMenuBar)
+		.Add(fToolBar)
+		.AddGroup(B_HORIZONTAL, 0)
+			.Add(fSidePanelView, 1)
+			.Add(fMainView, 5)
+		.End()
+	.End();
 }
 
 

@@ -76,14 +76,6 @@ PreferenceWindow::MessageReceived(BMessage* message)
 			_PreferencesModified();
 			break;
 		}		
-		
-		case kUseRightSide:
-		{
-			bool state = fUseRightSideCB->Value() == B_CONTROL_ON;
-			fTempPreferences->fUseRightSide = state;
-			_PreferencesModified();
-			break;
-		}				
 
 		case kApplyPreferencesMessage:
 		{
@@ -168,11 +160,7 @@ PreferenceWindow::_InitInterface()
 
 	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
 		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
-	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);	
-	
-	fUseRightSideCB = new BCheckBox("UseRightSide",
-		B_TRANSLATE("Show Date on Left side (Restart app needed)"), new BMessage(kUseRightSide));
-	fUseRightSideCB->SetValue(B_CONTROL_OFF);
+	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);		
 
 	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
 	fRevertButton = new BButton(B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));
@@ -190,7 +178,6 @@ PreferenceWindow::_InitInterface()
 			.Add(fDayOfWeekMenuField)
 			.AddStrut(B_USE_HALF_ITEM_SPACING)
 			.Add(fWeekNumberHeaderCB)
-			.Add(fUseRightSideCB)
 	.End();
 	fWeekPreferencesBox->SetLabel(fWeekCategoryLabel);
 
@@ -231,12 +218,6 @@ PreferenceWindow::_SyncPreferences(Preferences* preferences)
 
 	BMenuItem* item = fDayOfWeekMenu->ItemAt(preferences->fStartOfWeekOffset);
 	item->SetMarked(true);	
-	
-	if (preferences->fUseRightSide == true) {
-		fUseRightSideCB->SetValue(B_CONTROL_ON);
-	} else {
-		fUseRightSideCB->SetValue(B_CONTROL_OFF);
-	}
 }
 
 
