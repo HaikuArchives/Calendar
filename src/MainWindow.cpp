@@ -95,7 +95,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fDayView->MessageReceived(&msg);
 			break;
 		}
-		
+
 		case kWeekView:
 		case kDayView:
 		{
@@ -103,7 +103,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fDayView->MessageReceived(message);
 			break;
 		}
-		
+
 		case kAgendaView:
 		{
 			_ToggleEventViewButton(message->what);
@@ -302,7 +302,7 @@ MainWindow::_InitInterface()
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
 		.Add(fDayView)
 	.End();
-	
+
 	Preferences* preferences = ((App*)be_app)->GetPreferences();
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)

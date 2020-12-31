@@ -46,7 +46,7 @@ private:
 		BScrollView*	fEventScroll;
 		BDate			fDate;
 		QueryDBManager*	fDBManager;
-		
+
 		int32 mode;
 
 };

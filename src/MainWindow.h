@@ -45,7 +45,7 @@ private:
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();
 	void			_SetEventListPopUpEnabled(bool state);
-	BDate		_GetSelectedCalendarDate() const;
+	BDate			_GetSelectedCalendarDate() const;
 	void			_ToggleEventViewButton(int selectedButton);
 
 	static const int	kMenuAppQuit		= 1000;

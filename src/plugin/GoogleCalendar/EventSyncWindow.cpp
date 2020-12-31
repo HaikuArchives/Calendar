@@ -156,7 +156,7 @@ EventSyncWindow::_SetStatusLabel(bool status, time_t syncTime)
 	BString timeString;
 	BDateTimeFormat().Format(timeString, syncTime, B_SHORT_DATE_FORMAT,
 		B_SHORT_TIME_FORMAT);
-	
+
 	statusText.ReplaceAll("%status%", statusString);
 	statusText.ReplaceAll("%time%", timeString);
 

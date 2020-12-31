@@ -68,16 +68,16 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 
 	// event time period
 	rgb_color color;
-	
+
 	float tint = B_NO_TINT;
 	float lightTime = B_LIGHTEN_2_TINT;
 	float darkTime = B_DARKEN_3_TINT;
-	
+
 	if (IsSelected())
 		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
 	else
 		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
-		
+
 	tint = color.red + color.green + color.blue > 128 * 3
 			? darkTime : lightTime;
 	view->SetHighColor(tint_color(color, tint));
@@ -86,7 +86,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
 		+ (finfo.ascent + finfo.descent));
-		
+
 	BString timeText(fTimeText);
 	view->TruncateString(&timeText, B_TRUNCATE_END,  rect.Width() - offset - 2);
 	view->DrawString(timeText.String());
@@ -97,11 +97,11 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
 	view->SetFont(&namefont);
-	
+
 	view->MovePenTo(offset, rect.top + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
 		+ (finfo.ascent + finfo.descent) - timefont.Size() + 2);
-		
+
 	BString name(fName);
 	view->TruncateString(&name, B_TRUNCATE_END, rect.Width() - offset - 2);
 	view->DrawString(name.String());

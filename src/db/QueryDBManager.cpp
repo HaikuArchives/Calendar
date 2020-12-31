@@ -668,7 +668,7 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 	BString type = BString("application/x-calendar-event");
 	file->WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, type.String(),
 					type.CountChars() + 1);
-	
+
 	BString name = BString(event->GetName());
 	file->WriteAttr("Event:Name", B_STRING_TYPE, 0, name.String(),
 					name.CountChars() + 1);
