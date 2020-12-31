@@ -303,7 +303,6 @@ MainWindow::_InitInterface()
 		.Add(fDayView)
 	.End();
 
-	Preferences* preferences = ((App*)be_app)->GetPreferences();
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
 		.Add(fToolBar)
