@@ -7,6 +7,7 @@
 #include "SidePanelView.h"
 
 #include <Button.h>
+#include <Catalog.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
@@ -17,6 +18,8 @@
 #include "PreferenceWindow.h"
 #include "CalendarView.h"
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "SidePanelView"
 
 enum StartOfWeek
 {
@@ -60,18 +63,17 @@ SidePanelView::SidePanelView()
 
 	float width, height;
 	fMonthLabel->GetPreferredSize(&width, &height);
-	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth("September XXXX"),
-		height));
+	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth(B_TRANSLATE_COMMENT(
+		"September XXXX", "Choose the longest month name")), height));
 
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
-		.SetInsets(15)
+		.SetInsets(B_USE_WINDOW_INSETS)
 		.Add(fDateHeaderView)
 		.AddStrut(30)
-		.AddGroup(B_HORIZONTAL, B_USE_SMALL_SPACING)
-			.SetInsets(5.0, 5.0, 5.0, 5.0)
+		.AddGroup(B_HORIZONTAL)
 			.Add(fMonthLabel)
 			.AddGlue()
 			.Add(fMonthDownButton)
@@ -79,7 +81,7 @@ SidePanelView::SidePanelView()
 		.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
-		.AddGlue()
+		.AddGlue(10)
 	.End();
 
 	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
