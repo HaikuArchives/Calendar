@@ -69,12 +69,12 @@ DayView::LoadEvents()
 		fEventList->MakeEmpty();
 		fEventListView->MakeEmpty();
 	}
-	
+
 	if (mode == kWeekView)
 		fEventList = fDBManager->GetEventsOfWeek(fDate);
 	else
 		fEventList = fDBManager->GetEventsOfDay(fDate); // Day and Agenda views
-		
+
 	fEventList->SortItems((int (*)(const void *, const void *))CompareFunc);
 	_PopulateEvents();
 	fEventListView->Invalidate();
@@ -184,7 +184,7 @@ DayView::_PopulateEvents()
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
-		
+
 		remaining = "";
 		eventName = "";
 		startTime = "";
@@ -206,7 +206,7 @@ DayView::_PopulateEvents()
 				B_SHORT_TIME_FORMAT);
 			timeFormat.Format(endTime, event->GetEndDateTime(),
 				B_SHORT_TIME_FORMAT);
-			
+
 			if (mode == kDayView)
 				timePeriod << startTime << " - " << endTime;
 			else if (mode == kWeekView) {

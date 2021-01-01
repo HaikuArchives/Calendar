@@ -36,10 +36,11 @@ private:
 		void				_PreferencesModified();
 
 		static const int		kStartOfWeekChangeMessage 		= 1000;
-		static const int 		kShowWeekChangeMessage			= 1001;
+		static const int 		kShowWeekChangeMessage		= 1001;
 		static const int		kApplyPreferencesMessage		= 1002;
 		static const int		kRevertPreferencesMessage		= 1003;
 		static const int		kDefaultCategoryChangeMessage 	= 1004;
+
 
 		BView*				fMainView;
 		BCheckBox*			fWeekNumberHeaderCB;

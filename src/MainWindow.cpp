@@ -95,7 +95,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fDayView->MessageReceived(&msg);
 			break;
 		}
-		
+
 		case kWeekView:
 		case kDayView:
 		{
@@ -103,7 +103,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fDayView->MessageReceived(message);
 			break;
 		}
-		
+
 		case kAgendaView:
 		{
 			_ToggleEventViewButton(message->what);
@@ -307,8 +307,8 @@ MainWindow::_InitInterface()
 		.Add(fMenuBar)
 		.Add(fToolBar)
 		.AddGroup(B_HORIZONTAL, 0)
-			.Add(fMainView, 5)
 			.Add(fSidePanelView, 1)
+			.Add(fMainView, 5)
 		.End()
 	.End();
 }

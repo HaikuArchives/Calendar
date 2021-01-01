@@ -69,7 +69,7 @@ private:
 	bool			_EventToFile(Event* event, BFile* file);
 
 	void			_ReplaceCategory(BString oldCategory, BString newCategory);
-	
+
 	status_t		_CategoryStatusSwitch(status_t);
 	status_t		_EventStatusSwitch(status_t);
 
