@@ -16,6 +16,9 @@
 #include <LayoutBuilder.h>
 #include <StringView.h>
 #include <View.h>
+#include <String.h>
+#include <Key.h>
+#include <KeyStore.h>
 
 #include "App.h"
 #include "EventSync.h"
@@ -40,6 +43,11 @@ EventSyncWindow::EventSyncWindow()
 		syncDataDir.CreateDirectory(syncDataPath.Path(), &syncDataDir);
 	}
 
+	fLogMessage = new BTextView("Log");
+	//fLogMessage->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
+	//fLogMessage->SetLowColor(fDescriptionView->ViewColor());
+	//fLogMessage->MakeEditable(false);
+
 	fSyncDataFile.SetTo(&syncDataDir, "sync");
 
 	_InitInterface();
@@ -63,6 +71,10 @@ EventSyncWindow::MessageReceived(BMessage* message)
 
 		case kSyncPressed:
 			_Sync();
+			break;
+
+		case kRemovePressed:
+			_RemoveKey();
 			break;
 
 		case kSyncStatusMessage:
@@ -98,13 +110,17 @@ EventSyncWindow::_InitInterface()
 	BView* fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fStatusLabel = new BStringView("Status Label",
-		B_TRANSLATE("No Data Available"));
+	fStatusLabel = new BStringView("Status Label","");
 	fSyncButton = new BButton(NULL, "Sync", new BMessage(kSyncPressed));
+	fRemoveButton = new BButton(NULL, "Remove Password", new BMessage(kRemovePressed));
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.Add(fStatusLabel)
-		.Add(fSyncButton)
+		.AddGroup(B_HORIZONTAL, 0)
+			.Add(fSyncButton)
+			.Add(fRemoveButton)
+		.End()
+		.Add(fLogMessage)
 	.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
@@ -117,8 +133,16 @@ EventSyncWindow::_InitInterface()
 void
 EventSyncWindow::_Sync()
 {
-	fStatusLabel->SetText(B_TRANSLATE("Please wait while we sync..."));
+	_SetStatusMessage(B_TRANSLATE("Please wait while we sync..."));
 	_StartSynchronizationThread();
+}
+
+void
+EventSyncWindow::_SetStatusMessage(const char* str)
+{
+	BString bstr;
+	bstr << fLogMessage->Text() << str <<"\n";
+	fLogMessage->SetText(bstr.String());
 }
 
 
@@ -126,6 +150,7 @@ void
 EventSyncWindow::_StartSynchronizationThread()
 {
 	if (fSynchronizationThread < 0) {
+		_SetStatusMessage(B_TRANSLATE("StartSynchronizationThread"));
 		fThreadMessage = new BMessage();
 		fThreadMessage->AddPointer("handler", this);
 		fSynchronizationThread = spawn_thread(SynchronizationLoop,
@@ -139,6 +164,7 @@ void
 EventSyncWindow::_StopSynchronizationThread()
 {
 	if (fSynchronizationThread > 0) {
+		_SetStatusMessage(B_TRANSLATE("StopSynchronizationThread"));
 		kill_thread(fSynchronizationThread);
 		delete fThreadMessage;
 		fSynchronizationThread = -1;
@@ -170,9 +196,10 @@ EventSyncWindow::_LoadSyncData()
 	BMessage* message = new BMessage();
 	BFile* file = new BFile(fSyncDataFile.Path(), B_READ_ONLY);
 
-
 	if (file->InitCheck() == B_OK) {
+		_SetStatusMessage(B_TRANSLATE("LoadSyncData"));
 		if (message->Unflatten(file) == B_OK) {
+			_SetStatusMessage(B_TRANSLATE("Unflatten file"));
 			bool lastSyncStatus;
 			message->FindBool("syncStatus", &lastSyncStatus);
 			time_t* lastSyncTime;
@@ -182,19 +209,15 @@ EventSyncWindow::_LoadSyncData()
 			_SetStatusLabel(lastSyncStatus, *lastSyncTime);
 		}
 	}
-
 	else
 	{
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("There was an error in loading the last sync data."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		_SetStatusMessage(B_TRANSLATE("There was an error in loading the last sync data."));
 	}
-
 
 	delete file;
 	delete message;
-
 }
+
 
 void
 EventSyncWindow::_SaveSyncData(bool status)
@@ -206,22 +229,41 @@ EventSyncWindow::_SaveSyncData(bool status)
 	time_t syncTime = time(NULL);
 
 	if (file->InitCheck() == B_OK) {
+		_SetStatusMessage(B_TRANSLATE("SaveSyncData"));
 		message->AddBool("syncStatus", status);
 		message->AddData("syncTime", B_RAW_TYPE, (void*)&syncTime,
 			sizeof(time_t));
 		message->Flatten(file);
 	}
-
 	else
 	{
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("There was an error in saving the recent sync data."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
+		_SetStatusMessage(B_TRANSLATE("There was an error in saving the recent sync data."));
 	}
 
 	_SetStatusLabel(status, syncTime);
 
 	delete file;
 	delete message;
+}
+
+
+void
+EventSyncWindow::_RemoveKey()
+{
+	BPasswordKey key;
+	BKeyStore keyStore;
+	if(keyStore.GetKey(kAppName, B_KEY_TYPE_PASSWORD, "refresh_token", key) == B_OK) {
+		status_t result = keyStore.RemoveKey(kAppName, key);
+		if (result != B_OK) {
+			_SetStatusMessage(B_TRANSLATE("Password/Token removed"));
+		}
+		else
+		{
+			_SetStatusMessage(B_TRANSLATE("Error remove Password/Token"));
+		}
+	}
+	else
+	{
+		_SetStatusMessage(B_TRANSLATE("No Password/Token to remove"));
+	}
 }

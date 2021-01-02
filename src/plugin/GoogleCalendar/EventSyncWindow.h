@@ -8,11 +8,13 @@
 #include <Path.h>
 #include <String.h>
 #include <Window.h>
+#include <TextView.h>
 
 
 class BButton;
 class BStringView;
 class BView;
+class BTextView;
 
 
 static const uint32 kEventSyncWindowQuitting = 'kswq';
@@ -35,13 +37,18 @@ private:
 	void			_StartSynchronizationThread();
 	void			_StopSynchronizationThread();
 	void			_SetStatusLabel(bool status, time_t syncTime);
+	void			_SetStatusMessage(const char* str);
+	void			_RemoveKey();
 
 	static const uint32	kSyncPressed = 1000;
+	static const uint32	kRemovePressed = 1001;
 
 	BStringView*	fStatusLabel;
 	BButton*		fSyncButton;
+	BButton*		fRemoveButton;
 	BView*			fMainView;
 	BPath			fSyncDataFile;
+	BTextView*		fLogMessage;
 
 	thread_id		fSynchronizationThread;
 	BMessage*		fThreadMessage;
