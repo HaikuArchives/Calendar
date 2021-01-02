@@ -109,7 +109,7 @@ EventSyncWindow::_InitInterface()
 
 	fStatusLabel = new BStringView("Status Label","");
 	fSyncButton = new BButton(NULL, "Sync", new BMessage(kSyncPressed));
-	fRemoveButton = new BButton(NULL, "Remove Password", new BMessage(kRemovePressed));
+	fRemoveButton = new BButton(NULL, "Remove Token", new BMessage(kRemovePressed));
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.Add(fStatusLabel)
@@ -253,15 +253,15 @@ EventSyncWindow::_RemoveKey()
 	if(keyStore.GetKey(kAppName, B_KEY_TYPE_PASSWORD, "refresh_token", key) == B_OK) {
 		status_t result = keyStore.RemoveKey(kAppName, key);
 		if (result != B_OK) {
-			_SetStatusMessage(B_TRANSLATE("Password/Token removed"));
+			_SetStatusMessage(B_TRANSLATE("Token removed"));
 		}
 		else
 		{
-			_SetStatusMessage(B_TRANSLATE("Error remove Password/Token"));
+			_SetStatusMessage(B_TRANSLATE("Error remove token"));
 		}
 	}
 	else
 	{
-		_SetStatusMessage(B_TRANSLATE("No Password/Token to remove"));
+		_SetStatusMessage(B_TRANSLATE("No token to remove"));
 	}
 }
