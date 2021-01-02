@@ -67,7 +67,7 @@ EventSyncWindow::MessageReceived(BMessage* message)
 	switch(message->what) {
 
 		case kSyncPressed:
-			_Sync();
+			_StartSynchronizationThread();
 			break;
 
 		case kRemovePressed:
@@ -128,14 +128,6 @@ EventSyncWindow::_InitInterface()
 
 
 void
-EventSyncWindow::_Sync()
-{
-	_SetStatusMessage(B_TRANSLATE("Please wait while we sync..."));
-	_StartSynchronizationThread();
-}
-
-
-void
 EventSyncWindow::_SetStatusMessage(const char* str)
 {
 	BString bstr;
@@ -147,6 +139,10 @@ EventSyncWindow::_SetStatusMessage(const char* str)
 void
 EventSyncWindow::_StartSynchronizationThread()
 {
+	_SetStatusMessage(B_TRANSLATE("Please wait while we sync..."));
+	fSyncButton->SetEnabled(false);
+	fRemoveButton->SetEnabled(false);
+
 	if (fSynchronizationThread < 0) {
 		_SetStatusMessage(B_TRANSLATE("StartSynchronizationThread"));
 		fThreadMessage = new BMessage();
@@ -167,6 +163,8 @@ EventSyncWindow::_StopSynchronizationThread()
 		delete fThreadMessage;
 		fSynchronizationThread = -1;
 	}
+	fSyncButton->SetEnabled(true);
+	fRemoveButton->SetEnabled(true);
 }
 
 

@@ -31,7 +31,6 @@ public:
 
 private:
 	void			_InitInterface();
-	void			_Sync();
 	void			_LoadSyncData();
 	void			_SaveSyncData(bool status);
 	void			_StartSynchronizationThread();
