@@ -44,9 +44,6 @@ EventSyncWindow::EventSyncWindow()
 	}
 
 	fLogMessage = new BTextView("Log");
-	//fLogMessage->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
-	//fLogMessage->SetLowColor(fDescriptionView->ViewColor());
-	//fLogMessage->MakeEditable(false);
 
 	fSyncDataFile.SetTo(&syncDataDir, "sync");
 
@@ -136,6 +133,7 @@ EventSyncWindow::_Sync()
 	_SetStatusMessage(B_TRANSLATE("Please wait while we sync..."));
 	_StartSynchronizationThread();
 }
+
 
 void
 EventSyncWindow::_SetStatusMessage(const char* str)
