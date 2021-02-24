@@ -252,9 +252,6 @@ MainWindow::_InitInterface()
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Preferences"), new BMessage(kMenuAppPref)));
-	fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
-	fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
-	fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
