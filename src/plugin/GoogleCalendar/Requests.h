@@ -17,6 +17,8 @@
 #include <Json.h>
 
 
+using namespace BPrivate::Network;
+
 class ProtocolListener : public BUrlProtocolListener {
 public:
 	ProtocolListener(bool traceLogging)
@@ -93,7 +95,7 @@ class Requests {
 		{
 			ProtocolListener listener(true);
 			BUrl link(url);
-			BUrlRequest* request = BUrlProtocolRoster::MakeRequest( link, &listener );
+			BUrlRequest* request = BUrlProtocolRoster::MakeRequest( link, NULL, &listener );
 			BHttpRequest* hRequest = dynamic_cast<BHttpRequest *>(request);
 
 			hRequest->SetMethod(method);
