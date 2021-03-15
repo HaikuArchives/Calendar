@@ -10,6 +10,7 @@
 #include <Box.h>
 #include <Button.h>
 #include <Catalog.h>
+#include <ColorMenuItem.h>
 #include <CheckBox.h>
 #include <LayoutBuilder.h>
 #include <PopUpMenu.h>
@@ -140,8 +141,8 @@ PreferenceWindow::_InitInterface()
 	BList* categories = fDBManager->GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++) {
 		Category* category = (Category*)categories->ItemAt(i);
-		fDefaultCatMenu->AddItem(new BMenuItem(category->GetName(),
-			new BMessage(kDefaultCategoryChangeMessage)));
+		fDefaultCatMenu->AddItem(new BColorMenuItem(category->GetName(),
+			new BMessage(kDefaultCategoryChangeMessage), category->GetColor()));
 	}
 	fDefaultCatMenu->ItemAt(0)->SetMarked(true);
 	fDefaultCatMenuField = new BMenuField("DefaultCatMenu", NULL, fDefaultCatMenu);
