@@ -39,6 +39,7 @@ public:
 		BList*		GetEventsOfWeek(BDate date);
 		BList*		GetEventsOfCategory(Category* category);
 		BList*		GetEventsToNotify(BDateTime dateTime);
+		bool		CancelEvent(Event* event);
 		bool		RemoveEvent(Event* event);
 		bool		RemoveEvent(entry_ref eventRef);
 		bool		RemoveCancelledEvents();
@@ -52,6 +53,8 @@ public:
 		BList*		GetAllCategories();
 		bool		RemoveCategory(Category* category);
 		bool		RemoveCategory(entry_ref categoryRef);
+
+		bool		SyncEnabled();
 
 private:
 
@@ -88,6 +91,8 @@ private:
 	BDirectory*		fEventDir;
 	BDirectory*		fCancelledDir;
 	BDirectory*		fCategoryDir;
+	BDirectory*		fTrashDir;
 	BVolume			fQueryVolume;
+	bool			fSyncEnabled;
 };
 #endif // _QDB_MANAGER_H_

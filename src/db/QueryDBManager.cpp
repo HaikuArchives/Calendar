@@ -51,18 +51,18 @@ QueryDBManager::~QueryDBManager()
 void
 QueryDBManager::_Initialize()
 {
-	BPath rootPath;
+	BPath settingsPath;
 	BPath eventPath;
 	BPath cancelledPath;
 	BPath categoryPath;
-	BPath settingsPath;
+	BPath trashPath;
 	BPath sqlPath;
 
-	find_directory(B_USER_SETTINGS_DIRECTORY, &rootPath);
-	rootPath.Append(kDirectoryName);
+	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
+	settingsPath.Append(kDirectoryName);
 
 	// Event directory
-	eventPath = BPath(rootPath);
+	eventPath = BPath(settingsPath);
 	eventPath.Append(kEventDir);
 	BDirectory* eventDir = new BDirectory(eventPath.Path());
 	fEventDir = eventDir;
@@ -71,7 +71,7 @@ QueryDBManager::_Initialize()
 	}
 
 	// Cancelled directory
-	cancelledPath = BPath(rootPath);
+	cancelledPath = BPath(settingsPath);
 	cancelledPath.Append(kCancelledDir);
 	BDirectory* cancelledDir = new BDirectory(cancelledPath.Path());
 	fCancelledDir = cancelledDir;
@@ -80,13 +80,18 @@ QueryDBManager::_Initialize()
 	}
 
 	// Category directory
-	categoryPath = BPath(rootPath);
+	categoryPath = BPath(settingsPath);
 	categoryPath.Append(kCategoryDir);
 	BDirectory* categoryDir = new BDirectory(categoryPath.Path());
 	fCategoryDir = categoryDir;
 	if (fCategoryDir->InitCheck() == B_ENTRY_NOT_FOUND) {
 		fCategoryDir->CreateDirectory(categoryPath.Path(), fCategoryDir);
 	}
+
+	// Trash directory
+	find_directory(B_TRASH_DIRECTORY, &trashPath);
+	BDirectory* trashDir = new BDirectory(trashPath.Path());
+	fTrashDir = trashDir;
 
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
@@ -106,7 +111,7 @@ QueryDBManager::_Initialize()
 	}
 
 	// Migrate from SQL, if necessary
-	sqlPath = BPath(rootPath);
+	sqlPath = BPath(settingsPath);
 	sqlPath.Append(kDatabaseName);
 	if (BEntry(sqlPath.Path()).Exists())
 		_ImportFromSQL(sqlPath);
@@ -163,6 +168,23 @@ QueryDBManager::UpdateNotifiedEvent(const char* id)
 
 
 bool
+QueryDBManager::CancelEvent(Event* event)
+{
+	BPath settingsPath;
+	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
+	settingsPath.Append(kDirectoryName);
+
+	if (SyncEnabled() == true) {
+		Event newEvent(*event);
+		newEvent.SetStatus(false);
+		newEvent.SetUpdated(time(NULL));
+		return UpdateEvent(event, &newEvent);
+	} else
+		return RemoveEvent(event);
+}
+
+
+bool
 QueryDBManager::RemoveEvent(Event* event)
 {
 	entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
@@ -173,7 +195,7 @@ QueryDBManager::RemoveEvent(Event* event)
 bool
 QueryDBManager::RemoveEvent(entry_ref eventRef)
 {
-	status_t result = BEntry(&eventRef).Remove();
+	status_t result = BEntry(&eventRef).MoveTo(fTrashDir);
 	if (_EventStatusSwitch(result) == B_OK)
 		return true;
 	return false;
@@ -192,10 +214,10 @@ QueryDBManager::RemoveCancelledEvents()
 
 	query.Fetch();
 	entry_ref ref;
-
 	Event* event;
 
-	while (query.GetNextRef(&ref) == B_OK) {
+	while (query.GetNextRef(&ref) == B_OK
+		&& fTrashDir->Contains(BPath(&ref).Path()) == false) {
 		RemoveEvent(ref);
 	}
 
@@ -313,7 +335,8 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 	BFile evFile;
 	Event* event;
 
-	while (query.GetNextRef(&ref) == B_OK) {
+	while (query.GetNextRef(&ref) == B_OK
+		&& fTrashDir->Contains(BPath(&ref).Path()) == false) {
 		evFile = BFile(&ref, B_READ_WRITE);
 		event = _FileToEvent(&evFile);
 		events->AddItem(event);
@@ -416,7 +439,8 @@ QueryDBManager::GetAllCategories()
 	Category* category;
 	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
 
-	while (query.GetNextRef(&ref) == B_OK) {
+	while (query.GetNextRef(&ref) == B_OK
+		&& fTrashDir->Contains(BPath(&ref).Path()) == false) {
 		catFile = BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(&catFile);
 
@@ -449,9 +473,20 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	if (ev->CountItems() > 0)
 		return false;
 
-	if (_CategoryStatusSwitch(entry.Remove()) == B_OK)
+	if (_CategoryStatusSwitch(entry.MoveTo(fTrashDir)) == B_OK)
 		return true;
 	return false;
+}
+
+
+bool
+QueryDBManager::SyncEnabled()
+{
+	BPath settingsPath;
+	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
+	settingsPath.Append(kDirectoryName);
+
+	return BDirectory(settingsPath.Path()).Contains("sync");
 }
 
 
@@ -524,7 +559,8 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 	BFile evFile;
 	Event* event;
 
-	while (query.GetNextRef(&ref) == B_OK) {
+	while (query.GetNextRef(&ref) == B_OK
+		&& fTrashDir->Contains(BPath(&ref).Path()) == false) {
 		evFile = BFile(&ref, B_READ_WRITE);
 		event = _FileToEvent(&evFile);
 		events->AddItem(event);

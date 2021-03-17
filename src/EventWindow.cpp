@@ -347,18 +347,22 @@ EventWindow::OnSaveClick()
 void
 EventWindow::OnDeleteClick()
 {
-	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
-		B_TRANSLATE("Are you sure you want to delete this event?"),
-		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+	BString title("Confirm delete");
+	BString subtitle("Are you sure you want to move this event to Trash?");
+	if (fDBManager->SyncEnabled()) {
+		title = "Confirm cancelation";
+		subtitle = "Are you sure you want to cancel this event?";
+	}
+
+	BAlert* alert = new BAlert(B_TRANSLATE(title.String()),
+		B_TRANSLATE(subtitle.String()), NULL, B_TRANSLATE("OK"),
+		B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();
 
 	if (button_index == 0) {
-		Event newEvent(*fEvent);
-		newEvent.SetStatus(false);
-		newEvent.SetUpdated(time(NULL));
-		fDBManager->UpdateEvent(fEvent, &newEvent);
+		fDBManager->CancelEvent(fEvent);
 		CloseWindow();
 	}
 }
