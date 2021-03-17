@@ -35,22 +35,26 @@ public:
 private:
 	void			_InitInterface();
 	void			_SetCurrentColor(rgb_color color);
-	void			_OnSavePressed();
-	void			_OnDeletePressed();
+	void			_OnOkPressed();
+	void			_OnRevertPressed();
 	void			_CategoryModified();
 	void			_RefreshWindows();
 	void			_CloseWindow();
+	bool			_SaveChanges();
 
-	static const uint32	kSavePressed		= 1000;
-	static const uint32	kDeletePressed		= 1001;
+	static const uint32	kOkPressed				= 1000;
+	static const uint32	kRevertPressed			= 1001;
 	static const uint32	kCategoryTextChanged	= 1002;
 
 	BView*			fMainView;
-	BTextControl*		fCategoryText;
-	BColorControl*		fPicker;
-	ColorPreview*		fColorPreview;
-	BButton*		fSaveButton;
-	BButton*		fDeleteButton;
+	BTextControl*	fCategoryText;
+	BColorControl*	fPicker;
+	ColorPreview*	fColorPreview;
+	BButton*		fOkButton;
+	BButton*		fRevertButton;
+
+	BString			fOriginalText;
+	rgb_color		fOriginalColor;
 
 	Category*		fCategory;
 };

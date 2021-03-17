@@ -264,7 +264,8 @@ MainWindow::_InitInterface()
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kMenuEventDelete)));
 
 	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
-	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit categories"), new BMessage(kMenuCategoryEdit)));
+	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage categories" B_UTF8_ELLIPSIS),
+		new BMessage(kMenuCategoryEdit)));
 	fViewMenu = new BMenu(B_TRANSLATE("View"));
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Day view"), new BMessage(kDayView)));
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Week view"), new BMessage(kWeekView)));
