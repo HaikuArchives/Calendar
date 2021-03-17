@@ -24,8 +24,8 @@ public:
 				CategoryWindow();
 				~CategoryWindow();
 
-	virtual void		MessageReceived(BMessage* message);
-	virtual bool		QuitRequested();
+	virtual void	MessageReceived(BMessage* message);
+	virtual bool	QuitRequested();
 
 	void			LoadCategories();
 	QueryDBManager*	GetDBManager();
@@ -33,16 +33,19 @@ public:
 private:
 	void			_InitInterface();
 	void			_OpenCategoryWindow(Category* category);
+	void			_OnDeletePressed();
 
-	static const uint32	kAddPressed		= 1000;
-	static const uint32	kCancelPressed		= 1001;
-	static const uint32	kCategorySelected	= 1002;
+	static const uint32	kAddPressed				= 1000;
+	static const uint32	kDeletePressed			= 1001;
+	static const uint32	kCategoryEditSelected	= 1002;
+	static const uint32	kCategorySelected		= 1003;
 
 	BView*			fMainView;
 	BListView*		fCategoryListView;
-	BScrollView*		fCategoryScroll;
+	BScrollView*	fCategoryScroll;
 	BButton*		fAddButton;
-	BButton*		fCancelButton;
+	BButton*		fDeleteButton;
+	BButton*		fEditButton;
 	CategoryEditWindow*	fCategoryEditWindow;
 
 	BList*			fCategoryList;

@@ -6,6 +6,7 @@
 #include "CategoryWindow.h"
 
 
+#include <Alert.h>
 #include <Application.h>
 #include <Button.h>
 #include <Catalog.h>
@@ -26,7 +27,7 @@
 
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), B_TRANSLATE("Category manager"),
+	BWindow(BRect(), B_TRANSLATE("Manage categories"),
 		B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
@@ -52,13 +53,12 @@ CategoryWindow::MessageReceived(BMessage* message)
 			_OpenCategoryWindow(NULL);
 			break;
 
-		case kCancelPressed:
-			PostMessage(B_QUIT_REQUESTED);
+		case kDeletePressed:
+			_OnDeletePressed();
 			break;
 
-		case kCategorySelected:
+		case kCategoryEditSelected:
 		{
-
 			int32 selection = fCategoryListView->CurrentSelection();
 			if (selection >= 0) {
 				Category* category = ((Category*)fCategoryList->ItemAt(selection));
@@ -67,9 +67,20 @@ CategoryWindow::MessageReceived(BMessage* message)
 			break;
 		}
 
-		case kCategoryEditQuitting:
-			fCategoryEditWindow = NULL;
+		case kCategorySelected:
+		{
+			bool enabled = message->GetInt32("index", -1) >= 0;
+			fEditButton->SetEnabled(enabled);
+			fDeleteButton->SetEnabled(enabled);
 			break;
+		}
+
+		case kCategoryEditQuitting:
+		{
+			fCategoryEditWindow = NULL;
+			LoadCategories();
+			break;
+		}
 
 		case B_REFS_RECEIVED:
 		{
@@ -123,6 +134,7 @@ CategoryWindow::LoadCategories()
 {
 	LockLooper();
 
+	int32 selection = fCategoryListView->CurrentSelection();
 	if(!fCategoryList->IsEmpty()) {
 		fCategoryListView->MakeEmpty();
 		fCategoryList->MakeEmpty();
@@ -136,6 +148,11 @@ CategoryWindow::LoadCategories()
 		fCategoryListView->AddItem(new CategoryListItem(category->GetName(),
 			category->GetColor()));
 	}
+
+	if (selection < fCategoryList->CountItems())
+		fCategoryListView->Select(selection);
+	else
+		MessageReceived(new BMessage(kCategorySelected));
 
 	fCategoryListView->Invalidate();
 	UnlockLooper();
@@ -166,21 +183,25 @@ CategoryWindow::_InitInterface()
 	fCategoryList = new BList();
 	LoadCategories();
 
-	fCategoryListView->SetInvocationMessage(new BMessage(kCategorySelected));
+	fCategoryListView->SetSelectionMessage(new BMessage(kCategorySelected));
+	fCategoryListView->SetInvocationMessage(new BMessage(kCategoryEditSelected));
 
-	fAddButton = new BButton("AddButton", B_TRANSLATE("Add"),
+	fAddButton = new BButton("AddButton", B_TRANSLATE("Add" B_UTF8_ELLIPSIS),
 		new BMessage(kAddPressed));
-	fCancelButton = new BButton("CancelButton", B_TRANSLATE("Cancel"),
-		new BMessage(kCancelPressed));
+	fDeleteButton = new BButton("DeleteButton", B_TRANSLATE("Delete"),
+		new BMessage(kDeletePressed));
+	fEditButton = new BButton("EditButton", B_TRANSLATE("Edit" B_UTF8_ELLIPSIS),
+		new BMessage(kCategoryEditSelected));
+	fEditButton->SetEnabled(false);
+	fDeleteButton->SetEnabled(false);
 
-	fAddButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	fCancelButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL)
+	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.Add(fCategoryScroll)
-		.AddGroup(B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+		.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
+			.Add(fDeleteButton)
+			.AddGlue()
 			.Add(fAddButton)
-			.Add(fCancelButton)
+			.Add(fEditButton)
 		.End()
 	.End();
 
@@ -202,3 +223,45 @@ CategoryWindow::_OpenCategoryWindow(Category* category)
 
 	fCategoryEditWindow->Activate();
 }
+
+
+void
+CategoryWindow::_OnDeletePressed()
+{
+	int32 selection = fCategoryListView->CurrentSelection();
+	if (selection < 0)
+		return;
+
+	Category* category = ((Category*)fCategoryList->ItemAt(selection));
+	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
+
+	if (category->GetName() == defaultCat) {
+		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("You cannot delete the default category."),
+			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+		alert->Go();
+		return;
+	}
+
+	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
+		B_TRANSLATE("Are you sure you want to delete the selected category?"),
+		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"),
+		B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+	alert->SetShortcut(1, B_ESCAPE);
+	int32 button_index = alert->Go();
+
+	if (button_index == 0) {
+		if (fDBManager->RemoveCategory(category) == false) {
+			BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+				B_TRANSLATE("Cannot delete category. Can't delete a category used by events."),
+				NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->Go();
+			return;
+		} else
+			LoadCategories();
+	}
+}
+
+
