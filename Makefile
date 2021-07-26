@@ -50,6 +50,7 @@ SRCS = \
 	 src/utils/ColorConverter.cpp  \
 	 src/utils/ICal.cpp  \
 	 src/utils/ResourceLoader.cpp  \
+	 src/utils/SanitizeFileName.cpp \
 	 src/model/Category.cpp  \
 	 src/model/Event.cpp \
 	 src/db/QueryDBManager.cpp  \

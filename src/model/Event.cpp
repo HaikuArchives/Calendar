@@ -6,7 +6,6 @@
 
 #include "Event.h"
 
-#include <regex>
 #include <Uuid.h>
 
 
@@ -110,12 +109,6 @@ Event::GetName()
 	return fName.String();
 }
 
-const char*
-Event::GetSanitizedName()
-{
-	std::regex expression("[^\\w\\d]");
-	return std::regex_replace(fName.String(), expression, "_").c_str();
-}
 
 void
 Event::SetPlace(const char* place)

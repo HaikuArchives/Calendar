@@ -25,6 +25,7 @@
 #include "Category.h"
 #include "Event.h"
 #include "Preferences.h"
+#include "SanitizeFileName.h"
 #include "SQLiteManager.h"
 #include "QueryDBManager.h"
 
@@ -126,7 +127,7 @@ QueryDBManager::AddEvent(Event* event)
 	if (!event->GetStatus())
 		parentDir = fCancelledDir;
 
-	status_t result = _CreateUniqueFile(parentDir, event->GetSanitizedName(), &evFile);
+	status_t result = _CreateUniqueFile(parentDir, SanitizeFileName(event->GetName()), &evFile);
 
 	if (_EventStatusSwitch(result) != B_OK)
 		return false;
@@ -339,7 +340,7 @@ QueryDBManager::AddCategory(Category* category)
 
 	BFile catFile = BFile();
 	status_t result =
-		_CreateUniqueFile(fCategoryDir, category->GetName(), &catFile);
+		_CreateUniqueFile(fCategoryDir, SanitizeFileName(category->GetName()), &catFile);
 
 	if (_CategoryStatusSwitch(result) != B_OK)
 		return false;
