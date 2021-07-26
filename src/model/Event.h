@@ -33,6 +33,7 @@ public:
 	Category*	GetCategory();
 
 	const char*	GetName();
+	const char*	GetSanitizedName();
 	const char*	GetPlace();
 	const char*	GetDescription();
 
