@@ -126,7 +126,7 @@ QueryDBManager::AddEvent(Event* event)
 	if (!event->GetStatus())
 		parentDir = fCancelledDir;
 
-	status_t result = _CreateUniqueFile(parentDir, event->GetName(), &evFile);
+	status_t result = _CreateUniqueFile(parentDir, event->GetSanitizedName(), &evFile);
 
 	if (_EventStatusSwitch(result) != B_OK)
 		return false;
