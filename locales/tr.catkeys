@@ -1,0 +1,117 @@
+1	Turkish	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event%, %time% zamanında başlıyor.
+Reminder	NotificationLoop		Anımsatıcı
+A native Calendar application for Haiku.	App		Haiku'ya özel bir takvim uygulaması
+About	MainWindow		Hakkında
+Add event	MainWindow		Etkinlik ekle
+Agenda	MainWindow		Ajanda
+Agenda view	MainWindow		Ajanda görünümü
+App	MainWindow		Uygulama
+Category	MainWindow		Kategori
+Day	MainWindow		Gün
+Day view	MainWindow		Gün görünümü
+Edit categories	MainWindow		Kategorileri düzenle
+Edit event	MainWindow		Etkinlik düzenle
+Event	MainWindow		Etkinlik
+Go to today	MainWindow		Bugün'e git
+Google Calendar	MainWindow		Google Takvim
+Preferences	MainWindow		Tercihler
+Quit	MainWindow		Çık
+Remove event	MainWindow		Etkinlik kaldır
+Synchronize	MainWindow		Eşzamanla
+Today	MainWindow		Bugün
+View	MainWindow		Görünüm
+Week	MainWindow		Hafta
+Week view	MainWindow		Hafta görünümü
+Add	CategoryWindow		Ekle
+Cancel	CategoryWindow		İptal
+Category manager	CategoryWindow		Kategori Yöneticisi
+All day	DayView		Tüm gün
+All day, %startDay%	DayView		Tüm gün, %startDay%
+Are you sure you want to delete the selected event?	DayView		Seçili etkinliği silmek istediğinizden emin misiniz?
+Cancel	DayView		İptal
+Confirm delete	DayView		Silmeyi onayla
+Finished!	DayView		Bitti!
+Now, %remaining% left	DayView		Şimdi, %remaining% kalan
+OK	DayView		Tamam
+Starts in %remaining%	DayView		%remaining% içinde başlıyor
+All day:	EventWindow		Tüm gün:
+Are you sure you want to delete this event?	EventWindow		Bu etkinliği silmek istediğinizden emin misiniz?
+Cancel	EventWindow		İptal
+Category:	EventWindow		Kategori:
+Confirm delete	EventWindow		Silmeyi onayla
+Delete	EventWindow		Sil
+Description:	EventWindow		Açıklama:
+End date	EventWindow		Bitiş tarihi
+End date and time	EventWindow		Bitiş tarih ve zamanı
+End date:	EventWindow		Bitiş tarihi:
+End time:	EventWindow		Bitiş zamanı:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Zamanı SS:dd (24 saat) biçiminde girin.
+Error	EventWindow		Hata
+Event manager	EventWindow		Etkinlik Yöneticisi
+Monthly	EventWindow		Aylık
+Name:	EventWindow		Ad:
+OK	EventWindow		Tamam
+Place:	EventWindow		Konum:
+Recurrence	EventWindow		Yinelenme
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Üzgünüm, başlangıcından önce biten bir olay oluşturamazsınız.
+Start date	EventWindow		Başlangıç tarihi
+Start date and time	EventWindow		Başlangıç tarih ve zamanı
+Start date:	EventWindow		Başlangıç tarihi:
+Start time:	EventWindow		Başlangıç zamanı:
+The name must have a length greater than 2.	EventWindow		Ad en az 3 karakterden oluşmalıdır.
+There was some error in adding the event. Please try again.	EventWindow		Olay eklenirken bir hata oluştu. Lütfen yeniden deneyin.
+Yearly	EventWindow		Yıllık
+Apply	PreferenceWindow		Uygula
+First day of week	PreferenceWindow		Haftanın ilk günü
+Friday	PreferenceWindow		Cuma
+Locale based	PreferenceWindow		Yerel ayarlara göre
+Monday	PreferenceWindow		Pazartesi
+Preferences	PreferenceWindow		Tercihler
+Revert	PreferenceWindow		Geri al
+Saturday	PreferenceWindow		Cumartesi
+Show week number in Calendar	PreferenceWindow		Takvim'de hafta numarasını göster
+Sunday	PreferenceWindow		Pazar
+Thursday	PreferenceWindow		Perşembe
+Tuesday	PreferenceWindow		Salı
+Wednesday	PreferenceWindow		Çarşamba
+Are you sure you want to delete the selected category?	CategoryEditWindow		Seçili kategoriyi silmek istediğinizden emin misiniz?
+Cancel	CategoryEditWindow		İptal
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Kategori eklenemiyor/düzenlenemiyor. Aynı ad veya renkte bir kategori halihazırda var.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Kategori silinemiyor. Etkinlikler tarafından kullanılan bir kategori silinemez.
+Category Edit	CategoryEditWindow		Kategori düzenle
+Confirm delete	CategoryEditWindow		Silmeyi onayla
+Default	CategoryEditWindow		Öntanımlı
+Delete	CategoryEditWindow		Sil
+Error	CategoryEditWindow		Hata
+New category	CategoryEditWindow		Yeni kategori
+OK	CategoryEditWindow		Tamam
+Save	CategoryEditWindow		Kaydet
+The name must have a length greater than 2.	CategoryEditWindow		Ad en az 3 karakterden oluşmalıdır.
+You cannot delete the default category.	CategoryEditWindow		Öntanımlı kategori silinemez.
+Birthday	SQLiteManager		Doğum günü
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Veritabanı açılamadı (%code%). Kayıtlı olaylarınız yüklenemeyecek.
+Default	SQLiteManager		Öntanımlı
+OK	SQLiteManager		Tamam
+SQLITE ERROR	SQLiteManager		SQLITE HATASI
+There was an SQLite error (%code%).	SQLiteManager		Bir SQLite hatası oluştu (%code%).
+Calendar	System name		Takvim
+Configuration file	Preferences		Yapılandırma dosyası
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Yapılandırma dosyası açılamadı, çünkü gerekli izin yok. Bu genelde ayarlar dizininize yazma izninizin olmadığı anlamına gelir. Kendi kişisel ayarlarınızı yüklemek isterseniz işletim sistemi yardım belgelerine bakıp ayarlar dizininin hangisi olduğunu öğrenin ve izinlerini denetleyin.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Yapılandırma dosyası açılamadı, çünkü yolu belirtilmemiş. Bu genelde programcının bir hata yaptığı anlamına gelir. Sizin bunun hakkında yapabileceğiniz pek bir şey yok. Kişisel ayarlarınız yüklenemeyecek. Kusura bakmayın.
+OK	Preferences		Tamam
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		Yapılandırma dosyasını yüklemek için sistemde yeterli bellek yok. Kendi kişisel ayarlarınızı yüklemek isterseniz birkaç uygulamayı kapatın ve Takvim'i yeniden başlatın.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		Yapılandırma dosyasını kaydetmek için sistemde yeterli bellek yok. Kendi kişisel ayarlarınızı kaydetmek isterseniz birkaç uygulamayı kapatın ve yeniden deneyin.
+Delete	EventListView		Sil
+Edit	EventListView		Düzenle
+You don't have any events on this day!	EventListView		Herhangi bir etkinlik yok!
+Error	GoogleEventSyncWindow		Hata
+Failed	GoogleEventSyncWindow		Başarısız
+Google Calendar Sync	GoogleEventSyncWindow		Google Takvim Eşzamanlama
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Son Eşzamanlama: %status%/%time%.
+No Data Available	GoogleEventSyncWindow		Veri yok
+OK	GoogleEventSyncWindow		Tamam
+Please wait while we sync...	GoogleEventSyncWindow		Eşzamanlanırken lütfen bekleyin...
+Success	GoogleEventSyncWindow		Başarılı
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Son eşzamanlama verisi yüklenirken bir hata oluştu.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Son eşzamanlama verisi kaydedilirken bir hata oluştu.

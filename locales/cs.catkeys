@@ -1,0 +1,117 @@
+1	Czech	application/x-vnd.Calendar	3957779383
+%event% is starting at %time%.	NotificationLoop		%event% začíná v %time%.
+Reminder	NotificationLoop		Upomínka
+A native Calendar application for Haiku.	App		Kalendář Haiku.
+About	MainWindow		O aplikaci
+Add event	MainWindow		Přidat událost
+Agenda	MainWindow		Agenda
+Agenda view	MainWindow		Agenda
+App	MainWindow		Aplikace
+Category	MainWindow		Kategorie
+Day	MainWindow		Den
+Day view	MainWindow		Den
+Edit categories	MainWindow		Upravit
+Edit event	MainWindow		Upravit
+Event	MainWindow		Událost
+Go to today	MainWindow		Přejít na dnešek
+Google Calendar	MainWindow		Googlí kalendář
+Preferences	MainWindow		Možnosti
+Quit	MainWindow		Ukončit
+Remove event	MainWindow		Odebrat
+Synchronize	MainWindow		Synchronizovat
+Today	MainWindow		Dnes
+View	MainWindow		Zobrazit
+Week	MainWindow		Týden
+Week view	MainWindow		Týden
+Add	CategoryWindow		Přidat
+Cancel	CategoryWindow		Zrušit
+Category manager	CategoryWindow		Upravit kategorie
+All day	DayView		Celý den
+All day, %startDay%	DayView		Celý den, %startDay%
+Are you sure you want to delete the selected event?	DayView		Opravdu smazat vybranou událost?
+Cancel	DayView		Zrušit
+Confirm delete	DayView		Potvrdit smazání
+Finished!	DayView		Hotovo!
+Now, %remaining% left	DayView		Ještě zbývá %remaining%
+OK	DayView		OK
+Starts in %remaining%	DayView		Začíná v %remaining%
+All day:	EventWindow		Celý den:
+Are you sure you want to delete this event?	EventWindow		Opravdu smazat tuto událost?
+Cancel	EventWindow		Zrušit
+Category:	EventWindow		Kategorie:
+Confirm delete	EventWindow		Potvrdit smazání
+Delete	EventWindow		Smazat
+Description:	EventWindow		Popis:
+End date	EventWindow		Datum konce
+End date and time	EventWindow		Konec
+End date:	EventWindow		Datum konce:
+End time:	EventWindow		Čas konce:
+Enter the time in HH:mm (24 hour) format.	EventWindow		Čas ve formátu HH:mm (24 hodinový).
+Error	EventWindow		Chyba
+Event manager	EventWindow		Úprava události
+Monthly	EventWindow		Měsíčně
+Name:	EventWindow		Název:
+OK	EventWindow		OK
+Place:	EventWindow		Místo:
+Recurrence	EventWindow		Opakování
+Sorry, you cannot create an event that ends before it starts.	EventWindow		Termín nemůže končit před jeho začátkem.
+Start date	EventWindow		Datum začátku
+Start date and time	EventWindow		Začátek
+Start date:	EventWindow		Datum začátku:
+Start time:	EventWindow		Čas začátku:
+The name must have a length greater than 2.	EventWindow		Jméno musí být delší než 2 znaky.
+There was some error in adding the event. Please try again.	EventWindow		Chyba přidání události. Zkuste to znovu.
+Yearly	EventWindow		Ročně
+Apply	PreferenceWindow		Použít
+First day of week	PreferenceWindow		První den v týdnu
+Friday	PreferenceWindow		Pátek
+Locale based	PreferenceWindow		Podle nastavení systému
+Monday	PreferenceWindow		Pondělí
+Preferences	PreferenceWindow		Možnosti
+Revert	PreferenceWindow		Vrátit
+Saturday	PreferenceWindow		Sobota
+Show week number in Calendar	PreferenceWindow		Zobrazit čísla týdnů
+Sunday	PreferenceWindow		Neděle
+Thursday	PreferenceWindow		Čtvrtek
+Tuesday	PreferenceWindow		Úterý
+Wednesday	PreferenceWindow		Středa
+Are you sure you want to delete the selected category?	CategoryEditWindow		Opravdu smazat vybranou kategorii?
+Cancel	CategoryEditWindow		Zrušit
+Cannot add/modify the category. A category with the same name or color already exists.	CategoryEditWindow		Nelze přidat či upravit kategorii. Kategorie se stejným názvem či zbarvením existuje.
+Cannot delete category. Can't delete a category used by events.	CategoryEditWindow		Kategorii nelze smazat, protože je využívána událostmi.
+Category Edit	CategoryEditWindow		Úprava kategorie
+Confirm delete	CategoryEditWindow		Potvrdit smazání
+Default	CategoryEditWindow		Výchozí
+Delete	CategoryEditWindow		Smazat
+Error	CategoryEditWindow		Chyba
+New category	CategoryEditWindow		Nová kategorie
+OK	CategoryEditWindow		OK
+Save	CategoryEditWindow		Uložit
+The name must have a length greater than 2.	CategoryEditWindow		Název musí být delší než 2 znaky.
+You cannot delete the default category.	CategoryEditWindow		Nelze smazat výchozí kategorii.
+Birthday	SQLiteManager		Narozky
+Cannot open database (%code%). Your saved events will not be loaded.	SQLiteManager		Die Datenbank konnte nicht geladen werden (%code%). Gespeicherte Termine werden nicht geladen.
+Default	SQLiteManager		Standardwerte
+OK	SQLiteManager		OK
+SQLITE ERROR	SQLiteManager		Chyba SQLITE
+There was an SQLite error (%code%).	SQLiteManager		Chyba databáze SQLite (%code%).
+Calendar	System name		Kalendář
+Configuration file	Preferences		Konfigurační soubor
+Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Nelze otevřít soubor s nastaveními z důvodu oprávnění. Většinou to znamená, že nemáte oprávnění číst z adresáře nastavení. Pokud chcete načíst vaše nastavení najděte v dokumentaci systému, která by to měla být složka a zkuste ji změnit oprávnění.
+Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Nelze otevřít soubor s nastaveními, protože není stanovena cesta. Většinou to znamená, že programátor udělal chybu. S tím se nedá nic moc dělat. Vaše osobní nastavení nebudou načtena.
+OK	Preferences		OK
+There is not enough memory available on your system to load the configuration file. If you want to have your personal settings loaded, try closing a few applications and restart Calendar.	Preferences		K načtení nastavení je málo paměti. Pokud chcete načíst nastavení, zkuste ukončit pár aplikací a znovu spustit kalendář.
+There is not enough memory available on your system to save the configuration file. If you want to have your personal settings saved, try closing a few applications and try again.	Preferences		K uložení nastavení je málo paměti. Pokud chcete uložit nastavení, zkuste ukončit pár aplikací a znovu uložit.
+Delete	EventListView		Smazat
+Edit	EventListView		Upravit
+You don't have any events on this day!	EventListView		Dnes nemáte žádné plány!
+Error	GoogleEventSyncWindow		Chyba
+Failed	GoogleEventSyncWindow		Selhalo
+Google Calendar Sync	GoogleEventSyncWindow		Synchronizace Googlího kalendáře
+Last Sync: %status% at %time%.	GoogleEventSyncWindow		Poslední synchronizace: %status% v %time%.
+No Data Available	GoogleEventSyncWindow		Žádná dostupná data
+OK	GoogleEventSyncWindow		OK
+Please wait while we sync...	GoogleEventSyncWindow		Synchronizuje se, čekejte...
+Success	GoogleEventSyncWindow		Úspěch
+There was an error in loading the last sync data.	GoogleEventSyncWindow		Chyba při načítání posledních dat.
+There was an error in saving the recent sync data.	GoogleEventSyncWindow		Chyba pri ukládání posledních dat.

@@ -63,7 +63,7 @@ The name must have a length greater than 2.	EventWindow		Der Name muss länger a
 There was some error in adding the event. Please try again.	EventWindow		Der Termin konnt nicht erstellt werden. Bitte nochmals probieren.
 Yearly	EventWindow		Jährlich
 Apply	PreferenceWindow		Anwenden
-First day of week	PreferenceWindow		Erster Tag der Woche
+First day of week	PreferenceWindow		Wochenbeginn
 Friday	PreferenceWindow		Freitag
 Locale based	PreferenceWindow		Haikus Spracheinstellungen verwenden
 Monday	PreferenceWindow		Montag
