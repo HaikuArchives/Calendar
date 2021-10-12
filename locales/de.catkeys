@@ -95,7 +95,7 @@ Default	SQLiteManager		Standardwerte
 OK	SQLiteManager		OK
 SQLITE ERROR	SQLiteManager		SQLITE ERROR
 There was an SQLite error (%code%).	SQLiteManager		Ein SQLite Fehler ist aufgetreten (%code%).
-Calendar	System name		Calendar
+Calendar	System name		Kalender
 Configuration file	Preferences		Konfigurationsdatei
 Couldn't open configuration file because permission was denied. It usually means that you don't have read permissions to your settings directory. If you want to have your personal settings loaded, check your OS documentation to find out which directory it is and try changing its permissions.	Preferences		Die Konfigurationsdatei konnte nicht geladen werden, da der Zugriff verweigert wurde. Normalerweise bedeutet das, dass keine Leserechte auf den Einstellungsordner bestehen. Wenn die persönlichen Einstellungen geladen werden sollen, bitte die Haiku Dokumentation zu Rate ziehen, um zu erfahren welcher Ordner betroffen ist und wie die Zugriffsrechte geändert werden müssen.
 Couldn't open configuration file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Your personal settings will not be loaded. Sorry.	Preferences		Die Konfigurationsdatei konnte nicht geladen werden, da kein Pfad angegeben wurde. Normalerweise bedeutet das, dass der Programmierer einen Fehler gemacht hat. Der Benutzer ist da machtlos. Die persönlichen Einstellungen können leider nicht geladen werden.

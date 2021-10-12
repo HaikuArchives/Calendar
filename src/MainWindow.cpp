@@ -256,14 +256,19 @@ MainWindow::_InitInterface()
 
 	fMenuBar = new BMenuBar("MenuBar");
 
-	fAppMenu = new BMenu(B_TRANSLATE("App"));
+	fAppMenu = new BMenu(B_TRANSLATE("File"));
 	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"), new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Preferences"), new BMessage(kMenuAppPref)));
-	fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
-	fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
-	fAppMenu->AddItem(fSyncMenu);
+	//
+	// Google Calendar support is broken.  It should be replaced with a generic solution to
+	// be able to sync with various calendars.  Leaving this here for now to give future
+	// developer a place to start.
+	//
+	//fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
+	//fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
+	//fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
