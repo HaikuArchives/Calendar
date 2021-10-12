@@ -66,7 +66,12 @@ void
 App::AboutRequested()
 {
 	const char* authors[] = {
-		"Fredrik Modéen.",
+		"Akshay Agarwal",
+		"humdinger",
+		"Jaidyn Levesque",
+		"malbx",
+		"Fredrik Modéen",
+		"Bach Nguyen",
 		NULL
 	};
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
