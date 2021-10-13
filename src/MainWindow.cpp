@@ -256,7 +256,7 @@ MainWindow::_InitInterface()
 
 	fMenuBar = new BMenuBar("MenuBar");
 
-	fAppMenu = new BMenu(B_TRANSLATE("File"));
+	fAppMenu = new BMenu(B_TRANSLATE("App"));
 	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"), new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
