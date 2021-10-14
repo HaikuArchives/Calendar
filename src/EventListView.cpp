@@ -124,11 +124,14 @@ EventListView::MessageReceived(BMessage* message)
 		}
 
 		case kDeleteActionInvoked:
+		case kCancelActionInvoked:
 		{
 			fShowingPopUpMenu = false;
 			BView* view = Window()->FindView("DayView");
 			BMessenger msgr(view);
 			BMessage msg(kDeleteEventMessage);
+			if (message->what == kCancelActionInvoked)
+				msg.what = kCancelEventMessage;
 			msgr.SendMessage(&msg);
 			break;
 		}
@@ -212,6 +215,9 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Delete"),
 			new BMessage(kDeleteActionInvoked), 'D');
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Cancel"),
+			new BMessage(kCancelActionInvoked));
 	menu->AddItem(item);
 
 	if (!fPopUpMenuEnabled) {

@@ -351,7 +351,7 @@ void
 EventWindow::OnDeleteClick()
 {
 	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
-		B_TRANSLATE("Are you sure you want to delete this event?"),
+		B_TRANSLATE("Are you sure you want to move this event to Trash?"),
 		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
@@ -359,7 +359,7 @@ EventWindow::OnDeleteClick()
 
 	if (button_index == 0) {
 		Event newEvent(*fEvent);
-		newEvent.SetStatus(false);
+		newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
 		newEvent.SetUpdated(time(NULL));
 		fDBManager->UpdateEvent(fEvent, &newEvent);
 		CloseWindow();

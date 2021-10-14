@@ -16,7 +16,7 @@
 class EventListItem: public BListItem {
 public:
 				EventListItem(BString name, BString timeText,
-					rgb_color color);
+					rgb_color color, uint16 font_face = -1);
 				~EventListItem();
 
 	virtual void		DrawItem(BView*, BRect, bool);
@@ -28,6 +28,7 @@ private:
 	BString			fName;
 	BString			fTimeText;
 	rgb_color		fColor;
+	uint16			fFace;
 };
 
 #endif // EVENTLLISTITEM_H

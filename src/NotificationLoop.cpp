@@ -37,7 +37,9 @@ NotificationLoop(void* data)
 			event = ((Event*)events->ItemAt(i));
 			startTime = "";
 			notificationContent = B_TRANSLATE("%event% is starting at %time%.");
-			if (!event->IsNotified()) {
+			if (!(event->GetStatus() & EVENT_NOTIFIED)
+				&& !(event->GetStatus() & EVENT_CANCELLED))
+			{
 				BTimeFormat().Format(startTime, event->GetStartDateTime(),
 					B_SHORT_TIME_FORMAT);
 				notificationContent.ReplaceAll("%event%", event->GetName());
