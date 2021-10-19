@@ -24,9 +24,9 @@ HexToRGB(const BString& color)
 {
 	const char* hexColor = color.String();
     int rgb = (int)strtol(hexColor, NULL, 16);
-	int r = rgb >> 16;
-	int g = rgb >> 8 & 0xFF;
-	int b = rgb & 0xFF;
+	uint8 r = rgb >> 16;
+	uint8 g = rgb >> 8 & 0xFF;
+	uint8 b = rgb & 0xFF;
 
 	return (rgb_color){r, g, b};
 }
