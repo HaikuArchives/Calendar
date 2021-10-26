@@ -350,7 +350,7 @@ EventSync::ParseEvent(BMessage* eventJson)
 		time_t endDateTime;
 		time_t updated;
 
-		bool status;
+		uint16 status = 0;
 		bool notified;
 
 		event.FindString("id", &id);
@@ -358,12 +358,12 @@ EventSync::ParseEvent(BMessage* eventJson)
 
 		if (eventStatus == BString(kEventStatusToGCalStatus[kConfirmedEvent])
 			|| eventStatus == BString(kEventStatusToGCalStatus[kTentativeEvent])) {
-			status = kConfirmedEvent;
+			status = 0;
 		}
 		else if (eventStatus == BString(kEventStatusToGCalStatus[kCancelledEvent]))
-			status = kCancelledEvent;
+			status |= EVENT_DELETED;
 
-		if (status == kCancelledEvent) {
+		if (status & EVENT_DELETED) {
 			fCancelledEvents->Add(BString(id));
 			continue;
 		}
@@ -429,8 +429,7 @@ EventSync::ParseEvent(BMessage* eventJson)
 		Category* newCategory = new Category(*category);
 
 		Event* newEvent = new Event(name, place, description, allDay,
-			startDateTime, endDateTime, newCategory, notified, updated,
-			status, id);
+			startDateTime, endDateTime, newCategory, updated, status, id);
 
 		fEvents->AddItem(newEvent);
 	}
@@ -519,8 +518,6 @@ EventSync::SyncWithDatabase()
 				return B_ERROR;
 		}
 	}
-
-	fDBManager->RemoveCancelledEvents();
 
 	return B_OK;
 }

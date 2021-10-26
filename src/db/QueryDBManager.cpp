@@ -1,4 +1,5 @@
 /*
+ * Copyright 2020-2021 Jaidyn Levesque, <jadedctrl@tekik.io>
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
@@ -32,7 +33,6 @@
 #define B_TRANSLATION_CONTEXT "QueryDBManager"
 
 const char* kEventDir		= "events";
-const char* kCancelledDir	= "cancelled";
 const char* kCategoryDir	= "categories";
 
 
@@ -51,42 +51,14 @@ QueryDBManager::~QueryDBManager()
 void
 QueryDBManager::_Initialize()
 {
-	BPath rootPath;
-	BPath eventPath;
-	BPath cancelledPath;
-	BPath categoryPath;
-	BPath settingsPath;
-	BPath sqlPath;
+	fEventDir = _EnsureDirectory(_SettingsPath(kEventDir));
+	fCategoryDir = _EnsureDirectory(_SettingsPath(kCategoryDir));
 
-	find_directory(B_USER_SETTINGS_DIRECTORY, &rootPath);
-	rootPath.Append(kDirectoryName);
-
-	// Event directory
-	eventPath = BPath(rootPath);
-	eventPath.Append(kEventDir);
-	BDirectory* eventDir = new BDirectory(eventPath.Path());
-	fEventDir = eventDir;
-	if (fEventDir->InitCheck() == B_ENTRY_NOT_FOUND) {
-		fEventDir->CreateDirectory(eventPath.Path(), fEventDir);
-	}
-
-	// Cancelled directory
-	cancelledPath = BPath(rootPath);
-	cancelledPath.Append(kCancelledDir);
-	BDirectory* cancelledDir = new BDirectory(cancelledPath.Path());
-	fCancelledDir = cancelledDir;
-	if (fCancelledDir->InitCheck() == B_ENTRY_NOT_FOUND) {
-		fCancelledDir->CreateDirectory(cancelledPath.Path(), fCancelledDir);
-	}
-
-	// Category directory
-	categoryPath = BPath(rootPath);
-	categoryPath.Append(kCategoryDir);
-	BDirectory* categoryDir = new BDirectory(categoryPath.Path());
-	fCategoryDir = categoryDir;
-	if (fCategoryDir->InitCheck() == B_ENTRY_NOT_FOUND) {
-		fCategoryDir->CreateDirectory(categoryPath.Path(), fCategoryDir);
-	}
+	// Trash directory
+	BPath trashPath;
+	find_directory(B_TRASH_DIRECTORY, &trashPath);
+	BDirectory* trashDir = new BDirectory(trashPath.Path());
+	fTrashDir = trashDir;
 
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
@@ -106,10 +78,14 @@ QueryDBManager::_Initialize()
 	}
 
 	// Migrate from SQL, if necessary
-	sqlPath = BPath(rootPath);
-	sqlPath.Append(kDatabaseName);
+	BPath sqlPath = _SettingsPath(kDatabaseName);
 	if (BEntry(sqlPath.Path()).Exists())
 		_ImportFromSQL(sqlPath);
+
+	// Migrate pre-"Cancel/Delete"-dichtonomy events
+	BPath cancelPath = _SettingsPath("cancelled");
+	if (BEntry(cancelPath.Path()).Exists())
+		_MigrateCancellations(cancelPath);
 }
 
 
@@ -123,9 +99,6 @@ QueryDBManager::AddEvent(Event* event)
 
 	BDirectory* parentDir = fEventDir;
 	BFile evFile;
-	if (!event->GetStatus())
-		parentDir = fCancelledDir;
-
 	status_t result = _CreateUniqueFile(parentDir, event->GetName(), &evFile);
 
 	if (_EventStatusSwitch(result) != B_OK)
@@ -141,9 +114,17 @@ QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 	entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
 	BFile evFile = BFile(&ref, B_READ_WRITE);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
-		return NULL;
+		return false;
 
-	return _EventToFile(newEvent, &evFile);
+	bool ret = _EventToFile(newEvent, &evFile);
+
+	// If event is deleted (with sync), save the deletion for later sync.
+	// Otherwise, toss it in the bin.
+	if ((newEvent->GetStatus() & EVENT_DELETED)
+		&& (!(event->GetStatus() & EVENT_DELETED)))
+		return RemoveEvent(ref);
+
+	return ret;
 }
 
 
@@ -156,8 +137,7 @@ QueryDBManager::UpdateNotifiedEvent(const char* id)
 		return NULL;
 
 	Event* event = _FileToEvent(&evFile);
-
-	event->SetNotified(true);
+	event->SetStatus(event->GetStatus() | EVENT_NOTIFIED);
 	return _EventToFile(event, &evFile);
 }
 
@@ -171,35 +151,27 @@ QueryDBManager::RemoveEvent(Event* event)
 
 
 bool
-QueryDBManager::RemoveEvent(entry_ref eventRef)
+QueryDBManager::RemoveEvent(entry_ref eventRef, const char* restorePath)
 {
-	status_t result = BEntry(&eventRef).Remove();
-	if (_EventStatusSwitch(result) == B_OK)
+	BNode node(&eventRef);
+	BString path = restorePath;
+	if (restorePath == NULL)
+		path = BPath(&eventRef).Path();
+	node.WriteAttrString("_trk/original_path", &path);
+
+	char leafName[B_FILE_NAME_LENGTH] = {'\0'};
+	BEntry entry(&eventRef);
+	entry.GetName(leafName);
+	BString leaf = _UniqueFilename(fTrashDir, leafName);
+
+	BEntry trashEnt;
+	fTrashDir->GetEntry(&trashEnt);
+	printf("Trashing event %s to %s/%s…\n",
+			path.String(), BPath(&trashEnt).Path(), leaf.String());
+
+	if (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
 		return true;
 	return false;
-}
-
-
-bool
-QueryDBManager::RemoveCancelledEvents()
-{
-	BQuery query;
-	query.SetVolume(&fQueryVolume);
-
-	query.PushAttr("Event:Status");
-	query.PushString("Cancelled");
-	query.PushOp(B_EQ);
-
-	query.Fetch();
-	entry_ref ref;
-
-	Event* event;
-
-	while (query.GetNextRef(&ref) == B_OK) {
-		RemoveEvent(ref);
-	}
-
-	return true;
 }
 
 
@@ -219,7 +191,6 @@ Event*
 QueryDBManager::GetEvent(const char* name, time_t startTime)
 {
 	entry_ref ref = _GetEventRef(name, startTime);
-
 	return GetEvent(ref);
 }
 
@@ -280,6 +251,8 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
+		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
+			continue;
 		evFile = BFile(&ref, B_READ_WRITE);
 		event = _FileToEvent(&evFile);
 		events->AddItem(event);
@@ -304,7 +277,7 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 
 	query.PushAttr("Event:Status");
 	query.PushString("Unnotified");
-	query.PushOp(B_EQ);
+	query.PushOp(B_CONTAINS);
 	query.PushOp(B_AND);
 
 	query.Fetch();
@@ -314,6 +287,8 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
+		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
+			continue;
 		evFile = BFile(&ref, B_READ_WRITE);
 		event = _FileToEvent(&evFile);
 		events->AddItem(event);
@@ -417,6 +392,8 @@ QueryDBManager::GetAllCategories()
 	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
 
 	while (query.GetNextRef(&ref) == B_OK) {
+		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
+			continue;
 		catFile = BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(&catFile);
 
@@ -470,12 +447,19 @@ QueryDBManager::_GetEventRef(const char* name, time_t startDate)
 	query.PushOp(B_EQ);
 	query.PushOp(B_AND);
 
-	entry_ref ref;
+	query.Fetch();
 
-	if (query.Fetch() == B_OK)
+	entry_ref ref;
+	entry_ref finalRef;
+
+	while (query.GetNextRef(&ref) == B_OK) {
 		query.GetNextRef(&ref);
 
-	return ref;
+		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
+			continue;
+		finalRef = ref;
+	}
+	return finalRef;
 }
 
 
@@ -513,11 +497,6 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 	query.PushOp(B_LE);
 	query.PushOp(B_AND);
 
-	query.PushAttr("Event:Status");
-	query.PushString("Cancelled");
-	query.PushOp(B_NE);
-	query.PushOp(B_AND);
-
 	query.Fetch();
 	entry_ref ref;
 
@@ -525,6 +504,8 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
+		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
+			continue;
 		evFile = BFile(&ref, B_READ_WRITE);
 		event = _FileToEvent(&evFile);
 		events->AddItem(event);
@@ -583,13 +564,13 @@ QueryDBManager::_FileToEvent(BFile* file)
 	BString idStr = BString();
 	BString desc  = BString();
 	BString place = BString();
-	BString status = BString();
+	BString statusStr = BString();
 	file->ReadAttrString("Event:Name", &name);
 	file->ReadAttrString("Event:Category", &catName);
 	file->ReadAttrString("Calendar:ID", &idStr);
 	file->ReadAttrString("Event:Description", &desc);
 	file->ReadAttrString("Event:Place", &place);
-	file->ReadAttrString("Event:Status", &status);
+	file->ReadAttrString("Event:Status", &statusStr);
 
 	time_t start	= time(NULL);
 	time_t end		= time(NULL);
@@ -605,13 +586,15 @@ QueryDBManager::_FileToEvent(BFile* file)
 		&& dayEnd <= end && end <= dayEnd + 59)
 		allDay = true;
 
-	bool isNotified = false;
-	if (status == BString("Notified"))
-		isNotified = true;
+	uint16 status = 0;
+	if (statusStr.FindFirst("Notified") >= 0)
+		status |= EVENT_NOTIFIED;
+	if (statusStr.FindFirst("Cancelled") >= 0)
+		status |= EVENT_CANCELLED;
 
 	return new Event(name.String(), place.String(), desc.String(), allDay,
-					start, end, EnsureCategory(catName.String()), isNotified,
-					updated, true, idStr.String());
+					start, end, EnsureCategory(catName.String()), updated,
+					status, idStr.String());
 }
 
 
@@ -653,14 +636,16 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 	if (_EventStatusSwitch(file->InitCheck()) != B_OK)
 		return false;
 
-	BString status = BString("Unnotified");
-	if (!event->GetStatus()) {
-		status = BString("Cancelled");
-		entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
-		BEntry entry = BEntry(&ref);
-		entry.MoveTo(fCancelledDir);
-	} else if (event->IsNotified())
-		status = BString("Notified");
+	BString status;
+	if (event->GetStatus() & EVENT_NOTIFIED)
+		status << "Notified";
+	else
+		status << "Unnotified";
+	if (event->GetStatus() & EVENT_CANCELLED) {
+		if (status.IsEmpty() == false)
+			status << ", ";
+		status << "Cancelled";
+	}
 
 	file->WriteAttr("Event:Status", B_STRING_TYPE, 0, status.String(),
 						status.CountChars() + 1);
@@ -768,7 +753,6 @@ QueryDBManager::_CategoryStatusSwitch(status_t result)
 			break;
 		}
 	}
-
 	return result;
 }
 
@@ -813,7 +797,32 @@ QueryDBManager::_EventStatusSwitch(status_t result)
 			break;
 		}
 	}
+	return result;
+}
 
+
+status_t
+QueryDBManager::_TrashStatusSwitch(status_t result)
+{
+	if (result == B_ENTRY_NOT_FOUND) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
+			B_TRANSLATE("Couldn't move the event to trash― it seems that the event "
+			"couldn't be found or doesn't exist. You might want to "
+			"use a Tracker query to find this event and manually "
+			"delete it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
+	else if (result != B_OK) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
+			B_TRANSLATE("Couldn't move the event to Trash― you might want "
+			"use a Tracker query to find this event and manually "
+			"delete it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
 	return result;
 }
 
@@ -930,17 +939,46 @@ QueryDBManager::_ImportFromSQL(BPath dbPath)
 }
 
 
-// Create a file with name similar to the given one. If a file of the given
-// name already exists, then add a unique number to the end of it.
-status_t
-QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name,
-								BFile* newFile)
+// "Cancelled" was previously synonymous with "Deleted"― so on first run after
+// this change, all events with their status solely as "Cancelled" will be
+// moved to Trash.
+void
+QueryDBManager::_MigrateCancellations(BPath cancelPath)
 {
-	if (dir->Contains(name.String())) {
+	BNode evNode;
+	entry_ref ref;
+	BDirectory cancelDir(cancelPath.Path());
+	BString newStatus = "Unnotified";
+
+	while (cancelDir.GetNextRef(&ref) == B_OK) {
+		evNode.SetTo(&ref);
+		if (evNode.InitCheck() == B_OK)
+			evNode.WriteAttrString("Event:Status", &newStatus);
+		BPath restorePath = _SettingsPath("events/");
+		restorePath.Append(ref.name);
+		RemoveEvent(ref, restorePath.Path());
+	}
+	BEntry(cancelPath.Path()).Remove();
+}
+
+
+status_t
+QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name, BFile* newFile)
+{
+	return dir->CreateFile(_UniqueFilename(dir, name).String(), newFile, true);
+}
+
+
+// Return a unique leaf-name similar to the given one. If a file of the given
+// leaf already exists, then add a unique number to the end of it.
+BString
+QueryDBManager::_UniqueFilename(BDirectory* dir, BString leaf)
+{
+	if (dir->Contains(leaf.String())) {
 		int suffix = 1;
 		char suffixStr[3];
 		BStringList sections = BStringList();
-		bool result = name.Split(" - ", true, sections);
+		bool result = leaf.Split(" - ", true, sections);
 
 		if (result && sections.CountStrings() > 1) {
 			sscanf(sections.Last().String(), "%u", &suffix);
@@ -948,18 +986,35 @@ QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name,
 				suffix++;
 
 			sections.Remove(sections.CountStrings() - 1);
-			name = sections.Join(" - ");
+			leaf = sections.Join(" - ");
 		}
 
 		sprintf(suffixStr, "%u", suffix);
-		name += " - ";
-		name += suffixStr;
+		leaf += " - ";
+		leaf += suffixStr;
 
-		return _CreateUniqueFile(dir, name, newFile);
+		return _UniqueFilename(dir, leaf);
 	}	
-
-	dir->CreateFile(name.String(), newFile, true);
-	return B_OK;
+	return leaf;
 }
 
 
+BPath
+QueryDBManager::_SettingsPath(const char* leaf)
+{
+	BPath path;
+	find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	path.Append(kDirectoryName);
+	path.Append(leaf);
+	return path;
+}
+
+
+BDirectory*
+QueryDBManager::_EnsureDirectory(BPath path)
+{
+	BDirectory* dir = new BDirectory(path.Path());
+	if (dir->InitCheck() == B_ENTRY_NOT_FOUND)
+		dir->CreateDirectory(path.Path(), dir);
+	return dir;
+}

@@ -18,11 +18,12 @@ class QueryDBManager;
 
 const uint32 kEditEventMessage = 'ksem';
 const uint32 kDeleteEventMessage = 'kdem';
+const uint32 kCancelEventMessage = 'kcem';
 const uint32 kLaunchEventManagerToModify = 'klem';
 
-static const int 	kDayView 		= 1005;
-static const int 	kWeekView		= 1006;
-static const int 	kAgendaView		= 1007;
+static const int 	kDayView 		= 1006;
+static const int 	kWeekView		= 1007;
+static const int 	kAgendaView		= 1008;
 
 class DayView: public BView {
 public:

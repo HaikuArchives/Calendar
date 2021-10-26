@@ -128,7 +128,7 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 	BString desc("");
 	BString place("");
 	BString uid("");
-	bool status = true;
+	uint16 status = 0;
 	bool allDay = false;
 	BDateTime start = BDateTime();
 	BDateTime end = BDateTime();
@@ -156,7 +156,7 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 		else if (propName == "location")
 			place = propValue;
 		else if (propName == "status" && propValue.ToLower() == "cancelled")
-			status = false;
+			status |= EVENT_CANCELLED;
 		else if (propName == "uid")
 			uid = propValue;
 
@@ -206,7 +206,7 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 
 	delete properties;
 	return new Event(name.String(), place.String(), desc.String(), allDay,
-		start.Time_t(), end.Time_t(), category, false, updated.Time_t(), status,
+		start.Time_t(), end.Time_t(), category, updated.Time_t(), status,
 		uid.String());
 }
 

@@ -132,8 +132,8 @@ SQLiteManager::AddEvent(Event* event)
 	}
 
 	int allday = (event->IsAllDay())? 1 : 0;
-	int notified = (event->IsNotified())? 1 : 0;
-	int status = (event->GetStatus())? 1 : 0;
+	int notified = (event->GetStatus() & EVENT_NOTIFIED)? 1 : 0;
+	int status = (event->GetStatus() & EVENT_DELETED)? 0 : 1;
 
 	sqlite3_bind_text(stmt, 1, event->GetId(), strlen(event->GetId()), 0);
 	sqlite3_bind_text(stmt, 2, event->GetName(), strlen(event->GetName()), 0);
@@ -182,8 +182,8 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 	}
 
 	int allday = (newEvent->IsAllDay())? 1 : 0;
-	int notified = (newEvent->IsNotified())? 1 : 0;
-	int status = (newEvent->GetStatus())? 1 : 0;
+	int notified = (newEvent->GetStatus() & EVENT_NOTIFIED)? 1 : 0;
+	int status = (newEvent->GetStatus() & EVENT_DELETED)? 0 : 1;
 
 	sqlite3_bind_text(stmt, 1, newEvent->GetName(), strlen(newEvent->GetName()), 0);
 	sqlite3_bind_text(stmt, 2, newEvent->GetPlace(), strlen(newEvent->GetPlace()), 0);
@@ -318,11 +318,15 @@ SQLiteManager::GetEvent(const char* id)
 			return NULL;
 		}
 
-		bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
-		bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
+		uint16 status = 0;
+		if (!((int)sqlite3_column_int(stmt, 10)))
+			status |= EVENT_DELETED;
+		if ((int)sqlite3_column_int(stmt, 8))
+			status |= EVENT_NOTIFIED;
+
 		Event* event = new Event(name, place, description, allday,
-		start, end, category, notified, updated, status, uuid);
+			start, end, category, updated, status, uuid);
 
 		sqlite3_finalize(stmt);
 		return event;
@@ -370,12 +374,15 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 			continue;
 		}
 
-		bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
-		bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
-		Event* event = new Event(name, place, description, allday,
-		start, end, category, notified, updated, status, id);
+		uint16 status = 0;
+		if ((int)sqlite3_column_int(stmt, 8))
+			status |= EVENT_NOTIFIED;
+		if (!((int)sqlite3_column_int(stmt, 10)))
+			status |= EVENT_DELETED;
 
+		Event* event = new Event(name, place, description, allday,
+			start, end, category, updated, status, id);
 		events->AddItem(event);
 	}
 
@@ -424,12 +431,15 @@ SQLiteManager::GetEventsOfWeek(BDate date)
 			continue;
 		}
 
-		bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
-		bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
-		Event* event = new Event(name, place, description, allday,
-		start, end, category, notified, updated, status, id);
+		uint16 status = 0;
+		if ((int)sqlite3_column_int(stmt, 8))
+			status |= EVENT_NOTIFIED;
+		if (!((int)sqlite3_column_int(stmt, 10)))
+			status |= EVENT_DELETED;
 
+		Event* event = new Event(name, place, description, allday,
+			start, end, category, updated, status, id);
 		events->AddItem(event);
 	}
 
@@ -473,13 +483,15 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 			continue;
 		}
 
-		bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
-		bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
+		uint16 status = 0;
+		if ((int)sqlite3_column_int(stmt, 8))
+			status |= EVENT_NOTIFIED;
+		if (!((int)sqlite3_column_int(stmt, 10)))
+			status |= EVENT_DELETED;
 
 		Event* event = new Event(name, place, description, allday,
-		start, end, category, notified, updated, status, id);
-
+			start, end, category, updated, status, id);
 		events->AddItem(event);
 	}
 
@@ -517,12 +529,15 @@ SQLiteManager::GetAllEvents()
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 		} else {
-			bool notified = ((int)sqlite3_column_int(stmt, 8))? true : false;
 			time_t updated = (time_t)sqlite3_column_int(stmt, 9);
-			bool status = ((int)sqlite3_column_int(stmt, 10))? true : false;
-			Event* event = new Event(name, place, description, allday,
-			start, end, category, notified, updated, status, uuid);
+			uint16 status = 0;
+			if ((int)sqlite3_column_int(stmt, 8))
+				status |= EVENT_NOTIFIED;
+			if (!((int)sqlite3_column_int(stmt, 10)))
+				status |= EVENT_DELETED;
 
+			Event* event = new Event(name, place, description, allday,
+				start, end, category, updated, status, uuid);
 			events->AddItem(event);
 		}
 	}

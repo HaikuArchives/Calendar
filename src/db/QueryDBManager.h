@@ -1,4 +1,5 @@
 /*
+ * Copyright 2020-2021 Jaidyn Levesque, <jadedctrl@tekik.io>
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 #ifndef _QDB_MANAGER_H_
@@ -18,7 +19,6 @@ class Event;
 
 extern const char* kDirectoryName;
 extern const char* kEventDir;
-extern const char* kCancelledDir;
 extern const char* kCategoryDir;
 extern const char* kDatabaseName;
 
@@ -40,8 +40,8 @@ public:
 		BList*		GetEventsOfCategory(Category* category);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
-		bool		RemoveEvent(entry_ref eventRef);
-		bool		RemoveCancelledEvents();
+		bool		RemoveEvent(entry_ref eventRef,
+						const char* restorePath = NULL);
 
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,
@@ -54,7 +54,6 @@ public:
 		bool		RemoveCategory(entry_ref categoryRef);
 
 private:
-
 	void			_Initialize();
 
 	entry_ref		_GetEventRef(const char* name, time_t startDate);
@@ -72,8 +71,10 @@ private:
 
 	status_t		_CategoryStatusSwitch(status_t);
 	status_t		_EventStatusSwitch(status_t);
+	status_t		_TrashStatusSwitch(status_t);
 
 	void			_ImportFromSQL(BPath dbPath);
+	void			_MigrateCancellations(BPath cancelPath);
 
 	bool			_CategoryMimetype();
 	bool			_EventMimetype();
@@ -82,12 +83,16 @@ private:
 	void			_AddAttribute(BMessage& msg, const char* name,
 								const char* publicName, int32 type,
 								bool viewable, int32 width);
-	status_t		_CreateUniqueFile(BDirectory*, BString, BFile*);
+	status_t		_CreateUniqueFile(BDirectory* dir, BString leaf,
+								BFile* newFile);
+	BString			_UniqueFilename(BDirectory* dir, BString leaf);
+	BPath			_SettingsPath(const char* leaf);
+	BDirectory*		_EnsureDirectory(BPath path);
 
 
 	BDirectory*		fEventDir;
-	BDirectory*		fCancelledDir;
 	BDirectory*		fCategoryDir;
+	BDirectory*		fTrashDir;
 	BVolume			fQueryVolume;
 };
 #endif // _QDB_MANAGER_H_

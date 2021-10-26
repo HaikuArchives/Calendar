@@ -12,15 +12,14 @@
 Event::Event(const char* name,
 	const char* place, const char* description,
 	bool allday, time_t start, time_t end,
-	Category* category, bool notified,
-	time_t updated /*=time(NULL)*/, bool status /*= false*/,
+	Category* category,
+	time_t updated /*=time(NULL)*/, uint16 status /*= 0 */,
 	const char* id /*= NULL*/)
 {
 	fName = name;
 	fPlace = place;
 	fDescription = description;
 	fAllDay = allday;
-	fNotified = notified;
 	fStart = start;
 	fEnd = end;
 	fUpdated = updated;
@@ -45,7 +44,6 @@ Event::Event(Event& event)
 	fCategory = event.GetCategory();
 	fDescription = event.GetDescription();
 	fAllDay = event.IsAllDay();
-	fNotified = event.IsNotified();
 	fStart = event.GetStartDateTime();
 	fEnd = event.GetEndDateTime();
 	fUpdated = event.GetUpdated();
@@ -151,22 +149,7 @@ Event::IsAllDay()
 }
 
 
-void
-Event::SetNotified(bool notified)
-{
-	fNotified = notified;
-}
-
-
-bool
-Event::IsNotified()
-{
-	return fNotified;
-}
-
-
-
-bool
+uint16
 Event::GetStatus()
 {
 	return fStatus;
@@ -174,7 +157,7 @@ Event::GetStatus()
 
 
 void
-Event::SetStatus(bool status)
+Event::SetStatus(uint16 status)
 {
 	fStatus = status;
 }

@@ -97,6 +97,13 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 		}
 
+		case kMenuEventCancel:
+		{
+			BMessage msg(kCancelEventMessage);
+			fDayView->MessageReceived(&msg);
+			break;
+		}
+
 		case kWeekView:
 		case kDayView:
 		{
@@ -276,6 +283,7 @@ MainWindow::_InitInterface()
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Add event"), new BMessage(kAddEvent)));
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kMenuEventEdit)));
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kMenuEventDelete)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Cancel event"), new BMessage(kMenuEventCancel)));
 
 	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
 	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage categories" B_UTF8_ELLIPSIS),

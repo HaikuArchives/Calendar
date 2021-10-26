@@ -12,13 +12,15 @@
 #include "EventListItem.h"
 
 
-EventListItem::EventListItem(BString name, BString timeText, rgb_color color)
+EventListItem::EventListItem(BString name, BString timeText, rgb_color color,
+	uint16 font_face)
 	:
 	BListItem()
 {
 	fName = name;
 	fTimeText = timeText;
 	fColor = color;
+	fFace = font_face;
 }
 
 
@@ -96,6 +98,8 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 
 	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
+	if (fFace > -1)
+		namefont.SetFace(fFace);
 	view->SetFont(&namefont);
 
 	view->MovePenTo(offset, rect.top + ((rect.Height()

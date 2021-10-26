@@ -29,6 +29,7 @@ public:
 private:
 	static const int32 kEditActionInvoked	= 1000;
 	static const int32 kDeleteActionInvoked	= 1001;
+	static const int32 kCancelActionInvoked	= 1002;
 
 	void			_ShowPopUpMenu(BPoint screen);
 

@@ -12,14 +12,21 @@
 #include "Category.h"
 
 
+enum {
+	EVENT_NOTIFIED		= 1,
+	EVENT_CANCELLED		= 2,
+	EVENT_DELETED		= 4
+};
+
+
 class Event {
 public:
 
 			Event(const char* name, const char* place,
 				const char* description, bool allday,
 				time_t start, time_t end,
-				Category* category, bool notified,
-				time_t updated = time(NULL), bool status = true,
+				Category* category,
+				time_t updated = time(NULL), uint16 status = 0,
 				const char* id = NULL);
 			Event(Event& event);
 
@@ -43,20 +50,15 @@ public:
 	bool		IsAllDay();
 	void		SetAllDay(bool allday);
 
-	bool		GetStatus();
-	void		SetStatus(bool status);
+	uint16		GetStatus();
+	void		SetStatus(uint16 status);
 
 	time_t		GetUpdated();
 	void		SetUpdated(time_t updated);
 
-
-	bool		IsNotified();
-	void		SetNotified(bool notified);
-
 	bool 		Equals(Event& e);
 
 private:
-
 	BString		fName;
 	BString		fDescription;
 	BString		fPlace;
@@ -67,8 +69,7 @@ private:
 	time_t		fUpdated;
 
 	bool		fAllDay;
-	bool		fNotified;
-	bool		fStatus;
+	int16		fStatus;
 
 	Category*	fCategory;
 

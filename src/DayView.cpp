@@ -98,32 +98,47 @@ DayView::MessageReceived(BMessage* message)
 			}
 			break;
 		}
-
 		case kDeleteEventMessage:
+		case kCancelEventMessage:
 		{
-
 			int32 selection = fEventListView->CurrentSelection();
-			if (selection >= 0) {
-				Event* event = ((Event*)fEventList->ItemAt(selection));
+			if (selection < 0)
+				return;
+			Event* event = ((Event*)fEventList->ItemAt(selection));
+			bool isCancelled = (event->GetStatus() & EVENT_CANCELLED);
 
-				BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
-					B_TRANSLATE("Are you sure you want to delete the selected event?"),
-					NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
-				alert->SetShortcut(1, B_ESCAPE);
-				int32 button_index = alert->Go();
-
-				if (button_index == 0) {
-					Event newEvent(*event);
-					newEvent.SetStatus(false);
-					newEvent.SetUpdated(time(NULL));
-					fDBManager->UpdateEvent(event, &newEvent);
-					Window()->LockLooper();
-					LoadEvents();
-					Window()->UnlockLooper();
-				}
+			BString title(B_TRANSLATE("Confirm delete"));
+			BString label(B_TRANSLATE("Are you sure you want to move the selected event to Trash?"));
+			if (message->what == kCancelEventMessage) {
+				title = B_TRANSLATE("Confirm cancellation");
+				label = B_TRANSLATE("Are you sure you want to cancel the selected event?");
 			}
 
+			// If disabling a previous cancellation, the confirmation dialogue
+			// doesn't really make sense.
+			int32 button_index = 0;
+			if (!(message->what == kCancelEventMessage && isCancelled == true)) {
+				BAlert* alert = new BAlert(title, label, NULL, B_TRANSLATE("OK"),
+					B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				alert->SetShortcut(1, B_ESCAPE);
+				button_index = alert->Go();
+			}
+
+			if (button_index == 0) {
+				Event newEvent(*event);
+				newEvent.SetUpdated(time(NULL));
+				if (message->what == kCancelEventMessage && isCancelled == false)
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_CANCELLED);
+				else if (message->what == kCancelEventMessage)
+					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_CANCELLED);
+				else
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
+
+				fDBManager->UpdateEvent(event, &newEvent);
+				Window()->LockLooper();
+				LoadEvents();
+				Window()->UnlockLooper();
+			}
 			break;
 		}
 		case kDayView:
@@ -236,8 +251,11 @@ DayView::_PopulateEvents()
 
 		eventName << event->GetName();
 		rgb_color color = event->GetCategory()->GetColor();
+		uint16 face = -1;
+		if (event->GetStatus() & EVENT_CANCELLED)
+			face = 0 | B_ITALIC_FACE | B_LIGHT_FACE | B_STRIKEOUT_FACE;
 
-		item = new EventListItem(eventName, timePeriod , color);
+		item = new EventListItem(eventName, timePeriod , color, face);
 		fEventListView->AddItem(item);
 	}
 
