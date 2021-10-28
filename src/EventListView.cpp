@@ -12,6 +12,7 @@
 #include <PopUpMenu.h>
 #include <String.h>
 
+#include "Event.h"
 #include "EventListItem.h"
 #include "MainWindow.h"
 #include "DayView.h"
@@ -189,11 +190,36 @@ EventListView::MouseUp(BPoint position)
 
 
 void
+EventListView::SelectionChanged()
+{
+	BMessage msg(kEventSelected);
+	msg.AddInt32("index", CurrentSelection());
+
+	if (CurrentSelection() > -1) {
+		EventListItem* sItem = dynamic_cast<EventListItem *>
+			(ItemAt(CurrentSelection()));
+		if (sItem != NULL)
+			msg.AddBool("_cancelled",
+				(sItem->GetEvent()->GetStatus() & EVENT_CANCELLED));
+	}
+	Messenger().SendMessage(&msg);
+}
+
+
+void
+EventListView::MakeEmpty()
+{
+	BMessage msg(kEventSelected);
+	msg.AddInt32("index", -1);
+	Messenger().SendMessage(&msg);
+
+	BListView::MakeEmpty();
+}
+
+
+void
 EventListView::SetPopUpMenuEnabled(bool enable)
 {
-	if (fPopUpMenuEnabled == enable)
-		return;
-
 	fPopUpMenuEnabled = enable;
 }
 
@@ -218,6 +244,7 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Cancel"),
 			new BMessage(kCancelActionInvoked));
+	item->SetMarked(sItem->GetEvent()->GetStatus() & EVENT_CANCELLED);
 	menu->AddItem(item);
 
 	if (!fPopUpMenuEnabled) {

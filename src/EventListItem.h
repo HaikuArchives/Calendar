@@ -12,23 +12,26 @@
 #include <ListItem.h>
 #include <String.h>
 
+class Event;
+
 
 class EventListItem: public BListItem {
 public:
-				EventListItem(BString name, BString timeText,
-					rgb_color color, uint16 font_face = -1);
+				EventListItem(Event* event, int32 mode);
 				~EventListItem();
 
 	virtual void		DrawItem(BView*, BRect, bool);
 	virtual	void		Update(BView*, const BFont*);
 
+			Event*		GetEvent();
+
 private:
+			void		_CalcTimeText(int32 mode);
+
 	static const int 	fItemHeight	= 42;
 
-	BString			fName;
+	Event*			fEvent;
 	BString			fTimeText;
-	rgb_color		fColor;
-	uint16			fFace;
 };
 
 #endif // EVENTLLISTITEM_H

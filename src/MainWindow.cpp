@@ -151,6 +151,12 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 		}
 
+		case kEventSelected:
+		{
+			_ToggleEventMenu(message);
+			break;
+		}
+
 		case kMonthUpMessage:
 		case kMonthDownMessage:
 			fSidePanelView->MessageReceived(message);
@@ -284,6 +290,8 @@ MainWindow::_InitInterface()
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kMenuEventEdit)));
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kMenuEventDelete)));
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Cancel event"), new BMessage(kMenuEventCancel)));
+	for (int i = 1; i < fEventMenu->CountItems(); i++)
+		fEventMenu->ItemAt(i)->SetEnabled(false);
 
 	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
 	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage categories" B_UTF8_ELLIPSIS),
@@ -418,4 +426,16 @@ MainWindow::_ToggleEventViewButton(int selectedButtonId)
 			item->SetMarked(message->what == (uint32)selectedButtonId);
 		}
 	}
+}
+
+
+void
+MainWindow::_ToggleEventMenu(BMessage* msg)
+{
+	int32 index = msg->GetInt32("index", -1);
+	bool cancelled = msg->GetBool("_cancelled", false);
+
+	for (int i = 1; i < fEventMenu->CountItems(); i++)
+		fEventMenu->ItemAt(i)->SetEnabled(index > -1);
+	fEventMenu->ItemAt(3)->SetMarked(cancelled);
 }

@@ -15,14 +15,17 @@ static const uint32 kPopClosed	= 'kpop';
 
 class EventListView : public BListView {
 public:
-				EventListView();
-				~EventListView();
+					EventListView();
+					~EventListView();
 
-	virtual void		Draw(BRect rect);
-	virtual	void		FrameResized(float w, float h);
-	virtual	void		MessageReceived(BMessage* message);
+	virtual void	Draw(BRect rect);
+	virtual	void	FrameResized(float w, float h);
+	virtual	void	MessageReceived(BMessage* message);
+
 	void			MouseDown(BPoint position);
 	void			MouseUp(BPoint position);
+	void			SelectionChanged();
+	void			MakeEmpty();
 
 	void			SetPopUpMenuEnabled(bool enable);
 
