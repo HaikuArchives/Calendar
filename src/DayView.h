@@ -19,6 +19,7 @@ class QueryDBManager;
 const uint32 kEditEventMessage = 'ksem';
 const uint32 kDeleteEventMessage = 'kdem';
 const uint32 kCancelEventMessage = 'kcem';
+const uint32 kHideEventMessage = 'khev';
 const uint32 kLaunchEventManagerToModify = 'klem';
 const uint32 kEventSelected = 'kevs';
 

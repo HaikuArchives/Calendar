@@ -50,9 +50,6 @@ private:
 	void			_ToggleEventMenu(BMessage* msg);
 
 	static const int	kMenuAppQuit		= 1000;
-	static const int 	kMenuEventEdit 		= 1002;
-	static const int 	kMenuEventDelete	= 1003;
-	static const int 	kMenuEventCancel	= 1004;
 	static const int 	kAddEvent 		= 1005;
 	static const int 	kDayView 		= 1006;
 	static const int 	kWeekView		= 1007;

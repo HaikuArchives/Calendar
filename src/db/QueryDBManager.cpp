@@ -131,12 +131,13 @@ QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 bool
 QueryDBManager::UpdateNotifiedEvent(const char* id)
 {
-	BFile evFile = BFile();
-	_GetFileOfId(id, &evFile);
+	 BFile evFile = BFile();
+	 entry_ref ref;
+	_GetFileOfId(id, &evFile, &ref);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
 
-	Event* event = _FileToEvent(&evFile);
+	Event* event = _FileToEvent(&ref);
 	event->SetStatus(event->GetStatus() | EVENT_NOTIFIED);
 	return _EventToFile(event, &evFile);
 }
@@ -178,12 +179,9 @@ QueryDBManager::RemoveEvent(entry_ref eventRef, const char* restorePath)
 Event*
 QueryDBManager::GetEvent(const char* id)
 {
-	BFile evFile = BFile();
-	_GetFileOfId(id, &evFile);
-	if (evFile.InitCheck() != B_OK)
-		return NULL;
-
-	return _FileToEvent(&evFile);
+	entry_ref ref;
+	_GetFileOfId(id, NULL, &ref);
+	return _FileToEvent(&ref);
 }
 
 
@@ -198,33 +196,29 @@ QueryDBManager::GetEvent(const char* name, time_t startTime)
 Event*
 QueryDBManager::GetEvent(entry_ref ref)
 {
-	BFile evFile = BFile(&ref, B_READ_ONLY);
-	if (evFile.InitCheck() != B_OK)
-		return NULL;
-
-	return _FileToEvent(&evFile);
+	return _FileToEvent(&ref);
 }
 
 
 BList*
-QueryDBManager::GetEventsOfDay(BDate& date)
+QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 {
 	time_t dayStart	= BDateTime(date, BTime(0, 0, 0)).Time_t();
 	time_t dayEnd	= BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(dayStart, dayEnd);
+	return _GetEventsOfInterval(dayStart, dayEnd, ignoreHidden);
 }
 
 
 BList*
-QueryDBManager::GetEventsOfWeek(BDate date)
+QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 {
 	date.AddDays(-date.DayOfWeek()+1);
 	time_t weekStart = BDateTime(date, BTime(0, 0, 0)).Time_t();
 	date.AddDays(6);
 	time_t weekEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(weekStart, weekEnd);
+	return _GetEventsOfInterval(weekStart, weekEnd, ignoreHidden);
 }
 
 
@@ -239,11 +233,6 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	query.PushString(category->GetName());
 	query.PushOp(B_EQ);
 
-	query.PushAttr("Event:Status");
-	query.PushString("Cancelled");
-	query.PushOp(B_NE);
-	query.PushOp(B_AND);
-
 	query.Fetch();
 	entry_ref ref;
 
@@ -253,8 +242,7 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
+		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
 
@@ -289,8 +277,7 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
+		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
 
@@ -483,7 +470,8 @@ QueryDBManager::_GetCategoryRef(const char* name)
 
 
 BList*
-QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
+QueryDBManager::_GetEventsOfInterval(time_t start, time_t end,
+	bool ignoreHidden)
 {
 	BList* events = new BList();
 	BQuery query;
@@ -504,19 +492,18 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
-		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
-			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
-		events->AddItem(event);
+		event = _FileToEvent(&ref);
+		uint16 status = event->GetStatus();
+		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
+		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
+			events->AddItem(event);
 	}
-
 	return events;
 }
 
 
 status_t
-QueryDBManager::_GetFileOfId(const char* id, BFile* file)
+QueryDBManager::_GetFileOfId(const char* id, BFile* file, entry_ref* ref)
 {
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
@@ -525,17 +512,15 @@ QueryDBManager::_GetFileOfId(const char* id, BFile* file)
 	query.PushString(id);
 	query.PushOp(B_EQ);
 
-	entry_ref ref;
+	entry_ref foundRef;
 	status_t result = query.Fetch();
 
-	if (result == B_OK) {
-		entry_ref ref;
-		result = query.GetNextRef(&ref);
-
-		if (result == B_OK)
-			*file = BFile(&ref, B_READ_WRITE);
+	if (result == B_OK && query.GetNextRef(&foundRef) == B_OK) {
+		if (file != NULL)
+			*file = BFile(&foundRef, B_READ_WRITE);
+		if (ref != NULL)
+			*ref = foundRef;
 	}
-
 	return result;
 }
 
@@ -557,27 +542,32 @@ QueryDBManager::_FileToCategory(BFile* file)
 
 
 Event*
-QueryDBManager::_FileToEvent(BFile* file)
+QueryDBManager::_FileToEvent(entry_ref* ref)
 {
+	BNode node(ref);
+	BEntry entry(ref);
+	if (node.InitCheck() != B_OK || entry.InitCheck() != B_OK)
+		return NULL;
+
 	BString name  = BString();
 	BString catName = BString();
 	BString idStr = BString();
 	BString desc  = BString();
 	BString place = BString();
 	BString statusStr = BString();
-	file->ReadAttrString("Event:Name", &name);
-	file->ReadAttrString("Event:Category", &catName);
-	file->ReadAttrString("Calendar:ID", &idStr);
-	file->ReadAttrString("Event:Description", &desc);
-	file->ReadAttrString("Event:Place", &place);
-	file->ReadAttrString("Event:Status", &statusStr);
+	node.ReadAttrString("Event:Name", &name);
+	node.ReadAttrString("Event:Category", &catName);
+	node.ReadAttrString("Calendar:ID", &idStr);
+	node.ReadAttrString("Event:Description", &desc);
+	node.ReadAttrString("Event:Place", &place);
+	node.ReadAttrString("Event:Status", &statusStr);
 
 	time_t start	= time(NULL);
 	time_t end		= time(NULL);
 	time_t updated	= time(NULL);
-	file->ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
-	file->ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
-	file->ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
+	node.ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
+	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
+	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
 
 	bool allDay = false;
 	time_t dayStart	= BDateTime(BDate(start), BTime(0, 0, 0)).Time_t();
@@ -591,6 +581,10 @@ QueryDBManager::_FileToEvent(BFile* file)
 		status |= EVENT_NOTIFIED;
 	if (statusStr.FindFirst("Cancelled") >= 0)
 		status |= EVENT_CANCELLED;
+	if (statusStr.FindFirst("Hidden") >= 0)
+		status |= EVENT_HIDDEN;
+	if (fTrashDir->Contains(&entry) == true)
+		status |= EVENT_DELETED;
 
 	return new Event(name.String(), place.String(), desc.String(), allDay,
 					start, end, EnsureCategory(catName.String()), updated,
@@ -645,6 +639,11 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 		if (status.IsEmpty() == false)
 			status << ", ";
 		status << "Cancelled";
+	}
+	if (event->GetStatus() & EVENT_HIDDEN) {
+		if (status.IsEmpty() == false)
+			status << ", ";
+		status << "Hidden";
 	}
 
 	file->WriteAttr("Event:Status", B_STRING_TYPE, 0, status.String(),
