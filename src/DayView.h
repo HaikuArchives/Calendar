@@ -20,6 +20,7 @@ const uint32 kEditEventMessage = 'ksem';
 const uint32 kDeleteEventMessage = 'kdem';
 const uint32 kCancelEventMessage = 'kcem';
 const uint32 kLaunchEventManagerToModify = 'klem';
+const uint32 kEventSelected = 'kevs';
 
 static const int 	kDayView 		= 1006;
 static const int 	kWeekView		= 1007;
@@ -48,7 +49,7 @@ private:
 		BDate			fDate;
 		QueryDBManager*	fDBManager;
 
-		int32 mode;
+		int32 fMode;
 
 };
 

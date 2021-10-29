@@ -47,6 +47,7 @@ private:
 	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
 	void			_ToggleEventViewButton(int selectedButton);
+	void			_ToggleEventMenu(BMessage* msg);
 
 	static const int	kMenuAppQuit		= 1000;
 	static const int 	kMenuEventEdit 		= 1002;

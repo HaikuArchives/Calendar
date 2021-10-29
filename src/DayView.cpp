@@ -12,9 +12,6 @@
 #include <LayoutBuilder.h>
 #include <List.h>
 #include <ScrollView.h>
-#include <TimeFormat.h>
-#include <DurationFormat.h>
-#include <DateFormat.h>
 
 #include "Event.h"
 #include "EventListItem.h"
@@ -30,7 +27,7 @@ DayView::DayView(const BDate& date)
 	BView("DayView", B_WILL_DRAW)
 {
 	fDate = date;
-	mode = kDayView; // start with Day View
+	fMode = kDayView; // start with Day View
 	fEventListView = new EventListView();
 	fEventListView->SetViewColor(B_TRANSPARENT_COLOR);
 	fEventListView->SetInvocationMessage(new BMessage(kInvokationMessage));
@@ -70,7 +67,7 @@ DayView::LoadEvents()
 		fEventListView->MakeEmpty();
 	}
 
-	if (mode == kWeekView)
+	if (fMode == kWeekView)
 		fEventList = fDBManager->GetEventsOfWeek(fDate);
 	else
 		fEventList = fDBManager->GetEventsOfDay(fDate); // Day and Agenda views
@@ -144,7 +141,7 @@ DayView::MessageReceived(BMessage* message)
 		case kDayView:
 		case kWeekView:
 		case kAgendaView:
-			mode = message->what;
+			fMode = message->what;
 
 		case kSetCalendarToCurrentDate:
 			LoadEvents();
@@ -186,77 +183,10 @@ DayView::_PopulateEvents()
 {
 	Event* event;
 	EventListItem* item;
-	BString startTime;
-	BString endTime;
-	BString startDay;
-	BString endDay;
-	BString eventName;
-	BString timePeriod;
-	BString remaining;
-	BTimeFormat timeFormat;
-	BDateFormat dateFormat;
-	BDateTime now = BDateTime::CurrentDateTime(B_LOCAL_TIME);
 
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
 		event = ((Event*)fEventList->ItemAt(i));
-
-		remaining = "";
-		eventName = "";
-		startTime = "";
-		endTime = "";
-		timePeriod = "";
-
-		if (event->IsAllDay())
-			if (mode == kDayView)
-				timePeriod = B_TRANSLATE("All day");
-			else {
-				dateFormat.Format(startDay, event->GetStartDateTime(),
-					B_SHORT_DATE_FORMAT);
-				BString startday(B_TRANSLATE("All day, %startDay%"));
-				startday.ReplaceAll("%startDay%", startDay);
-				timePeriod << startday;
-			}
-		else {
-			timeFormat.Format(startTime, event->GetStartDateTime(),
-				B_SHORT_TIME_FORMAT);
-			timeFormat.Format(endTime, event->GetEndDateTime(),
-				B_SHORT_TIME_FORMAT);
-
-			if (mode == kDayView)
-				timePeriod << startTime << " - " << endTime;
-			else if (mode == kWeekView) {
-				dateFormat.Format(startDay, event->GetStartDateTime(),
-					B_SHORT_DATE_FORMAT);
-				dateFormat.Format(endDay, event->GetEndDateTime(),
-					B_SHORT_DATE_FORMAT);
-				timePeriod << startTime << ", " << startDay << " - " \
-								<< endTime << ", " << endDay;
-			} else {
-				BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
-				if (now.Time_t() >= event->GetStartDateTime() && 
-				    now.Time_t() <= event->GetEndDateTime()) {
-					formatter.Format(remaining, 0, difftime(event->GetEndDateTime(), now.Time_t())*1000000);
-					BString timeLeft(B_TRANSLATE("Now, %remaining% left"));
-					timeLeft.ReplaceAll("%remaining%", remaining);
-					timePeriod << timeLeft;
-				} else if (now.Time_t() < event->GetStartDateTime()) {
-					formatter.Format(remaining, 0, difftime(event->GetStartDateTime(), now.Time_t())*1000000);
-					BString timeLeft(B_TRANSLATE("Starts in %remaining%"));
-					timeLeft.ReplaceAll("%remaining%", remaining);
-					timePeriod << timeLeft;
-				} else
-					timePeriod = B_TRANSLATE("Finished!");
-			}
-		}
-
-		eventName << event->GetName();
-		rgb_color color = event->GetCategory()->GetColor();
-		uint16 face = -1;
-		if (event->GetStatus() & EVENT_CANCELLED)
-			face = 0 | B_ITALIC_FACE | B_LIGHT_FACE | B_STRIKEOUT_FACE;
-
-		item = new EventListItem(eventName, timePeriod , color, face);
+		item = new EventListItem(event, fMode);
 		fEventListView->AddItem(item);
 	}
-
 }
