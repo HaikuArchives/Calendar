@@ -92,9 +92,8 @@ QueryDBManager::_Initialize()
 bool
 QueryDBManager::AddEvent(Event* event)
 {
-	if (BString(event->GetName()).CountChars() < 3)
-		return false;
-	if (GetEvent(event->GetName(), event->GetStartDateTime()) != NULL)
+	Event* oldEvent = GetEvent(event->GetName(), event->GetStartDateTime());
+	if (oldEvent != NULL && !(oldEvent->GetStatus() & EVENT_DELETED))
 		return false;
 
 	BDirectory* parentDir = fEventDir;
@@ -112,17 +111,26 @@ bool
 QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 {
 	entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
+	return UpdateEvent(newEvent, ref);
+}
+
+
+bool
+QueryDBManager::UpdateEvent(Event* event, entry_ref ref)
+{
 	BFile evFile = BFile(&ref, B_READ_WRITE);
+	BEntry evEntry(&ref);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return false;
 
-	bool ret = _EventToFile(newEvent, &evFile);
+	bool ret = _EventToFile(event, &evFile);
 
-	// If event is deleted (with sync), save the deletion for later sync.
-	// Otherwise, toss it in the bin.
-	if ((newEvent->GetStatus() & EVENT_DELETED)
-		&& (!(event->GetStatus() & EVENT_DELETED)))
+	// If event is newly deleted, toss in bin. If undeleted, move back!
+	bool inTrash = fTrashDir->Contains(&evEntry);
+	if ((event->GetStatus() & EVENT_DELETED) && inTrash == false)
 		return RemoveEvent(ref);
+	else if (!(event->GetStatus() & EVENT_DELETED) && inTrash == true)
+		return RestoreEvent(ref);
 
 	return ret;
 }
@@ -170,9 +178,46 @@ QueryDBManager::RemoveEvent(entry_ref eventRef, const char* restorePath)
 	printf("Trashing event %s to %s/%s…\n",
 			path.String(), BPath(&trashEnt).Path(), leaf.String());
 
-	if (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
-		return true;
-	return false;
+	return (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
+}
+
+
+bool
+QueryDBManager::RestoreEvent(entry_ref ref)
+{
+	BEntry entry(&ref);
+	BFile file(&ref, B_READ_ONLY);
+	if (_RestoreStatusSwitch(entry.InitCheck()) != B_OK
+		|| _RestoreStatusSwitch(file.InitCheck()) != B_OK)
+		return false;
+
+	BDirectory* parentDir = fEventDir;
+
+	BString restorePath;
+	if (file.ReadAttrString("_trk/original_path", &restorePath) == B_OK) {
+		BEntry restoreEntry(restorePath.String());
+		restoreEntry.GetParent(parentDir);
+	}
+
+	char oldLeaf[B_FILE_NAME_LENGTH] = {'\0'};
+	entry.GetName(oldLeaf);
+	BString leaf = _UniqueFilename(fEventDir, BString(oldLeaf));
+
+	Event* event = _FileToEvent(&ref);
+	if (event != NULL) {
+		BString eventName = _UniqueEventName(event->GetName(),
+			event->GetStartDateTime());
+		event->SetName(eventName);
+		_EventToFile(event, &file);
+	}
+	delete event;
+
+	BEntry parentEnt;
+	parentDir->GetEntry(&parentEnt);
+	printf("Restoring event %s to %s…\n", BPath(&entry).Path(),
+		BPath(&parentEnt).Path());
+
+	return (_RestoreStatusSwitch(entry.MoveTo(parentDir, leaf)) == B_OK);
 }
 
 
@@ -437,16 +482,19 @@ QueryDBManager::_GetEventRef(const char* name, time_t startDate)
 	query.Fetch();
 
 	entry_ref ref;
-	entry_ref finalRef;
+	entry_ref normalRef;
+	entry_ref trashRef;
 
 	while (query.GetNextRef(&ref) == B_OK) {
-		query.GetNextRef(&ref);
-
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
-			continue;
-		finalRef = ref;
+			trashRef = ref;
+		else
+			normalRef = ref;
 	}
-	return finalRef;
+
+	if (normalRef.name == NULL)
+		return trashRef;
+	return normalRef;
 }
 
 
@@ -815,9 +863,32 @@ QueryDBManager::_TrashStatusSwitch(status_t result)
 	}
 	else if (result != B_OK) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
-			B_TRANSLATE("Couldn't move the event to Trash― you might want "
-			"use a Tracker query to find this event and manually "
-			"delete it."),
+			B_TRANSLATE("Couldn't move the event to Trash― you might want to "
+			"use a Tracker query to find this event and manually delete it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
+	return result;
+}
+
+
+status_t
+QueryDBManager::_RestoreStatusSwitch(status_t result)
+{
+	if (result == B_ENTRY_NOT_FOUND) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
+			B_TRANSLATE("Couldn't restore the deleted event― it seems that it "
+			"couldn't be found or doesn't exist. You might want to "
+			"look in the Trash to find this event and manually restore it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
+	else if (result != B_OK) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
+			B_TRANSLATE("Couldn't restore the deleted event― you might want to "
+			"look in the Trash to find this event and manually restore it."),
 			B_TRANSLATE("OK"), NULL, NULL,
 			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
@@ -973,28 +1044,46 @@ QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name, BFile* newFile)
 BString
 QueryDBManager::_UniqueFilename(BDirectory* dir, BString leaf)
 {
-	if (dir->Contains(leaf.String())) {
-		int suffix = 1;
-		char suffixStr[3];
-		BStringList sections = BStringList();
-		bool result = leaf.Split(" - ", true, sections);
-
-		if (result && sections.CountStrings() > 1) {
-			sscanf(sections.Last().String(), "%u", &suffix);
-			if (suffix > 0)
-				suffix++;
-
-			sections.Remove(sections.CountStrings() - 1);
-			leaf = sections.Join(" - ");
-		}
-
-		sprintf(suffixStr, "%u", suffix);
-		leaf += " - ";
-		leaf += suffixStr;
-
-		return _UniqueFilename(dir, leaf);
-	}	
+	if (dir->Contains(leaf.String()))
+		return _UniqueFilename(dir, _IncrementSuffix(leaf));
 	return leaf;
+}
+
+
+// Return an event name― Either one that is unique generally, or one allowed
+// to be used by a specific event (by ID).
+BString
+QueryDBManager::_UniqueEventName(BString name, time_t startTime, const char* id)
+{
+	Event* event = GetEvent(name.String(), startTime);
+	if (event == NULL || (id != NULL && strcmp(event->GetId(), id) == 0))
+		return name;
+	else
+		return _UniqueEventName(_IncrementSuffix(name), startTime, id);
+}
+
+
+BString
+QueryDBManager::_IncrementSuffix(BString string)
+{
+	int suffix = 1;
+	char suffixStr[3];
+	BStringList sections = BStringList();
+	bool result = string.Split(" - ", true, sections);
+
+	if (result && sections.CountStrings() > 1) {
+		sscanf(sections.Last().String(), "%u", &suffix);
+		if (suffix > 0)
+			suffix++;
+
+		sections.Remove(sections.CountStrings() - 1);
+		string = sections.Join(" - ");
+	}
+
+	sprintf(suffixStr, "%u", suffix);
+	string += " - ";
+	string += suffixStr;
+	return string;
 }
 
 

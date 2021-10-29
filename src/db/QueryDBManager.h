@@ -30,6 +30,7 @@ public:
 
 		bool		AddEvent(Event* event);
 		bool		UpdateEvent(Event* event, Event* newEvent);
+		bool		UpdateEvent(Event* event, entry_ref ref);
 		bool		UpdateNotifiedEvent(const char* id);
 
 		Event*		GetEvent(const char* id);
@@ -42,6 +43,7 @@ public:
 		bool		RemoveEvent(Event* event);
 		bool		RemoveEvent(entry_ref eventRef,
 						const char* restorePath = NULL);
+		bool		RestoreEvent(entry_ref ref);
 
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,
@@ -74,6 +76,7 @@ private:
 	status_t		_CategoryStatusSwitch(status_t);
 	status_t		_EventStatusSwitch(status_t);
 	status_t		_TrashStatusSwitch(status_t);
+	status_t		_RestoreStatusSwitch(status_t);
 
 	void			_ImportFromSQL(BPath dbPath);
 	void			_MigrateCancellations(BPath cancelPath);
@@ -83,11 +86,15 @@ private:
 	void			_AddIndices();
 
 	void			_AddAttribute(BMessage& msg, const char* name,
-								const char* publicName, int32 type,
-								bool viewable, int32 width);
+						const char* publicName, int32 type,
+						bool viewable, int32 width);
 	status_t		_CreateUniqueFile(BDirectory* dir, BString leaf,
-								BFile* newFile);
+						BFile* newFile);
 	BString			_UniqueFilename(BDirectory* dir, BString leaf);
+	BString			_UniqueEventName(BString name, time_t startTime,
+						const char* id = NULL);
+	BString			_IncrementSuffix(BString string);
+
 	BPath			_SettingsPath(const char* leaf);
 	BDirectory*		_EnsureDirectory(BPath path);
 

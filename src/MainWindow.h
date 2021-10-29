@@ -41,7 +41,7 @@ public:
 	void			StopNotificationThread();
 private:
 	void			_InitInterface();
-	void			_LaunchEventManager(Event* event);
+	void			_LaunchEventManager(Event* event, entry_ref* ref = NULL);
 	void			_SyncWithPreferences();
 	void			_UpdateDayView();
 	void			_SetEventListPopUpEnabled(bool state);

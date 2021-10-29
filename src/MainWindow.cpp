@@ -175,9 +175,8 @@ MainWindow::MessageReceived(BMessage* message)
 				info.SetTo(&file);
 				info.GetType(type);
 
-
 				if (BString(type) == BString("application/x-calendar-event"))
-					_LaunchEventManager(DBManager.GetEvent(ref));
+					_LaunchEventManager(NULL, &ref);
 
 				else if (BString(type) == BString("text/calendar")) {
 					thread_id icalThread = spawn_thread(ImportICalEvents,
@@ -335,13 +334,16 @@ MainWindow::_InitInterface()
 
 
 void
-MainWindow::_LaunchEventManager(Event* event)
+MainWindow::_LaunchEventManager(Event* event, entry_ref* ref)
 {
 	if (fEventWindow == NULL) {
 		fEventWindow = new EventWindow();
-		fEventWindow->SetEvent(event);
+		if (event != NULL)
+			fEventWindow->SetEvent(event);
+		else if (ref != NULL)
+			fEventWindow->SetEvent(*ref);
 
-		if (event == NULL) {
+		if (event == NULL && ref == NULL) {
 			BDate date = _GetSelectedCalendarDate();
 			fEventWindow->SetEventDate(date);
 		}
