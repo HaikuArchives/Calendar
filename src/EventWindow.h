@@ -44,6 +44,7 @@ public:
 	virtual void		FrameMoved(BPoint newPosition);
 
 	void			SetEvent(Event* event);
+	void			SetEvent(entry_ref ref);
 	void			SetEventDate(BDate& date);
 	void			SetStartDate(BDate& date);
 	void			SetEndDate(BDate& date);
@@ -60,6 +61,7 @@ public:
 
 private:
 	void			_InitInterface();
+	void			_PopulateWithEvent(Event* event);
 	void 			_DisableControls();
 	void			_UpdateCategoryMenu();
 	void			_ShowPopUpCalendar(int8 which);
@@ -105,9 +107,12 @@ private:
 	BRadioButton*		fEveryYear;
 
 	BCheckBox*		fAllDayCheckBox;
+	BCheckBox*		fCancelledCheckBox;
+	BCheckBox*		fHiddenCheckBox;
 
 	BBox*			fStartDateBox;
 	BBox*			fEndDateBox;
+	BBox*			fStatusBox;
 
 	BMessenger		fCalendarWindow;
 
@@ -115,6 +120,7 @@ private:
 	BDate			fEndDate;
 
 	Event*			fEvent;
+	entry_ref		fEventRef;
 	BList*			fCategoryList;
 	bool			fNew;
 

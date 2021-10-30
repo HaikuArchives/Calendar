@@ -83,24 +83,12 @@ MainWindow::MessageReceived(BMessage* message)
 			_LaunchEventManager(NULL);
 			break;
 
-		case kMenuEventEdit:
+		case kEditEventMessage:
+		case kDeleteEventMessage:
+		case kCancelEventMessage:
+		case kHideEventMessage:
 		{
-			BMessage msg(kEditEventMessage);
-			fDayView->MessageReceived(&msg);
-			break;
-		}
-
-		case kMenuEventDelete:
-		{
-			BMessage msg(kDeleteEventMessage);
-			fDayView->MessageReceived(&msg);
-			break;
-		}
-
-		case kMenuEventCancel:
-		{
-			BMessage msg(kCancelEventMessage);
-			fDayView->MessageReceived(&msg);
+			fDayView->MessageReceived(message);
 			break;
 		}
 
@@ -187,9 +175,8 @@ MainWindow::MessageReceived(BMessage* message)
 				info.SetTo(&file);
 				info.GetType(type);
 
-
 				if (BString(type) == BString("application/x-calendar-event"))
-					_LaunchEventManager(DBManager.GetEvent(ref));
+					_LaunchEventManager(NULL, &ref);
 
 				else if (BString(type) == BString("text/calendar")) {
 					thread_id icalThread = spawn_thread(ImportICalEvents,
@@ -287,9 +274,10 @@ MainWindow::_InitInterface()
 
 	fEventMenu = new BMenu(B_TRANSLATE("Event"));
 	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Add event"), new BMessage(kAddEvent)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kMenuEventEdit)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kMenuEventDelete)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Cancel event"), new BMessage(kMenuEventCancel)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kEditEventMessage)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kDeleteEventMessage)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Cancel event"), new BMessage(kCancelEventMessage)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Hide event"), new BMessage(kHideEventMessage)));
 	for (int i = 1; i < fEventMenu->CountItems(); i++)
 		fEventMenu->ItemAt(i)->SetEnabled(false);
 
@@ -346,13 +334,16 @@ MainWindow::_InitInterface()
 
 
 void
-MainWindow::_LaunchEventManager(Event* event)
+MainWindow::_LaunchEventManager(Event* event, entry_ref* ref)
 {
 	if (fEventWindow == NULL) {
 		fEventWindow = new EventWindow();
-		fEventWindow->SetEvent(event);
+		if (event != NULL)
+			fEventWindow->SetEvent(event);
+		else if (ref != NULL)
+			fEventWindow->SetEvent(*ref);
 
-		if (event == NULL) {
+		if (event == NULL && ref == NULL) {
 			BDate date = _GetSelectedCalendarDate();
 			fEventWindow->SetEventDate(date);
 		}
@@ -433,9 +424,13 @@ void
 MainWindow::_ToggleEventMenu(BMessage* msg)
 {
 	int32 index = msg->GetInt32("index", -1);
+	bool deleted = msg->GetBool("_deleted", false);
 	bool cancelled = msg->GetBool("_cancelled", false);
+	bool hidden = msg->GetBool("_hidden", false);
 
 	for (int i = 1; i < fEventMenu->CountItems(); i++)
 		fEventMenu->ItemAt(i)->SetEnabled(index > -1);
+	fEventMenu->ItemAt(2)->SetMarked(deleted);
 	fEventMenu->ItemAt(3)->SetMarked(cancelled);
+	fEventMenu->ItemAt(4)->SetMarked(hidden);
 }

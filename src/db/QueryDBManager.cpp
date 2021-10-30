@@ -92,9 +92,8 @@ QueryDBManager::_Initialize()
 bool
 QueryDBManager::AddEvent(Event* event)
 {
-	if (BString(event->GetName()).CountChars() < 3)
-		return false;
-	if (GetEvent(event->GetName(), event->GetStartDateTime()) != NULL)
+	Event* oldEvent = GetEvent(event->GetName(), event->GetStartDateTime());
+	if (oldEvent != NULL && !(oldEvent->GetStatus() & EVENT_DELETED))
 		return false;
 
 	BDirectory* parentDir = fEventDir;
@@ -112,17 +111,26 @@ bool
 QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 {
 	entry_ref ref = _GetEventRef(event->GetName(), event->GetStartDateTime());
+	return UpdateEvent(newEvent, ref);
+}
+
+
+bool
+QueryDBManager::UpdateEvent(Event* event, entry_ref ref)
+{
 	BFile evFile = BFile(&ref, B_READ_WRITE);
+	BEntry evEntry(&ref);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return false;
 
-	bool ret = _EventToFile(newEvent, &evFile);
+	bool ret = _EventToFile(event, &evFile);
 
-	// If event is deleted (with sync), save the deletion for later sync.
-	// Otherwise, toss it in the bin.
-	if ((newEvent->GetStatus() & EVENT_DELETED)
-		&& (!(event->GetStatus() & EVENT_DELETED)))
+	// If event is newly deleted, toss in bin. If undeleted, move back!
+	bool inTrash = fTrashDir->Contains(&evEntry);
+	if ((event->GetStatus() & EVENT_DELETED) && inTrash == false)
 		return RemoveEvent(ref);
+	else if (!(event->GetStatus() & EVENT_DELETED) && inTrash == true)
+		return RestoreEvent(ref);
 
 	return ret;
 }
@@ -131,12 +139,13 @@ QueryDBManager::UpdateEvent(Event* event, Event* newEvent)
 bool
 QueryDBManager::UpdateNotifiedEvent(const char* id)
 {
-	BFile evFile = BFile();
-	_GetFileOfId(id, &evFile);
+	 BFile evFile = BFile();
+	 entry_ref ref;
+	_GetFileOfId(id, &evFile, &ref);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
 
-	Event* event = _FileToEvent(&evFile);
+	Event* event = _FileToEvent(&ref);
 	event->SetStatus(event->GetStatus() | EVENT_NOTIFIED);
 	return _EventToFile(event, &evFile);
 }
@@ -169,21 +178,55 @@ QueryDBManager::RemoveEvent(entry_ref eventRef, const char* restorePath)
 	printf("Trashing event %s to %s/%s…\n",
 			path.String(), BPath(&trashEnt).Path(), leaf.String());
 
-	if (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
-		return true;
-	return false;
+	return (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
+}
+
+
+bool
+QueryDBManager::RestoreEvent(entry_ref ref)
+{
+	BEntry entry(&ref);
+	BFile file(&ref, B_READ_ONLY);
+	if (_RestoreStatusSwitch(entry.InitCheck()) != B_OK
+		|| _RestoreStatusSwitch(file.InitCheck()) != B_OK)
+		return false;
+
+	BDirectory* parentDir = fEventDir;
+
+	BString restorePath;
+	if (file.ReadAttrString("_trk/original_path", &restorePath) == B_OK) {
+		BEntry restoreEntry(restorePath.String());
+		restoreEntry.GetParent(parentDir);
+	}
+
+	char oldLeaf[B_FILE_NAME_LENGTH] = {'\0'};
+	entry.GetName(oldLeaf);
+	BString leaf = _UniqueFilename(fEventDir, BString(oldLeaf));
+
+	Event* event = _FileToEvent(&ref);
+	if (event != NULL) {
+		BString eventName = _UniqueEventName(event->GetName(),
+			event->GetStartDateTime());
+		event->SetName(eventName);
+		_EventToFile(event, &file);
+	}
+	delete event;
+
+	BEntry parentEnt;
+	parentDir->GetEntry(&parentEnt);
+	printf("Restoring event %s to %s…\n", BPath(&entry).Path(),
+		BPath(&parentEnt).Path());
+
+	return (_RestoreStatusSwitch(entry.MoveTo(parentDir, leaf)) == B_OK);
 }
 
 
 Event*
 QueryDBManager::GetEvent(const char* id)
 {
-	BFile evFile = BFile();
-	_GetFileOfId(id, &evFile);
-	if (evFile.InitCheck() != B_OK)
-		return NULL;
-
-	return _FileToEvent(&evFile);
+	entry_ref ref;
+	_GetFileOfId(id, NULL, &ref);
+	return _FileToEvent(&ref);
 }
 
 
@@ -198,33 +241,29 @@ QueryDBManager::GetEvent(const char* name, time_t startTime)
 Event*
 QueryDBManager::GetEvent(entry_ref ref)
 {
-	BFile evFile = BFile(&ref, B_READ_ONLY);
-	if (evFile.InitCheck() != B_OK)
-		return NULL;
-
-	return _FileToEvent(&evFile);
+	return _FileToEvent(&ref);
 }
 
 
 BList*
-QueryDBManager::GetEventsOfDay(BDate& date)
+QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 {
 	time_t dayStart	= BDateTime(date, BTime(0, 0, 0)).Time_t();
 	time_t dayEnd	= BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(dayStart, dayEnd);
+	return _GetEventsOfInterval(dayStart, dayEnd, ignoreHidden);
 }
 
 
 BList*
-QueryDBManager::GetEventsOfWeek(BDate date)
+QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 {
 	date.AddDays(-date.DayOfWeek()+1);
 	time_t weekStart = BDateTime(date, BTime(0, 0, 0)).Time_t();
 	date.AddDays(6);
 	time_t weekEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(weekStart, weekEnd);
+	return _GetEventsOfInterval(weekStart, weekEnd, ignoreHidden);
 }
 
 
@@ -239,11 +278,6 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	query.PushString(category->GetName());
 	query.PushOp(B_EQ);
 
-	query.PushAttr("Event:Status");
-	query.PushString("Cancelled");
-	query.PushOp(B_NE);
-	query.PushOp(B_AND);
-
 	query.Fetch();
 	entry_ref ref;
 
@@ -253,8 +287,7 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
+		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
 
@@ -289,8 +322,7 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
+		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
 
@@ -450,16 +482,19 @@ QueryDBManager::_GetEventRef(const char* name, time_t startDate)
 	query.Fetch();
 
 	entry_ref ref;
-	entry_ref finalRef;
+	entry_ref normalRef;
+	entry_ref trashRef;
 
 	while (query.GetNextRef(&ref) == B_OK) {
-		query.GetNextRef(&ref);
-
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
-			continue;
-		finalRef = ref;
+			trashRef = ref;
+		else
+			normalRef = ref;
 	}
-	return finalRef;
+
+	if (normalRef.name == NULL)
+		return trashRef;
+	return normalRef;
 }
 
 
@@ -483,7 +518,8 @@ QueryDBManager::_GetCategoryRef(const char* name)
 
 
 BList*
-QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
+QueryDBManager::_GetEventsOfInterval(time_t start, time_t end,
+	bool ignoreHidden)
 {
 	BList* events = new BList();
 	BQuery query;
@@ -504,19 +540,18 @@ QueryDBManager::_GetEventsOfInterval(time_t start, time_t end)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
-		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
-			continue;
-		evFile = BFile(&ref, B_READ_WRITE);
-		event = _FileToEvent(&evFile);
-		events->AddItem(event);
+		event = _FileToEvent(&ref);
+		uint16 status = event->GetStatus();
+		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
+		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
+			events->AddItem(event);
 	}
-
 	return events;
 }
 
 
 status_t
-QueryDBManager::_GetFileOfId(const char* id, BFile* file)
+QueryDBManager::_GetFileOfId(const char* id, BFile* file, entry_ref* ref)
 {
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
@@ -525,17 +560,15 @@ QueryDBManager::_GetFileOfId(const char* id, BFile* file)
 	query.PushString(id);
 	query.PushOp(B_EQ);
 
-	entry_ref ref;
+	entry_ref foundRef;
 	status_t result = query.Fetch();
 
-	if (result == B_OK) {
-		entry_ref ref;
-		result = query.GetNextRef(&ref);
-
-		if (result == B_OK)
-			*file = BFile(&ref, B_READ_WRITE);
+	if (result == B_OK && query.GetNextRef(&foundRef) == B_OK) {
+		if (file != NULL)
+			*file = BFile(&foundRef, B_READ_WRITE);
+		if (ref != NULL)
+			*ref = foundRef;
 	}
-
 	return result;
 }
 
@@ -557,27 +590,32 @@ QueryDBManager::_FileToCategory(BFile* file)
 
 
 Event*
-QueryDBManager::_FileToEvent(BFile* file)
+QueryDBManager::_FileToEvent(entry_ref* ref)
 {
+	BNode node(ref);
+	BEntry entry(ref);
+	if (node.InitCheck() != B_OK || entry.InitCheck() != B_OK)
+		return NULL;
+
 	BString name  = BString();
 	BString catName = BString();
 	BString idStr = BString();
 	BString desc  = BString();
 	BString place = BString();
 	BString statusStr = BString();
-	file->ReadAttrString("Event:Name", &name);
-	file->ReadAttrString("Event:Category", &catName);
-	file->ReadAttrString("Calendar:ID", &idStr);
-	file->ReadAttrString("Event:Description", &desc);
-	file->ReadAttrString("Event:Place", &place);
-	file->ReadAttrString("Event:Status", &statusStr);
+	node.ReadAttrString("Event:Name", &name);
+	node.ReadAttrString("Event:Category", &catName);
+	node.ReadAttrString("Calendar:ID", &idStr);
+	node.ReadAttrString("Event:Description", &desc);
+	node.ReadAttrString("Event:Place", &place);
+	node.ReadAttrString("Event:Status", &statusStr);
 
 	time_t start	= time(NULL);
 	time_t end		= time(NULL);
 	time_t updated	= time(NULL);
-	file->ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
-	file->ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
-	file->ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
+	node.ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
+	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
+	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
 
 	bool allDay = false;
 	time_t dayStart	= BDateTime(BDate(start), BTime(0, 0, 0)).Time_t();
@@ -591,6 +629,10 @@ QueryDBManager::_FileToEvent(BFile* file)
 		status |= EVENT_NOTIFIED;
 	if (statusStr.FindFirst("Cancelled") >= 0)
 		status |= EVENT_CANCELLED;
+	if (statusStr.FindFirst("Hidden") >= 0)
+		status |= EVENT_HIDDEN;
+	if (fTrashDir->Contains(&entry) == true)
+		status |= EVENT_DELETED;
 
 	return new Event(name.String(), place.String(), desc.String(), allDay,
 					start, end, EnsureCategory(catName.String()), updated,
@@ -645,6 +687,11 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 		if (status.IsEmpty() == false)
 			status << ", ";
 		status << "Cancelled";
+	}
+	if (event->GetStatus() & EVENT_HIDDEN) {
+		if (status.IsEmpty() == false)
+			status << ", ";
+		status << "Hidden";
 	}
 
 	file->WriteAttr("Event:Status", B_STRING_TYPE, 0, status.String(),
@@ -816,9 +863,32 @@ QueryDBManager::_TrashStatusSwitch(status_t result)
 	}
 	else if (result != B_OK) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
-			B_TRANSLATE("Couldn't move the event to Trash― you might want "
-			"use a Tracker query to find this event and manually "
-			"delete it."),
+			B_TRANSLATE("Couldn't move the event to Trash― you might want to "
+			"use a Tracker query to find this event and manually delete it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
+	return result;
+}
+
+
+status_t
+QueryDBManager::_RestoreStatusSwitch(status_t result)
+{
+	if (result == B_ENTRY_NOT_FOUND) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
+			B_TRANSLATE("Couldn't restore the deleted event― it seems that it "
+			"couldn't be found or doesn't exist. You might want to "
+			"look in the Trash to find this event and manually restore it."),
+			B_TRANSLATE("OK"), NULL, NULL,
+			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		alert->Go();
+	}
+	else if (result != B_OK) {
+		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
+			B_TRANSLATE("Couldn't restore the deleted event― you might want to "
+			"look in the Trash to find this event and manually restore it."),
 			B_TRANSLATE("OK"), NULL, NULL,
 			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
@@ -974,28 +1044,46 @@ QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name, BFile* newFile)
 BString
 QueryDBManager::_UniqueFilename(BDirectory* dir, BString leaf)
 {
-	if (dir->Contains(leaf.String())) {
-		int suffix = 1;
-		char suffixStr[3];
-		BStringList sections = BStringList();
-		bool result = leaf.Split(" - ", true, sections);
-
-		if (result && sections.CountStrings() > 1) {
-			sscanf(sections.Last().String(), "%u", &suffix);
-			if (suffix > 0)
-				suffix++;
-
-			sections.Remove(sections.CountStrings() - 1);
-			leaf = sections.Join(" - ");
-		}
-
-		sprintf(suffixStr, "%u", suffix);
-		leaf += " - ";
-		leaf += suffixStr;
-
-		return _UniqueFilename(dir, leaf);
-	}	
+	if (dir->Contains(leaf.String()))
+		return _UniqueFilename(dir, _IncrementSuffix(leaf));
 	return leaf;
+}
+
+
+// Return an event name― Either one that is unique generally, or one allowed
+// to be used by a specific event (by ID).
+BString
+QueryDBManager::_UniqueEventName(BString name, time_t startTime, const char* id)
+{
+	Event* event = GetEvent(name.String(), startTime);
+	if (event == NULL || (id != NULL && strcmp(event->GetId(), id) == 0))
+		return name;
+	else
+		return _UniqueEventName(_IncrementSuffix(name), startTime, id);
+}
+
+
+BString
+QueryDBManager::_IncrementSuffix(BString string)
+{
+	int suffix = 1;
+	char suffixStr[3];
+	BStringList sections = BStringList();
+	bool result = string.Split(" - ", true, sections);
+
+	if (result && sections.CountStrings() > 1) {
+		sscanf(sections.Last().String(), "%u", &suffix);
+		if (suffix > 0)
+			suffix++;
+
+		sections.Remove(sections.CountStrings() - 1);
+		string = sections.Join(" - ");
+	}
+
+	sprintf(suffixStr, "%u", suffix);
+	string += " - ";
+	string += suffixStr;
+	return string;
 }
 
 

@@ -51,7 +51,8 @@ EventWindow::EventWindow()
 	:
 	BWindow(((App*)be_app)->GetPreferences()->fEventWindowRect,
 			B_TRANSLATE("Event manager"),
-			B_TITLED_WINDOW, B_AUTO_UPDATE_SIZE_LIMITS)
+			B_TITLED_WINDOW, B_AUTO_UPDATE_SIZE_LIMITS),
+	fEvent(NULL)
 {
 	_InitInterface();
 
@@ -143,54 +144,20 @@ void
 EventWindow::SetEvent(Event* event)
 {
 	fEvent = event;
-
-	if (event != NULL) {
-		fTextName->SetText(event->GetName());
-		fTextPlace->SetText(event->GetPlace());
-		fTextDescription->SetText(event->GetDescription());
-
-		fStartDate = BDate(event->GetStartDateTime());
-		fEndDate = BDate(event->GetEndDateTime());
-
-		fTextStartDate->SetText(GetDateString(fStartDate));
-		fTextEndDate->SetText(GetDateString(fEndDate));
+	if (fDBManager->GetEvent(event->GetName(), event->GetStartDateTime()) != NULL)
+		fNew = false;
+	_PopulateWithEvent(event);
+}
 
 
-		Category* category;
-
-		for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-			category = ((Category*)fCategoryList->ItemAt(i));
-			if (category->Equals(*event->GetCategory())) {
-				fCategoryMenu->ItemAt(i)->SetMarked(true);
-				break;
-			}
-		}
-
-		if (event->IsAllDay()) {
-			fAllDayCheckBox->SetValue(B_CONTROL_ON);
-			fTextStartTime->SetEnabled(false);
-			fTextEndTime->SetEnabled(false);
-			fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
-			fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
-			// This is needed for week view
-			fTextStartDate->SetText(GetDateString(fStartDate));
-			fTextEndDate->SetText(GetDateString(fEndDate));
-		}
-
-		else
-		{
-			fAllDayCheckBox->SetValue(B_CONTROL_OFF);
-			fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
-			fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
-		}
-
-		if (fDBManager->GetEvent(event->GetName(), event->GetStartDateTime()))
-			fNew = false;
-
-		if (fNew == false)
-			fDeleteButton->SetEnabled(true);
-	}
-
+void
+EventWindow::SetEvent(entry_ref ref)
+{
+	fEventRef = ref;
+	fEvent = fDBManager->GetEvent(ref);
+	if (fEvent != NULL)
+		fNew = false;
+	_PopulateWithEvent(fEvent);
 }
 
 
@@ -274,7 +241,6 @@ void
 EventWindow::OnSaveClick()
 {
 	if (BString(fTextName->Text()).CountChars() < 3) {
-
 		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
 			B_TRANSLATE("The name must have a length greater than 2."),
 			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
@@ -295,9 +261,7 @@ EventWindow::OnSaveClick()
 		timeFormat.Parse(fTextStartTime->Text(), B_SHORT_TIME_FORMAT, startTime);
 		timeFormat.Parse(fTextEndTime->Text(), B_SHORT_TIME_FORMAT, endTime);
 	}
-
-	else
-	{
+	else {
 		startTime.SetTime(0, 0, 0);
 		endTime.SetTime(23, 59, 59, 59);
 	}
@@ -315,34 +279,46 @@ EventWindow::OnSaveClick()
 		return;
 	}
 
+	uint16 status = 0;
+	if (fEvent != NULL)
+		status = fEvent->GetStatus();
+
+	if (fHiddenCheckBox->Value() == B_CONTROL_ON)
+		status |= EVENT_HIDDEN;
+	else if (fHiddenCheckBox->Value() == B_CONTROL_OFF)
+		status &= ~EVENT_HIDDEN;
+
+	if (fCancelledCheckBox->Value() == B_CONTROL_ON)
+		status |= EVENT_CANCELLED;
+	else if (fCancelledCheckBox->Value() == B_CONTROL_OFF)
+		status &= ~EVENT_CANCELLED;
+
 	Category* category = NULL;
 	BMenuItem* item = fCategoryMenu->FindMarked();
 	int32 index = fCategoryMenu->IndexOf(item);
 	Category* c = ((Category*)fCategoryList->ItemAt(index));
 	category = new Category(*c);
 
-	bool notified = (difftime(start, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
 
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		start, end, category, notified);
+		start, end, category, time(NULL), status);
 
-	if ((fNew == true) && (fDBManager->AddEvent(&newEvent))) {
+	if ((fNew == true) && (fDBManager->AddEvent(&newEvent)))
 		CloseWindow();
-	}
-
-	else if ((fNew == false) && (fDBManager->UpdateEvent(fEvent, &newEvent)))
-	{
-		CloseWindow();
-	}
-
-	else
-	{
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("There was some error in adding the event. Please try again."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-		alert->Go();
-		return;
+	else if (fNew == false) {
+		if (fEventRef.name == NULL && fDBManager->UpdateEvent(fEvent, &newEvent))
+			CloseWindow();
+		else if (fEventRef.name != NULL
+			&& fDBManager->UpdateEvent(&newEvent, fEventRef))
+			CloseWindow();
+		else {
+			BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+				B_TRANSLATE("There was some error in adding the event. Please try again."),
+				NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			alert->Go();
+			return;
+		}
 	}
 }
 
@@ -350,20 +326,29 @@ EventWindow::OnSaveClick()
 void
 EventWindow::OnDeleteClick()
 {
+	bool deleting = !(fEvent->GetStatus() & EVENT_DELETED);
+	Event newEvent(*fEvent);
+	newEvent.SetUpdated(time(NULL));
+	if (deleting == true)
+		newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
+	else
+		newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_DELETED);
+
 	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
 		B_TRANSLATE("Are you sure you want to move this event to Trash?"),
 		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
-	alert->SetShortcut(1, B_ESCAPE);
-	int32 button_index = alert->Go();
-
-	if (button_index == 0) {
-		Event newEvent(*fEvent);
-		newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
-		newEvent.SetUpdated(time(NULL));
-		fDBManager->UpdateEvent(fEvent, &newEvent);
-		CloseWindow();
+	if (deleting == true) {
+		alert->SetShortcut(1, B_ESCAPE);
+		if (alert->Go() == 1)
+			return;
 	}
+
+	if (fEventRef.name != NULL)
+		fDBManager->UpdateEvent(&newEvent, fEventRef);
+	else
+		fDBManager->UpdateEvent(fEvent, &newEvent);
+	CloseWindow();
 }
 
 
@@ -384,14 +369,11 @@ EventWindow::OnCheckBoxToggle()
 		fTextStartTime->SetEnabled(false);
 		fTextEndTime->SetEnabled(false);
 	}
-
-	else
-	{
+	else {
 		fTextStartTime->SetText(GetLocaleTimeString(BDateTime(fStartDate, BTime(0, 0, 0)).Time_t()));
 		fTextEndTime->SetText(GetLocaleTimeString(BDateTime(fEndDate, BTime(1, 0, 0)).Time_t()));
 		fTextStartTime->SetEnabled(true);
 		fTextEndTime->SetEnabled(true);
-
 	}
 }
 
@@ -419,6 +401,8 @@ EventWindow::_InitInterface()
 
 	fAllDayCheckBox = new BCheckBox("", new BMessage(kAllDayPressed));
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+	fCancelledCheckBox = new BCheckBox(B_TRANSLATE("Cancelled"), NULL);
+	fHiddenCheckBox = new BCheckBox(B_TRANSLATE("Hidden"), NULL);
 
 	fEveryMonth = new BRadioButton("EveryMonth", B_TRANSLATE("Monthly"), new BMessage(kOptEveryMonth));
 	fEveryYear = new BRadioButton("EveryYear", B_TRANSLATE("Yearly"), new BMessage(kOptEveryYear));
@@ -468,6 +452,17 @@ EventWindow::_InitInterface()
 	fEndDateEdit = new BMenu(B_TRANSLATE("End date"));
 
 	fCategoryMenuField = new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
+
+	BBox* fStatusBox = new BBox("StatusBox");
+	BLayoutBuilder::Group<>(fStatusBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+		.SetInsets(B_USE_ITEM_INSETS)
+		.AddStrut(B_USE_ITEM_SPACING)
+		.AddGroup(B_HORIZONTAL)
+			.Add(fCancelledCheckBox)
+			.Add(fHiddenCheckBox)
+		.End()
+	.End();
+	fStatusBox->SetLabel(B_TRANSLATE("Status"));
 
 	BBox* fRecurrenceBox = new BBox("RecurrenceBox");
 	BLayoutBuilder::Group<>(fRecurrenceBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -541,6 +536,7 @@ EventWindow::_InitInterface()
 			.Add(fStartDateBox)
 			.Add(fEndDateBox)
 			.Add(fRecurrenceBox)
+			.Add(fStatusBox)
 		.End()
 	.End();
 
@@ -557,6 +553,59 @@ EventWindow::_InitInterface()
 			.Add(SaveButton)
 		.End()
 	.End();
+}
+
+
+void
+EventWindow::_PopulateWithEvent(Event* event)
+{
+	if (event == NULL)
+		return;
+
+	fTextName->SetText(event->GetName());
+	fTextPlace->SetText(event->GetPlace());
+	fTextDescription->SetText(event->GetDescription());
+
+	fStartDate = BDate(event->GetStartDateTime());
+	fEndDate = BDate(event->GetEndDateTime());
+
+	fTextStartDate->SetText(GetDateString(fStartDate));
+	fTextEndDate->SetText(GetDateString(fEndDate));
+
+	Category* category;
+	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
+		category = ((Category*)fCategoryList->ItemAt(i));
+		if (category->Equals(*event->GetCategory())) {
+			fCategoryMenu->ItemAt(i)->SetMarked(true);
+			break;
+		}
+	}
+
+	if (event->IsAllDay()) {
+		fAllDayCheckBox->SetValue(B_CONTROL_ON);
+		fTextStartTime->SetEnabled(false);
+		fTextEndTime->SetEnabled(false);
+		fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
+		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
+		// This is needed for week view
+		fTextStartDate->SetText(GetDateString(fStartDate));
+		fTextEndDate->SetText(GetDateString(fEndDate));
+	}
+	else {
+		fAllDayCheckBox->SetValue(B_CONTROL_OFF);
+		fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
+		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
+	}
+
+	uint16 status = 0;
+	if (event != NULL)
+		status = event->GetStatus();
+	fCancelledCheckBox->SetValue(status & EVENT_CANCELLED);
+	fHiddenCheckBox->SetValue(status & EVENT_HIDDEN);
+	if (status & EVENT_DELETED)
+		fDeleteButton->SetLabel(B_TRANSLATE("Undelete"));
+
+	fDeleteButton->SetEnabled(fNew == false);
 }
 
 

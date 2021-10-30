@@ -30,18 +30,20 @@ public:
 
 		bool		AddEvent(Event* event);
 		bool		UpdateEvent(Event* event, Event* newEvent);
+		bool		UpdateEvent(Event* event, entry_ref ref);
 		bool		UpdateNotifiedEvent(const char* id);
 
 		Event*		GetEvent(const char* id);
 		Event*		GetEvent(const char* name, time_t startTime);
 		Event*		GetEvent(entry_ref ref);
-		BList*		GetEventsOfDay(BDate& date);
-		BList*		GetEventsOfWeek(BDate date);
+		BList*		GetEventsOfDay(BDate& date, bool ignoreHidden = true);
+		BList*		GetEventsOfWeek(BDate date, bool ignoreHidden = true);
 		BList*		GetEventsOfCategory(Category* category);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
 		bool		RemoveEvent(entry_ref eventRef,
 						const char* restorePath = NULL);
+		bool		RestoreEvent(entry_ref ref);
 
 		bool		AddCategory(Category* category);
 		bool		UpdateCategory(Category* category,
@@ -59,11 +61,13 @@ private:
 	entry_ref		_GetEventRef(const char* name, time_t startDate);
 	entry_ref		_GetCategoryRef(const char* name);
 
-	BList*			_GetEventsOfInterval(time_t start, time_t end);
-	status_t		_GetFileOfId(const char* id, BFile* file);
+	BList*			_GetEventsOfInterval(time_t start, time_t end,
+						bool ignoreHidden = true);
+	status_t		_GetFileOfId(const char* id, BFile* file,
+						entry_ref* ref = NULL);
 
 	Category*		_FileToCategory(BFile* file);
-	Event*			_FileToEvent(BFile* file);
+	Event*			_FileToEvent(entry_ref* ref);
 	bool			_CategoryToFile(Category* category, BFile* file);
 	bool			_EventToFile(Event* event, BFile* file);
 
@@ -72,6 +76,7 @@ private:
 	status_t		_CategoryStatusSwitch(status_t);
 	status_t		_EventStatusSwitch(status_t);
 	status_t		_TrashStatusSwitch(status_t);
+	status_t		_RestoreStatusSwitch(status_t);
 
 	void			_ImportFromSQL(BPath dbPath);
 	void			_MigrateCancellations(BPath cancelPath);
@@ -81,11 +86,15 @@ private:
 	void			_AddIndices();
 
 	void			_AddAttribute(BMessage& msg, const char* name,
-								const char* publicName, int32 type,
-								bool viewable, int32 width);
+						const char* publicName, int32 type,
+						bool viewable, int32 width);
 	status_t		_CreateUniqueFile(BDirectory* dir, BString leaf,
-								BFile* newFile);
+						BFile* newFile);
 	BString			_UniqueFilename(BDirectory* dir, BString leaf);
+	BString			_UniqueEventName(BString name, time_t startTime,
+						const char* id = NULL);
+	BString			_IncrementSuffix(BString string);
+
 	BPath			_SettingsPath(const char* leaf);
 	BDirectory*		_EnsureDirectory(BPath path);
 

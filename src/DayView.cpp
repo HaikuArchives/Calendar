@@ -97,24 +97,32 @@ DayView::MessageReceived(BMessage* message)
 		}
 		case kDeleteEventMessage:
 		case kCancelEventMessage:
+		case kHideEventMessage:
 		{
 			int32 selection = fEventListView->CurrentSelection();
 			if (selection < 0)
 				return;
 			Event* event = ((Event*)fEventList->ItemAt(selection));
 			bool isCancelled = (event->GetStatus() & EVENT_CANCELLED);
+			bool isHidden = (event->GetStatus() & EVENT_HIDDEN);
 
 			BString title(B_TRANSLATE("Confirm delete"));
 			BString label(B_TRANSLATE("Are you sure you want to move the selected event to Trash?"));
 			if (message->what == kCancelEventMessage) {
 				title = B_TRANSLATE("Confirm cancellation");
 				label = B_TRANSLATE("Are you sure you want to cancel the selected event?");
+			} else if (message->what == kHideEventMessage) {
+				title = B_TRANSLATE("Confirm hiding");
+				label = B_TRANSLATE("Are you sure you want to hide the selected event?\n"
+					"If you want to unhide it, you'll have to open the event file manually.");
 			}
 
-			// If disabling a previous cancellation, the confirmation dialogue
-			// doesn't really make sense.
+			// If disabling a previous cancellation or unhiding, the
+			// confirmation dialogue doesn't really make sense.
 			int32 button_index = 0;
-			if (!(message->what == kCancelEventMessage && isCancelled == true)) {
+			if (!(message->what == kCancelEventMessage && isCancelled == true)
+				&& !(message->what == kHideEventMessage && isHidden == true))
+			{
 				BAlert* alert = new BAlert(title, label, NULL, B_TRANSLATE("OK"),
 					B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 				alert->SetShortcut(1, B_ESCAPE);
@@ -128,6 +136,10 @@ DayView::MessageReceived(BMessage* message)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_CANCELLED);
 				else if (message->what == kCancelEventMessage)
 					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_CANCELLED);
+				else if (message->what == kHideEventMessage && isHidden == false)
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_HIDDEN);
+				else if (message->what == kHideEventMessage)
+					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_HIDDEN);
 				else
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
 

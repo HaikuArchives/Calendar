@@ -126,6 +126,7 @@ EventListView::MessageReceived(BMessage* message)
 
 		case kDeleteActionInvoked:
 		case kCancelActionInvoked:
+		case kHideActionInvoked:
 		{
 			fShowingPopUpMenu = false;
 			BView* view = Window()->FindView("DayView");
@@ -133,6 +134,8 @@ EventListView::MessageReceived(BMessage* message)
 			BMessage msg(kDeleteEventMessage);
 			if (message->what == kCancelActionInvoked)
 				msg.what = kCancelEventMessage;
+			else if (message->what == kHideActionInvoked)
+				msg.what = kHideEventMessage;
 			msgr.SendMessage(&msg);
 			break;
 		}
@@ -198,9 +201,12 @@ EventListView::SelectionChanged()
 	if (CurrentSelection() > -1) {
 		EventListItem* sItem = dynamic_cast<EventListItem *>
 			(ItemAt(CurrentSelection()));
-		if (sItem != NULL)
-			msg.AddBool("_cancelled",
-				(sItem->GetEvent()->GetStatus() & EVENT_CANCELLED));
+		if (sItem != NULL) {
+			uint16 status = sItem->GetEvent()->GetStatus();
+			msg.AddBool("_cancelled", (status & EVENT_CANCELLED));
+			msg.AddBool("_deleted", (status & EVENT_DELETED));
+			msg.AddBool("_hidden", (status & EVENT_HIDDEN));
+		}
 	}
 	Messenger().SendMessage(&msg);
 }
@@ -232,6 +238,7 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 
 	EventListItem* sItem = dynamic_cast<EventListItem *>
 		(ItemAt(CurrentSelection()));
+	uint16 eventStatus = sItem->GetEvent()->GetStatus();
 
 	PopUpMenu* menu = new PopUpMenu("PopUpMenu", this);
 
@@ -241,10 +248,15 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Delete"),
 			new BMessage(kDeleteActionInvoked), 'D');
+	item->SetMarked(eventStatus & EVENT_DELETED);
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Cancel"),
 			new BMessage(kCancelActionInvoked));
-	item->SetMarked(sItem->GetEvent()->GetStatus() & EVENT_CANCELLED);
+	item->SetMarked(eventStatus & EVENT_CANCELLED);
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Hide"),
+			new BMessage(kHideActionInvoked));
+	item->SetMarked(eventStatus & EVENT_HIDDEN);
 	menu->AddItem(item);
 
 	if (!fPopUpMenuEnabled) {
