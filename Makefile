@@ -61,10 +61,12 @@ SRCS = \
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
 RDEFS = \
-	 src/calendar.rdef  \
-	 images/icons/add_event.rdef \
-	 images/icons/app_icon.rdef \
-	 images/icons/toolbar_placeholder.rdef \
+	src/calendar.rdef  \
+	images/icons/add_event.rdef \
+	images/icons/app_icon.rdef \
+	images/icons/category.rdef \
+	images/icons/event.rdef \
+	images/icons/toolbar_placeholder.rdef \
 
 
 #	Specify the resource files to use. Full or relative paths can be used.

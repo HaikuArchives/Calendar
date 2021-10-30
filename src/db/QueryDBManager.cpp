@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include <Alert.h>
+#include <Bitmap.h>
 #include <Catalog.h>
 #include <Directory.h>
 #include <Entry.h>
@@ -18,6 +19,7 @@
 #include <Message.h>
 #include <MimeType.h>
 #include <Query.h>
+#include <Resources.h>
 #include <String.h>
 #include <StringList.h>
 #include <VolumeRoster.h>
@@ -901,8 +903,11 @@ bool
 QueryDBManager::_CategoryMimetype()
 {
 	BMessage info;
+	uint8* iconData;
+	size_t iconLength = 0;
 	BMimeType mime("application/x-calendar-category" );
-	if (mime.IsInstalled())
+	if (mime.IsInstalled()
+		&& mime.GetIcon(&iconData, &iconLength) != B_ENTRY_NOT_FOUND)
 		return true;
 
 	mime.GetAttrInfo(&info);
@@ -915,6 +920,11 @@ QueryDBManager::_CategoryMimetype()
 	_AddAttribute(info, "Category:Color",	"Color", B_RGB_COLOR_TYPE, false, 100);
 	_AddAttribute(info, "Calendar:ID",		"ID", B_STRING_TYPE, true, 100);
 
+	size_t length = 0;
+	BResources* res = BApplication::AppResources();
+	const void* icon = res->LoadResource('VICN', "CATEGORY_ICON", &length);
+	mime.SetIcon((uint8*)icon, length);
+
 	return mime.SetAttrInfo( &info );
 }
 
@@ -923,8 +933,11 @@ bool
 QueryDBManager::_EventMimetype()
 {
 	BMessage info;
+	uint8* iconData;
+	size_t iconLength = 0;
 	BMimeType mime("application/x-calendar-event" );
-	if (mime.IsInstalled())
+	if (mime.IsInstalled()
+		&& mime.GetIcon(&iconData, &iconLength) != B_ENTRY_NOT_FOUND)
 		return true;
 
 	mime.GetAttrInfo(&info);
@@ -944,6 +957,10 @@ QueryDBManager::_EventMimetype()
 	_AddAttribute(info, "Event:Updated", "Updated",	B_TIME_TYPE, true, 150);
 	_AddAttribute(info, "Event:Status",	"Status",	B_STRING_TYPE, true, 50);
 	_AddAttribute(info, "Calendar:ID",	"ID",		B_STRING_TYPE, true, 100);
+
+	BResources* res = BApplication::AppResources();
+	const void* icon = res->LoadResource('VICN', "EVENT_ICON", &iconLength);
+	mime.SetIcon((uint8*)icon, iconLength);
 
 	return mime.SetAttrInfo( &info );
 }
