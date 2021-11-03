@@ -1052,7 +1052,8 @@ QueryDBManager::_MigrateCancellations(BPath cancelPath)
 status_t
 QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name, BFile* newFile)
 {
-	return dir->CreateFile(_UniqueFilename(dir, name).String(), newFile, true);
+	return dir->CreateFile(_UniqueFilename(dir,
+		name.ReplaceAllChars("/","∕", 0)).String(), newFile, true);
 }
 
 
