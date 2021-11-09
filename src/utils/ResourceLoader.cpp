@@ -1,5 +1,6 @@
 /*
  * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
+ * Copyight 2021 Jaidyn Levesque, jadedctrl@teknik.io
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
@@ -13,12 +14,15 @@
 #include <TranslatorFormats.h>
 #include <TranslationUtils.h>
 
+// The "greenscreen" color used by recoloured icons
+const rgb_color SUBSTITUTION_COLOR = { 12, 135, 03 };
 
-BBitmap* LoadVectorIcon(const char* name, int32 iconSize, int32 cropSize)
+
+BBitmap*
+LoadVectorIcon(const char* name, int32 iconSize, int32 cropSize)
 {
-	BResources* res = BApplication::AppResources();
 	size_t length = 0;
-	const void* data = res->LoadResource(B_VECTOR_ICON_TYPE, name, &length);
+	const void* data = LoadVectorIcon(name, &length);
 	BBitmap* temp = new BBitmap(BRect(0, 0, iconSize - 1, iconSize - 1),
 		B_BITMAP_NO_SERVER_LINK, B_RGBA32);
 	BBitmap* dest = new BBitmap(BRect(0, 0, cropSize - 1, cropSize - 1),
@@ -35,4 +39,40 @@ BBitmap* LoadVectorIcon(const char* name, int32 iconSize, int32 cropSize)
 	delete temp;
 	delete dest;
 	return NULL;
+}
+
+
+void*
+LoadVectorIcon(const char* name, size_t* length)
+{
+	BResources* res = BApplication::AppResources();
+	return (void*)res->LoadResource(B_VECTOR_ICON_TYPE, name, length);
+}
+
+
+uchar*
+LoadRecoloredIcon(const char* name, size_t* length, rgb_color newColor)
+{
+	uchar* newIcon = NULL;
+	void* icon = LoadVectorIcon(name, length);
+	if (icon != NULL) {
+		newIcon = new uchar[*length];
+		memcpy(newIcon, icon, *length);
+		RecolorIcon(newIcon, SUBSTITUTION_COLOR, newColor, *length);
+	}
+	return newIcon;
+}
+
+
+void
+RecolorIcon(uchar* icon, rgb_color oldColor, rgb_color newColor, size_t length)
+{
+	for (int i = 0; i < length; i++)
+		if (icon[i] == oldColor.red && icon[i+1] == oldColor.green
+			&& icon[i+2] == oldColor.blue)
+		{
+			icon[i] = newColor.red;
+			icon[i + 1] = newColor.green;
+			icon[i + 2] = newColor.blue;
+		}
 }
