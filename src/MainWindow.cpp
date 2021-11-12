@@ -297,9 +297,6 @@ MainWindow::_InitInterface()
 	fMenuBar->AddItem(fViewMenu);
 
 	fToolBar = new BToolBar();
-	fToolBar->AddAction(new BMessage(kSetCalendarToCurrentDate), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Today", B_TRANSLATE("Today"), true);
-	fToolBar->AddSeparator();
 	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
 		"Day", B_TRANSLATE("Day"), true);
 	fToolBar->AddAction(new BMessage(kWeekView), this, LoadVectorIcon("CALENDAR_ICON"),

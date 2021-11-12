@@ -8,8 +8,8 @@
 #include <DateTime.h>
 #include <View.h>
 
-#include "DateHeaderView.h"
 #include "CalendarView.h"
+#include "DateHeaderButton.h"
 
 class BButton;
 class BStringView;
@@ -42,7 +42,7 @@ private:
 		BStringView*		fYearLabel;
 		BStringView*		fMonthLabel;
 		CalendarView*   	fCalendarView;
-		DateHeaderView*		fDateHeaderView;
+		DateHeaderButton*	fDateHeaderButton;
 		BButton*		fMonthUpButton;
 		BButton*		fMonthDownButton;
 };
