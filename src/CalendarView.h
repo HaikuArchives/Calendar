@@ -9,7 +9,6 @@
 #include <DateTime.h>
 #include <View.h>
 
-#include "DateHeaderView.h"
 #include "QueryDBManager.h"
 
 

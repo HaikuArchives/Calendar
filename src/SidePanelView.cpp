@@ -45,7 +45,7 @@ SidePanelView::SidePanelView()
 	//fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
 	fCalendarView->SetSelectionMessage(new BMessage(kSelectionMessage));
 
-	fDateHeaderView = new DateHeaderView();
+	fDateHeaderButton = new DateHeaderButton();
 
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
@@ -71,7 +71,7 @@ SidePanelView::SidePanelView()
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
-		.Add(fDateHeaderView)
+		.Add(fDateHeaderButton)
 		.AddStrut(30)
 		.AddGroup(B_HORIZONTAL)
 			.Add(fMonthLabel)
@@ -98,7 +98,7 @@ SidePanelView::MessageReceived(BMessage* message)
 			message->FindInt32(B_OBSERVE_WHAT_CHANGE, &change);
 			switch (change) {
 				case kSystemDateChangeMessage:
-					fDateHeaderView->MessageReceived(message);
+					fDateHeaderButton->MessageReceived(message);
 					break;
 
 				default:
@@ -130,7 +130,7 @@ SidePanelView::MessageReceived(BMessage* message)
 		case B_LOCALE_CHANGED:
 		{
 			BLocaleRoster::Default()->Refresh();
-			fDateHeaderView->MessageReceived(message);
+			fDateHeaderButton->MessageReceived(message);
 			_UpdateDateLabel();
 			break;
 		}
