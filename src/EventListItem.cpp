@@ -15,8 +15,8 @@
 #include <MenuItem.h>
 #include <TimeFormat.h>
 
-#include "DayView.h"
 #include "Event.h"
+#include "EventTabView.h"
 
 
 #undef B_TRANSLATION_CONTEXT
@@ -154,31 +154,22 @@ EventListItem::_CalcTimeText(int32 mode)
 	BDateTime now = BDateTime::CurrentDateTime(B_LOCAL_TIME);
 
 	if (fEvent->IsAllDay() == true)
-		if (mode == kDayView)
-			timePeriod = B_TRANSLATE("All day");
-		else {
+		if ((mode & kAgendaView) || (mode & kDateView)) {
 			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
 				B_SHORT_DATE_FORMAT);
 			BString startday(B_TRANSLATE("All day, %startDay%"));
 			startday.ReplaceAll("%startDay%", startDay);
 			timePeriod << startday;
 		}
+		else
+			timePeriod = B_TRANSLATE("All day");
 	else {
 		timeFormat.Format(startTime, fEvent->GetStartDateTime(),
 			B_SHORT_TIME_FORMAT);
 		timeFormat.Format(endTime, fEvent->GetEndDateTime(),
 			B_SHORT_TIME_FORMAT);
 
-		if (mode == kDayView)
-			timePeriod << startTime << " - " << endTime;
-		else if (mode == kWeekView) {
-			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
-				B_SHORT_DATE_FORMAT);
-			dateFormat.Format(endDay, fEvent->GetEndDateTime(),
-				B_SHORT_DATE_FORMAT);
-			timePeriod << startTime << ", " << startDay << " - " \
-							<< endTime << ", " << endDay;
-		} else {
+		if (mode & kAgendaView) {
 			BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
 			if (now.Time_t() >= fEvent->GetStartDateTime() && 
 			    now.Time_t() <= fEvent->GetEndDateTime()) {
@@ -194,6 +185,15 @@ EventListItem::_CalcTimeText(int32 mode)
 			} else
 				timePeriod = B_TRANSLATE("Finished!");
 		}
+		else if (mode & kDateView) {
+			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
+				B_SHORT_DATE_FORMAT);
+			dateFormat.Format(endDay, fEvent->GetEndDateTime(),
+				B_SHORT_DATE_FORMAT);
+			timePeriod << startTime << ", " << startDay << " - " \
+							<< endTime << ", " << endDay;
+		} else
+			timePeriod << startTime << " - " << endTime;
 	}
 
 	if (fEvent->GetStatus() & EVENT_CANCELLED)

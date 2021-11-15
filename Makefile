@@ -36,9 +36,9 @@ SRCS = \
 	 src/CategoryListItem.cpp \
 	 src/CalendarMenuWindow.cpp  \
 	 src/DateHeaderButton.cpp  \
-	 src/DayView.cpp  \
 	 src/EventListView.cpp  \
 	 src/EventListItem.cpp  \
+	 src/EventTabView.cpp  \
 	 src/EventWindow.cpp  \
 	 src/PreferenceWindow.cpp  \
 	 src/NotificationLoop.cpp  \

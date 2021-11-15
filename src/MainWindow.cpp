@@ -13,16 +13,15 @@
 #include <MenuItem.h>
 #include <MenuBar.h>
 #include <NodeInfo.h>
-#include <ToolBar.h>
 #include <vector>
 
 #include "App.h"
 #include "Button.h"
 #include "CategoryEditWindow.h"
-#include "DayView.h"
 #include "Event.h"
 #include "EventListView.h"
 #include "EventSyncWindow.h"
+#include "EventTabView.h"
 #include "EventWindow.h"
 #include "MainView.h"
 #include "Preferences.h"
@@ -30,8 +29,6 @@
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
-
-using BPrivate::BToolBar;
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "MainWindow"
@@ -74,39 +71,33 @@ void
 MainWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what) {
-
 		case kMenuAppQuit:
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
-
 		case kAddEvent:
 			_LaunchEventManager(NULL);
 			break;
-
 		case kEditEventMessage:
 		case kDeleteEventMessage:
 		case kCancelEventMessage:
 		case kHideEventMessage:
+		case kChangeListMode:
+		case kChangeListTab:
+			fEventsView->MessageReceived(message);
+			break;
+		case kListTabChanged:
 		{
-			fDayView->MessageReceived(message);
+			for (int i = 0; i < fEventsView->CountTabs(); i++)
+				fViewMenu->ItemAt(i)->SetMarked(false);
+			fViewMenu->ItemAt(fEventsView->Selection())->SetMarked(true);
 			break;
 		}
-
-		case kWeekView:
-		case kDayView:
+		case kListModeChanged:
 		{
-			_ToggleEventViewButton(message->what);
-			fDayView->MessageReceived(message);
+			bool agenda = (fEventsView->Mode() & kAgendaView);
+			fViewMenu->FindItem(B_TRANSLATE("Agenda mode"))->SetMarked(agenda);
 			break;
 		}
-
-		case kAgendaView:
-		{
-			_ToggleEventViewButton(message->what);
-			fDayView->MessageReceived(message);
-			break;
-		}
-
 		case kLaunchEventManagerToModify:
 		{
 			Event* event;
@@ -114,51 +105,44 @@ MainWindow::MessageReceived(BMessage* message)
 			_LaunchEventManager(event);
 			break;
 		}
-
 		case kEventWindowQuitting:
 		{
 			fEventWindow = NULL;
-			_UpdateDayView();
+			_UpdateEventsView();
 			_SetEventListPopUpEnabled(true);
 			fEventMenu->SetEnabled(true);
 			break;
 		}
-
 		case kSetCalendarToCurrentDate:
 			fSidePanelView->MessageReceived(message);
-			fDayView->MessageReceived(message);
+			fEventsView->MessageReceived(message);
 			break;
-
 		case kSelectedDateChanged:
-			_UpdateDayView();
+		case kSynchronizationComplete:
+			_UpdateEventsView();
 			break;
-
 		case kSelectionMessage:
 		{
 			fSidePanelView->MessageReceived(message);
 			break;
 		}
-
 		case kEventSelected:
 		{
 			_ToggleEventMenu(message);
 			break;
 		}
-
 		case kMonthUpMessage:
 		case kMonthDownMessage:
 			fSidePanelView->MessageReceived(message);
 			break;
-
 		case B_LOCALE_CHANGED:
 		{
 			Preferences* preferences = ((App*)be_app)->GetPreferences();
 			fSidePanelView->MessageReceived(message);
 			fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
-			_UpdateDayView();
+			_UpdateEventsView();
 			break;
 		}
-
 		case B_REFS_RECEIVED:
 		{
 			int i = 0;
@@ -192,36 +176,22 @@ MainWindow::MessageReceived(BMessage* message)
 			}
 			break;
 		}
-
-		case kSynchronizationComplete:
-			_UpdateDayView();
-			break;
-
 		case kAppPreferencesChanged:
 			_SyncWithPreferences();
 			break;
-
 		case kMenuAppPref:
-			be_app->PostMessage(message);
-			break;
-
 		case kMenuCategoryEdit:
-			be_app->PostMessage(message);
-			break;
-
 		case kMenuSyncGCAL:
 			be_app->PostMessage(message);
 			break;
-
 		case kRefreshCategoryList:
 		{
-			_UpdateDayView();
+			_UpdateEventsView();
 			if (fEventWindow != NULL) {
 				BMessenger msgr(fEventWindow);
 				msgr.SendMessage(message);
 			}
 		}
-
 		default:
 			BWindow::MessageReceived(message);
 			break;
@@ -284,10 +254,23 @@ MainWindow::_InitInterface()
 	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
 	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage categories" B_UTF8_ELLIPSIS),
 		new BMessage(kMenuCategoryEdit)));
+
+	BMessage* agendaMsg = new BMessage(kChangeListMode);
+	agendaMsg->AddUInt8("mode", (uint8)kAgendaView);
+
+	BMessage* dayMsg = new BMessage(kChangeListTab);
+	dayMsg->AddInt32("tab", kDayTab);
+	BMessage* weekMsg = new BMessage(kChangeListTab);
+	weekMsg->AddInt32("tab", kWeekTab);
+	BMessage* monthMsg = new BMessage(kChangeListTab);
+	monthMsg->AddInt32("tab", kMonthTab);
+
 	fViewMenu = new BMenu(B_TRANSLATE("View"));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Day view"), new BMessage(kDayView)));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Week view"), new BMessage(kWeekView)));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda view"), new BMessage(kAgendaView)));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Day view"), dayMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Week view"), weekMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Month view"), monthMsg));
+	fViewMenu->AddSeparatorItem();
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda mode"), agendaMsg));
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Go to today"), new BMessage(kSetCalendarToCurrentDate)));
 
@@ -296,32 +279,18 @@ MainWindow::_InitInterface()
 	fMenuBar->AddItem(fCategoryMenu);
 	fMenuBar->AddItem(fViewMenu);
 
-	fToolBar = new BToolBar();
-	fToolBar->AddAction(new BMessage(kDayView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Day", B_TRANSLATE("Day"), true);
-	fToolBar->AddAction(new BMessage(kWeekView), this, LoadVectorIcon("CALENDAR_ICON"),
-		"Week", B_TRANSLATE("Week"), true);
-	fToolBar->AddAction(new BMessage(kAgendaView), this, LoadVectorIcon("ADD_EVENT"),
-		"Agenda", B_TRANSLATE("Agenda"), true);
-	fToolBar->AddSeparator();
-	fToolBar->AddAction(new BMessage(kAddEvent), this, LoadVectorIcon("ADD_EVENT"),
-		"Add event", B_TRANSLATE("Add event"), true);
-	fToolBar->AddGlue();
-
 	fSidePanelView = new SidePanelView();
-	fDayView = new DayView(BDate::CurrentDate(B_LOCAL_TIME));
-
-	_ToggleEventViewButton(kDayView);
+	fEventsView = new EventTabView(BDate::CurrentDate(B_LOCAL_TIME));
 
 	fMainView->StartWatchingAll(fSidePanelView);
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
-		.Add(fDayView)
+		.SetInsets(0, 0, -2, -2)
+		.Add(fEventsView)
 	.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
-		.Add(fToolBar)
 		.AddGroup(B_HORIZONTAL, 0)
 			.Add(fSidePanelView, 1)
 			.Add(fMainView, 5)
@@ -357,7 +326,7 @@ MainWindow::_LaunchEventManager(Event* event, entry_ref* ref)
 void
 MainWindow::_SetEventListPopUpEnabled(bool state)
 {
-	fDayView->SetEventListPopUpEnabled(state);
+	fEventsView->SetPopUpEnabled(state);
 }
 
 
@@ -378,12 +347,11 @@ MainWindow::_SyncWithPreferences()
 
 
 void
-MainWindow::_UpdateDayView()
+MainWindow::_UpdateEventsView()
 {
 	BDate date = _GetSelectedCalendarDate();
-	fDayView->SetDate(date);
 	LockLooper();
-	fDayView->LoadEvents();
+	fEventsView->SetDate(date);
 	UnlockLooper();
 }
 
@@ -392,28 +360,6 @@ BDate
 MainWindow::_GetSelectedCalendarDate() const
 {
 	return fSidePanelView->GetSelectedDate();
-}
-
-
-void
-MainWindow::_ToggleEventViewButton(int selectedButtonId)
-{
-	static const std::vector<int> skEventViewButtonIds = { kDayView, kWeekView,
-			kAgendaView };
-
-	for (int buttonName : skEventViewButtonIds) {
-		BButton* button = fToolBar->FindButton(buttonName);
-		BMessage* message = button->Message();
-		if (message != NULL) {
-			button->SetValue(message->what == (uint32)selectedButtonId);
-		}
-
-		BMenuItem* item = fViewMenu->FindItem(buttonName);
-		message = button->Message();
-		if (message != NULL) {
-			item->SetMarked(message->what == (uint32)selectedButtonId);
-		}
-	}
 }
 
 
