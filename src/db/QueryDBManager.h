@@ -38,6 +38,9 @@ public:
 		Event*		GetEvent(entry_ref ref);
 		BList*		GetEventsOfDay(BDate& date, bool ignoreHidden = true);
 		BList*		GetEventsOfWeek(BDate date, bool ignoreHidden = true);
+		BList*		GetEventsOfMonth(BDate date, bool ignoreHidden = true);
+		BList*		GetEventsOfInterval(time_t start, time_t end,
+						bool ignoreHidden = true);
 		BList*		GetEventsOfCategory(Category* category);
 		BList*		GetEventsToNotify(BDateTime dateTime);
 		bool		RemoveEvent(Event* event);
@@ -61,8 +64,6 @@ private:
 	entry_ref		_GetEventRef(const char* name, time_t startDate);
 	entry_ref		_GetCategoryRef(const char* name);
 
-	BList*			_GetEventsOfInterval(time_t start, time_t end,
-						bool ignoreHidden = true);
 	status_t		_GetFileOfId(const char* id, BFile* file,
 						entry_ref* ref = NULL);
 

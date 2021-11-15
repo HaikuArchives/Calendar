@@ -4,7 +4,6 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-
 #include "EventListView.h"
 
 #include <Catalog.h>
@@ -14,8 +13,8 @@
 
 #include "Event.h"
 #include "EventListItem.h"
+#include "EventTabView.h"
 #include "MainWindow.h"
-#include "DayView.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "EventListView"
@@ -45,9 +44,9 @@ PopUpMenu::~PopUpMenu()
 }
 
 
-EventListView::EventListView()
+EventListView::EventListView(const char* name)
 	:
-	BListView("EventList"),
+	BListView(name),
 	fShowingPopUpMenu(false),
 	fPopUpMenuEnabled(true),
 	fPrimaryButton(false)
@@ -117,7 +116,7 @@ EventListView::MessageReceived(BMessage* message)
 		case kEditActionInvoked:
 		{
 			fShowingPopUpMenu = false;
-			BView* view = Window()->FindView("DayView");
+			BView* view = Window()->FindView("EventsView");
 			BMessenger msgr(view);
 			BMessage msg(kEditEventMessage);
 			msgr.SendMessage(&msg);
@@ -129,7 +128,7 @@ EventListView::MessageReceived(BMessage* message)
 		case kHideActionInvoked:
 		{
 			fShowingPopUpMenu = false;
-			BView* view = Window()->FindView("DayView");
+			BView* view = Window()->FindView("EventsView");
 			BMessenger msgr(view);
 			BMessage msg(kDeleteEventMessage);
 			if (message->what == kCancelActionInvoked)
@@ -220,6 +219,20 @@ EventListView::MakeEmpty()
 	Messenger().SendMessage(&msg);
 
 	BListView::MakeEmpty();
+}
+
+
+Event*
+EventListView::SelectedEvent()
+{
+	Event* event = NULL;
+	if (CurrentSelection() > -1) {
+		EventListItem* sItem = dynamic_cast<EventListItem *>
+			(ItemAt(CurrentSelection()));
+		if (sItem != NULL && sItem->GetEvent() != NULL)
+			event = sItem->GetEvent();
+	}
+	return event;
 }
 
 

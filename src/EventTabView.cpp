@@ -1,0 +1,288 @@
+/*
+ * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
+ * Copyright 2021, Jaidyn Levesque, jadedctrl@teknik.io
+ * All rights reserved. Distributed under the terms of the MIT license.
+ */
+
+#include "EventTabView.h"
+
+#include <Alert.h>
+#include <Catalog.h>
+#include <ScrollView.h>
+#include <Window.h>
+
+#include "Event.h"
+#include "EventListItem.h"
+#include "EventListView.h"
+#include "SidePanelView.h"
+#include "QueryDBManager.h"
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "DayView"
+
+EventTabView::EventTabView(const BDate& date)
+	: BTabView("EventsView")
+{
+	_AddEventList("Day", B_TRANSLATE("Day"), kDayTab);
+	_AddEventList("Week", B_TRANSLATE("Week"), kWeekTab);
+	_AddEventList("Month", B_TRANSLATE("Month"), kMonthTab);
+
+	fMode = 0;
+	fPopUpEnabled = true;
+	fEventList = new BList();
+	fDBManager = new QueryDBManager();
+	SetDate(date);
+}
+
+
+void
+EventTabView::AttachedToWindow()
+{
+	if (Selection() < 0)
+		Select(0);
+
+	EventListView* list = ListAt(Selection());
+	if (list != NULL)
+		list->SetTarget(this);
+}
+
+
+void
+EventTabView::MessageReceived(BMessage* message)
+{
+	switch (message->what) {
+		case kInvokationMessage:
+		case kEditEventMessage:
+		{
+			Event* event = SelectedEvent();
+			if (event != NULL) {
+				BMessage msg(kLaunchEventManagerToModify);
+				msg.AddPointer("event", event);
+				Window()->PostMessage(&msg);
+			}
+			break;
+		}
+		case kDeleteEventMessage:
+		case kCancelEventMessage:
+		case kHideEventMessage:
+		{
+			Event* event = SelectedEvent();
+			if (event == NULL)
+				return;
+			bool isCancelled = (event->GetStatus() & EVENT_CANCELLED);
+			bool isHidden = (event->GetStatus() & EVENT_HIDDEN);
+
+			BString title(B_TRANSLATE("Confirm delete"));
+			BString label(B_TRANSLATE("Are you sure you want to move the selected event to Trash?"));
+			if (message->what == kCancelEventMessage) {
+				title = B_TRANSLATE("Confirm cancellation");
+				label = B_TRANSLATE("Are you sure you want to cancel the selected event?");
+			} else if (message->what == kHideEventMessage) {
+				title = B_TRANSLATE("Confirm hiding");
+				label = B_TRANSLATE("Are you sure you want to hide the selected event?\n"
+					"If you want to unhide it, you'll have to open the event file manually.");
+			}
+
+			// If disabling a previous cancellation or unhiding, the
+			// confirmation dialogue doesn't really make sense.
+			int32 button_index = 0;
+			if (!(message->what == kCancelEventMessage && isCancelled == true)
+				&& !(message->what == kHideEventMessage && isHidden == true))
+			{
+				BAlert* alert = new BAlert(title, label, NULL, B_TRANSLATE("OK"),
+					B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				alert->SetShortcut(1, B_ESCAPE);
+				button_index = alert->Go();
+			}
+
+			if (button_index == 0) {
+				Event newEvent(*event);
+				newEvent.SetUpdated(time(NULL));
+				if (message->what == kCancelEventMessage && isCancelled == false)
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_CANCELLED);
+				else if (message->what == kCancelEventMessage)
+					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_CANCELLED);
+				else if (message->what == kHideEventMessage && isHidden == false)
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_HIDDEN);
+				else if (message->what == kHideEventMessage)
+					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_HIDDEN);
+				else
+					newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
+
+				fDBManager->UpdateEvent(event, &newEvent);
+				Window()->LockLooper();
+				LoadEvents();
+				Window()->UnlockLooper();
+			}
+			break;
+		}
+		case kChangeListMode: {
+			uint8 mode = 0;
+			if (message->FindUInt8("mode", &mode) == B_OK)
+				ToggleMode(mode);
+			break;
+		}
+		case kChangeListTab: {
+			int32 tab = message->GetInt32("tab", -1);
+			Select(tab);
+			break;
+		}
+		case kSetCalendarToCurrentDate:
+			LoadEvents();
+			break;
+		default:
+			BView::MessageReceived(message);
+			break;
+	}
+}
+
+
+void
+EventTabView::Select(int32 index)
+{
+	if (index < 0)
+		return;
+	if (index == kDayTab)
+		fMode &= ~kDateView;
+	else
+		fMode |= kDateView;
+	BTabView::Select(index);
+	ListAt(index)->SetPopUpMenuEnabled(fPopUpEnabled);
+	LoadEvents();
+
+	Window()->MessageReceived(new BMessage(kListTabChanged));
+}
+
+
+void
+EventTabView::SetDate(const BDate& date)
+{
+	fDate = date;
+	LoadEvents();
+}
+
+
+void
+EventTabView::ToggleMode(uint8 flag)
+{
+	fMode ^= flag;
+	_PopulateList();
+
+	Window()->MessageReceived(new BMessage(kListModeChanged));
+}
+
+
+uint8
+EventTabView::Mode()
+{
+	return fMode;
+}
+
+
+void
+EventTabView::SetPopUpEnabled(bool state)
+{
+	fPopUpEnabled = state;
+}
+
+
+Event*
+EventTabView::SelectedEvent()
+{
+	EventListView* list = ListAt(Selection());
+	Event* event = NULL;
+	if (list != NULL)
+		event = list->SelectedEvent();
+	return event;
+}
+
+
+void
+EventTabView::LoadEvents()
+{
+	fEventList->MakeEmpty();
+	switch (Selection()) {
+		case kDayTab:
+			fEventList = fDBManager->GetEventsOfDay(fDate, false);
+			break;
+		case kWeekTab:
+			fEventList = fDBManager->GetEventsOfWeek(fDate, false);
+			break;
+		case kMonthTab:
+			fEventList = fDBManager->GetEventsOfMonth(fDate, false);
+			break;
+	}
+
+	fEventList->SortItems((int (*)(const void *, const void *))_CompareFunc);
+	_PopulateList();
+}
+
+
+EventListView*
+EventTabView::ListAt(int32 index)
+{
+	BTab* tab = TabAt(index);
+	EventListView* list = NULL;
+	if (tab != NULL) {
+		BScrollView* scroll = (BScrollView*)tab->View();
+		if (scroll != NULL)
+			list = (EventListView*)scroll->Target();
+	}
+	return list;
+}
+
+
+void
+EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
+{
+	EventListView* listView = new EventListView(BString(name).Append("EventList"));
+	listView->SetInvocationMessage(new BMessage(kInvokationMessage));
+
+	BScrollView* scrollView = new BScrollView(BString(name).Append("Scroll"),
+		listView, B_WILL_DRAW, false, true);
+	scrollView->SetExplicitMinSize(BSize(260, 260));
+	scrollView->SetBorders(0);
+
+	AddTab(scrollView);
+	TabAt(tab)->SetLabel(label);
+}
+
+
+void
+EventTabView::_PopulateList()
+{
+	EventListView* list = ListAt(Selection());
+	if (list == NULL)
+		return;
+
+	list->MakeEmpty();
+	for (int32 i = 0; i < fEventList->CountItems(); i++) {
+		Event* event = ((Event*)fEventList->ItemAt(i));
+		if (event == NULL)
+			continue;
+
+		uint16 eventStatus = event->GetStatus();
+		if ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
+			continue;
+
+		EventListItem* item = new EventListItem(event, fMode);
+		list->AddItem(item);
+	}
+	list->Invalidate();
+}
+
+
+int
+EventTabView::_CompareFunc(const void* a, const void* b)
+{
+	if ((*(Event**) a)->IsAllDay() && !(*(Event**) b)->IsAllDay())
+		return -1;
+	else if ((*(Event**) b)->IsAllDay() && !(*(Event**) a)->IsAllDay())
+		return 1;
+	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) < 0 )
+		return -1;
+	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) > 0)
+		return 1;
+	else
+		return 0;
+}

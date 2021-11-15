@@ -252,7 +252,7 @@ QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 	time_t dayStart	= BDateTime(date, BTime(0, 0, 0)).Time_t();
 	time_t dayEnd	= BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(dayStart, dayEnd, ignoreHidden);
+	return GetEventsOfInterval(dayStart, dayEnd, ignoreHidden);
 }
 
 
@@ -264,7 +264,19 @@ QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 	date.AddDays(6);
 	time_t weekEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return _GetEventsOfInterval(weekStart, weekEnd, ignoreHidden);
+	return GetEventsOfInterval(weekStart, weekEnd, ignoreHidden);
+}
+
+
+BList*
+QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
+{
+	BDate startDate(date.Year(), date.Month(), 1);
+	BDate endDate(date.Year(), date.Month(), date.DaysInMonth());
+	time_t monthStart = BDateTime(startDate, BTime(0, 0, 0)).Time_t();
+	time_t monthEnd = BDateTime(endDate, BTime(23, 59, 59)).Time_t();
+
+	return GetEventsOfInterval(monthStart, monthEnd, ignoreHidden);
 }
 
 
@@ -519,7 +531,7 @@ QueryDBManager::_GetCategoryRef(const char* name)
 
 
 BList*
-QueryDBManager::_GetEventsOfInterval(time_t start, time_t end,
+QueryDBManager::GetEventsOfInterval(time_t start, time_t end,
 	bool ignoreHidden)
 {
 	BList* events = new BList();

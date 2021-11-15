@@ -11,19 +11,13 @@
 
 class BMenu;
 class BMenuBar;
-class DayView;
 class Event;
+class EventTabView;
 class EventWindow;
 class MainView;
 class Preferences;
 class PreferenceWindow;
 class SidePanelView;
-
-
-namespace BPrivate {
-	class BToolBar;
-}
-using BPrivate::BToolBar;
 
 
 static const uint32 kMenuAppPref = 'kmap';
@@ -43,30 +37,25 @@ private:
 	void			_InitInterface();
 	void			_LaunchEventManager(Event* event, entry_ref* ref = NULL);
 	void			_SyncWithPreferences();
-	void			_UpdateDayView();
+	void			_UpdateEventsView();
 	void			_SetEventListPopUpEnabled(bool state);
 	BDate			_GetSelectedCalendarDate() const;
-	void			_ToggleEventViewButton(int selectedButton);
 	void			_ToggleEventMenu(BMessage* msg);
 
 	static const int	kMenuAppQuit		= 1000;
 	static const int 	kAddEvent 		= 1005;
-	static const int 	kDayView 		= 1006;
-	static const int 	kWeekView		= 1007;
-	static const int 	kAgendaView		= 1008;
 
 
 	MainView*		fMainView;
-	EventWindow*		fEventWindow;
+	EventWindow*	fEventWindow;
 	BMenuBar*		fMenuBar;
 	BMenu*			fAppMenu;
 	BMenu*			fEventMenu;
 	BMenu*			fCategoryMenu;
 	BMenu*			fViewMenu;
 	BMenu*			fSyncMenu;
-	BToolBar*		fToolBar;
-	SidePanelView*		fSidePanelView;
-	DayView*		fDayView;
+	SidePanelView*	fSidePanelView;
+	EventTabView*	fEventsView;
 	thread_id		fNotificationThread;
 };
 

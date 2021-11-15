@@ -19,8 +19,8 @@
 #include <TimeZone.h>
 
 #include "App.h"
-#include "DayView.h"
 #include "Event.h"
+#include "EventTabView.h"
 #include "MainWindow.h"
 #include "Preferences.h"
 #include "QueryDBManager.h"

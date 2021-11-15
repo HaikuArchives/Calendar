@@ -9,23 +9,26 @@
 
 #include <ListView.h>
 
+class Event;
 
 static const uint32 kPopClosed	= 'kpop';
 
 
 class EventListView : public BListView {
 public:
-					EventListView();
+					EventListView(const char* name);
 					~EventListView();
 
 	virtual void	Draw(BRect rect);
 	virtual	void	FrameResized(float w, float h);
 	virtual	void	MessageReceived(BMessage* message);
 
-	void			MouseDown(BPoint position);
-	void			MouseUp(BPoint position);
-	void			SelectionChanged();
-	void			MakeEmpty();
+	virtual void	MouseDown(BPoint position);
+	virtual void	MouseUp(BPoint position);
+	virtual void	SelectionChanged();
+	virtual void	MakeEmpty();
+
+			Event*	SelectedEvent();
 
 	void			SetPopUpMenuEnabled(bool enable);
 
