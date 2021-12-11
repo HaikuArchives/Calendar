@@ -66,6 +66,8 @@ RDEFS = \
 	images/icons/app_icon.rdef \
 	images/icons/category.rdef \
 	images/icons/event.rdef \
+	images/icons/event-cancelled.rdef \
+	images/icons/event-hidden.rdef \
 	images/icons/toolbar_placeholder.rdef \
 
 
