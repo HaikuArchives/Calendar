@@ -700,16 +700,17 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 		return false;
 
 	BString status;
-	if (event->GetStatus() & EVENT_NOTIFIED)
+	uint16 statusInt = event->GetStatus();
+	if (statusInt & EVENT_NOTIFIED)
 		status << "Notified";
 	else
 		status << "Unnotified";
-	if (event->GetStatus() & EVENT_CANCELLED) {
+	if (statusInt & EVENT_CANCELLED) {
 		if (status.IsEmpty() == false)
 			status << ", ";
 		status << "Cancelled";
 	}
-	if (event->GetStatus() & EVENT_HIDDEN) {
+	if (statusInt & EVENT_HIDDEN) {
 		if (status.IsEmpty() == false)
 			status << ", ";
 		status << "Hidden";
@@ -752,8 +753,14 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 	time_t end = event->GetEndDateTime();
 	file->WriteAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 
+	const char* icon_type = "EVENT_ICON";
+	if (statusInt & EVENT_HIDDEN)
+		icon_type = "EVENT_HIDDEN_ICON";
+	else if (statusInt & EVENT_CANCELLED)
+		icon_type = "EVENT_CANCELLED_ICON";
+
 	size_t length = 0;
-	uchar* icon = LoadRecoloredIcon("EVENT_ICON", &length,
+	uchar* icon = LoadRecoloredIcon(icon_type, &length,
 		event->GetCategory()->GetColor());
 	if (icon != NULL) {
 		file->WriteAttr("BEOS:ICON", B_VECTOR_ICON_TYPE, 0, icon, length);
