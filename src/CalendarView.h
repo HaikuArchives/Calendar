@@ -24,23 +24,29 @@ using BPrivate::BCalendarView;
 
 class CalendarView: public BCalendarView {
 public:
-					CalendarView(BRect, const char*, uint32, uint32);
-					CalendarView(BMessage*);
-					CalendarView(const char*);
-					CalendarView(const char*, uint32);
+					CalendarView(BRect frame, const char* name,
+						uint32 resizeMask, uint32 flags);
+					CalendarView(BMessage* archive);
+					CalendarView(const char* text);
+					CalendarView(const char* name, uint32 flags);
 
-		void			DrawDay(BView*, BRect, const char*, bool, bool, bool, bool);
+	virtual	void	DrawDay(BView* owner, BRect frame, const char* text,
+						bool isSelected, bool isEnabled, bool focus,
+						bool isHighlight);
+
+			void	SetMarkHidden(bool show);
+
 private:
-		void			_Init();
-		void			_DrawItem(BView* owner, BRect frame, const char* text,
-							bool isHighlight, bool focus, rgb_color bgColor,
-							rgb_color textColor);
+			void	_Init();
+			void	_DrawItem(BView* owner, BRect frame, const char* text,
+						bool isHighlight, bool focus, rgb_color bgColor,
+						rgb_color textColor);
 
+		bool fMarkHidden;
 		QueryDBManager*	fDBManager;
 };
 
 
-rgb_color	TintColor(rgb_color color, rgb_color base, int severity);
 float		FontHeight(const BView* view);
 
 

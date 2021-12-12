@@ -66,6 +66,7 @@ Preferences::Load(const char* filename)
 		storage.Unflatten(file);
 	fStartOfWeekOffset = storage.GetInt32("startOfWeekOffset", 0);
 	fHeaderVisible = storage.GetBool("headerVisible", false);
+	fFirstDeletion = storage.GetBool("firstDeletion", true);
 	fDefaultCategory = storage.GetString("defaultCategory", B_TRANSLATE("Default"));
 	fMainWindowRect = storage.GetRect("mainWindowRect", BRect());
 	fEventWindowRect = storage.GetRect("eventWindowRect", BRect());
@@ -122,6 +123,7 @@ Preferences::Save(const char* filename)
 	BMessage storage;
 	storage.AddInt32("startOfWeekOffset", fStartOfWeekOffset);
 	storage.AddBool("headerVisible", fHeaderVisible);
+	storage.AddBool("firstDeletion", fFirstDeletion);
 	storage.AddString("defaultCategory", fDefaultCategory);
 	storage.AddRect("mainWindowRect", fMainWindowRect);
 	storage.AddRect("eventWindowRect", fEventWindowRect);

@@ -95,7 +95,15 @@ MainWindow::MessageReceived(BMessage* message)
 		case kListModeChanged:
 		{
 			bool agenda = (fEventsView->Mode() & kAgendaView);
+			bool hidden = (fEventsView->Mode() & kHiddenView);
 			fViewMenu->FindItem(B_TRANSLATE("Agenda mode"))->SetMarked(agenda);
+			fViewMenu->FindItem(B_TRANSLATE("Show hidden/deleted events"))->SetMarked(hidden);
+
+			if (hidden == true)
+				((App*)be_app)->GetPreferences()->fFirstDeletion = false;
+
+			message->AddBool("hidden", hidden);
+			fSidePanelView->MessageReceived(message);
 			break;
 		}
 		case kLaunchEventManagerToModify:
@@ -122,15 +130,11 @@ MainWindow::MessageReceived(BMessage* message)
 			_UpdateEventsView();
 			break;
 		case kSelectionMessage:
-		{
 			fSidePanelView->MessageReceived(message);
 			break;
-		}
 		case kEventSelected:
-		{
 			_ToggleEventMenu(message);
 			break;
-		}
 		case kMonthUpMessage:
 		case kMonthDownMessage:
 			fSidePanelView->MessageReceived(message);
@@ -257,6 +261,8 @@ MainWindow::_InitInterface()
 
 	BMessage* agendaMsg = new BMessage(kChangeListMode);
 	agendaMsg->AddUInt8("mode", (uint8)kAgendaView);
+	BMessage* hiddenMsg = new BMessage(kChangeListMode);
+	hiddenMsg->AddUInt8("mode", (uint8)kHiddenView);
 
 	BMessage* dayMsg = new BMessage(kChangeListTab);
 	dayMsg->AddInt32("tab", kDayTab);
@@ -271,6 +277,7 @@ MainWindow::_InitInterface()
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Month view"), monthMsg));
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda mode"), agendaMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Show hidden/deleted events"), hiddenMsg));
 	fViewMenu->AddSeparatorItem();
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Go to today"), new BMessage(kSetCalendarToCurrentDate)));
 

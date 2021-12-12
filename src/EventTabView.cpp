@@ -11,6 +11,7 @@
 #include <ScrollView.h>
 #include <Window.h>
 
+#include "App.h"
 #include "Event.h"
 #include "EventListItem.h"
 #include "EventListView.h"
@@ -71,26 +72,16 @@ EventTabView::MessageReceived(BMessage* message)
 				return;
 			bool isCancelled = (event->GetStatus() & EVENT_CANCELLED);
 			bool isHidden = (event->GetStatus() & EVENT_HIDDEN);
+			bool isDeleted = (event->GetStatus() & EVENT_DELETED);
 
-			BString title(B_TRANSLATE("Confirm delete"));
-			BString label(B_TRANSLATE("Are you sure you want to move the selected event to Trash?"));
-			if (message->what == kCancelEventMessage) {
-				title = B_TRANSLATE("Confirm cancellation");
-				label = B_TRANSLATE("Are you sure you want to cancel the selected event?");
-			} else if (message->what == kHideEventMessage) {
-				title = B_TRANSLATE("Confirm hiding");
-				label = B_TRANSLATE("Are you sure you want to hide the selected event?\n"
-					"If you want to unhide it, you'll have to open the event file manually.");
-			}
-
-			// If disabling a previous cancellation or unhiding, the
-			// confirmation dialogue doesn't really make sense.
+			// If deleting an event, make sure user's prepared for the
+			// dire consequences!
 			int32 button_index = 0;
-			if (!(message->what == kCancelEventMessage && isCancelled == true)
-				&& !(message->what == kHideEventMessage && isHidden == true))
-			{
-				BAlert* alert = new BAlert(title, label, NULL, B_TRANSLATE("OK"),
-					B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			if (message->what == kDeleteEventMessage && isDeleted == false) {
+				BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
+					B_TRANSLATE("Are you sure you want to move the selected event to Trash?"),
+					NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"),
+					B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 				alert->SetShortcut(1, B_ESCAPE);
 				button_index = alert->Go();
 			}
@@ -106,13 +97,26 @@ EventTabView::MessageReceived(BMessage* message)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_HIDDEN);
 				else if (message->what == kHideEventMessage)
 					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_HIDDEN);
-				else
+				else if (message->what == kDeleteEventMessage && isDeleted == false)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
+				else if (message->what == kDeleteEventMessage && isDeleted == true)
+					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_DELETED);
 
 				fDBManager->UpdateEvent(event, &newEvent);
 				Window()->LockLooper();
 				LoadEvents();
 				Window()->UnlockLooper();
+			}
+
+			if ((message->what == kDeleteEventMessage || message->what == kHideEventMessage)
+				&& ((App*)be_app)->GetPreferences()->fFirstDeletion == true)
+			{
+				((App*)be_app)->GetPreferences()->fFirstDeletion = false;
+				BAlert* alert = new BAlert(B_TRANSLATE("Managing events"),
+					B_TRANSLATE("Keep in mind, you can manage deleted and hidden events by "
+						"toggling \"Show hidden/deleted events\" in the \"View\" menu."),
+					B_TRANSLATE("OK"));
+				alert->Go();
 			}
 			break;
 		}
@@ -261,8 +265,10 @@ EventTabView::_PopulateList()
 		if (event == NULL)
 			continue;
 
+		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
-		if ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
+		if (hidden == false &&
+			((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN)))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);
