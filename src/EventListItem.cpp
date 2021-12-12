@@ -15,6 +15,7 @@
 #include <MenuItem.h>
 #include <TimeFormat.h>
 
+#include "ColorConverter.h"
 #include "Event.h"
 #include "EventTabView.h"
 
@@ -46,11 +47,21 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	BFont timefont;
 	font_height finfo;
 
+	uint16 status = fEvent->GetStatus();
+	int severity = 0;
+	if (status & EVENT_HIDDEN)
+		severity = 1;
+	if (status & EVENT_DELETED)
+		severity = 2;
+	if (IsSelected() == true)
+		severity = 0;
+
 	rgb_color bgColor;
-	if (IsSelected())
+	if (IsSelected() == true)
 		bgColor = ui_color(B_LIST_SELECTED_BACKGROUND_COLOR);
 	else
 		bgColor = ui_color(B_LIST_BACKGROUND_COLOR);
+	bgColor = TintColor(bgColor, bgColor, severity);
 
 	view->SetHighColor(bgColor);
 	view->SetLowColor(bgColor);
@@ -77,20 +88,17 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	offset += spacing + colorRect.Width() + 2;
 
 	// event time period
-	rgb_color color;
+	rgb_color textColor;
 
 	float tint = B_NO_TINT;
 	float lightTime = B_LIGHTEN_2_TINT;
 	float darkTime = B_DARKEN_3_TINT;
 
 	if (IsSelected())
-		color = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+		textColor = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
 	else
-		color = ui_color(B_LIST_ITEM_TEXT_COLOR);
-
-	tint = color.red + color.green + color.blue > 128 * 3
-			? darkTime : lightTime;
-	view->SetHighColor(tint_color(color, tint));
+		textColor = ui_color(B_LIST_ITEM_TEXT_COLOR);
+	view->SetHighColor(TintColor(textColor, textColor, 1));
 	
 	view->MovePenTo(offset,
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
@@ -102,12 +110,17 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->DrawString(timeText.String());
 
 	// event name
-	view->SetHighColor(color);
+	view->SetHighColor(textColor);
 
+	uint16 face = 0;
 	namefont.SetSize(timefont.Size() + 2);
 	namefont.GetHeight(&finfo);
 	if (fEvent->GetStatus() & EVENT_CANCELLED)
-		namefont.SetFace(0 | B_ITALIC_FACE | B_LIGHT_FACE | B_STRIKEOUT_FACE);
+		face |= B_ITALIC_FACE;
+	if (fEvent->GetStatus() & EVENT_DELETED)
+		face |= B_STRIKEOUT_FACE;
+	if (face != 0)
+		namefont.SetFace(face | B_LIGHT_FACE);
 	view->SetFont(&namefont);
 
 	view->MovePenTo(offset, rect.top + ((rect.Height()
@@ -153,6 +166,14 @@ EventListItem::_CalcTimeText(int32 mode)
 	BDateFormat dateFormat;
 	BDateTime now = BDateTime::CurrentDateTime(B_LOCAL_TIME);
 
+	uint16 status = fEvent->GetStatus();
+	if (status & EVENT_CANCELLED)
+		timePeriod << B_TRANSLATE("[Cancelled] ");
+	if (status & EVENT_HIDDEN)
+		timePeriod << B_TRANSLATE("[Hidden] ");
+	if (status & EVENT_DELETED)
+		timePeriod << B_TRANSLATE("[Deleted] ");
+
 	if (fEvent->IsAllDay() == true)
 		if ((mode & kAgendaView) || (mode & kDateView)) {
 			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
@@ -162,7 +183,7 @@ EventListItem::_CalcTimeText(int32 mode)
 			timePeriod << startday;
 		}
 		else
-			timePeriod = B_TRANSLATE("All day");
+			timePeriod << B_TRANSLATE("All day");
 	else {
 		timeFormat.Format(startTime, fEvent->GetStartDateTime(),
 			B_SHORT_TIME_FORMAT);
@@ -195,9 +216,6 @@ EventListItem::_CalcTimeText(int32 mode)
 		} else
 			timePeriod << startTime << " - " << endTime;
 	}
-
-	if (fEvent->GetStatus() & EVENT_CANCELLED)
-		timePeriod << " [Cancelled]";
 
 	fTimeText = timePeriod;
 }

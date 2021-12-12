@@ -28,6 +28,8 @@ public:
 	BString					fDefaultCategory;
 	BRect					fMainWindowRect;
 	BRect					fEventWindowRect;
+
+	bool					fFirstDeletion;
 };
 
 

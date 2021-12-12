@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
-
 #include "SidePanelView.h"
 
 #include <Button.h>
@@ -13,10 +12,11 @@
 #include <LocaleRoster.h>
 #include <StringView.h>
 
+#include "CalendarView.h"
+#include "EventTabView.h"
 #include "MainView.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
-#include "CalendarView.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "SidePanelView"
@@ -93,8 +93,8 @@ SidePanelView::MessageReceived(BMessage* message)
 {
 	int32 change;
 	switch (message->what) {
-
 		case B_OBSERVER_NOTICE_CHANGE:
+		{
 			message->FindInt32(B_OBSERVE_WHAT_CHANGE, &change);
 			switch (change) {
 				case kSystemDateChangeMessage:
@@ -106,7 +106,7 @@ SidePanelView::MessageReceived(BMessage* message)
 					break;
 			}
 			break;
-
+		}
 		case kSelectionMessage:
 		{
 			int32 day, month, year;
@@ -117,7 +117,6 @@ SidePanelView::MessageReceived(BMessage* message)
 			_UpdateDate(BDate(year, month, day));
 			break;
 		}
-
 		case kMonthDownMessage:
 		case kMonthUpMessage:
 		{
@@ -126,7 +125,6 @@ SidePanelView::MessageReceived(BMessage* message)
 			_UpdateDate(date);
 			break;
 		}
-
 		case B_LOCALE_CHANGED:
 		{
 			BLocaleRoster::Default()->Refresh();
@@ -134,11 +132,16 @@ SidePanelView::MessageReceived(BMessage* message)
 			_UpdateDateLabel();
 			break;
 		}
-
+		case kListModeChanged:
+		{
+			bool hidden = false;
+			if (message->FindBool("hidden", &hidden) == B_OK)
+				fCalendarView->SetMarkHidden(hidden);
+			break;
+		}
 		case kSetCalendarToCurrentDate:
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
-
 		default:
 			BView::MessageReceived(message);
 			break;
@@ -156,10 +159,7 @@ SidePanelView::SetStartOfWeek(int32 index)
 	if (startOfWeekDay == kLocaleStartOfWeek) {
 		BDateFormat().GetStartOfWeek(&firstDay);
 		fCalendarView->SetStartOfWeek(firstDay);
-	}
-
-	else
-	{
+	} else {
 		firstDay = static_cast<BWeekday>(index);
 		fCalendarView->SetStartOfWeek(firstDay);
 	}

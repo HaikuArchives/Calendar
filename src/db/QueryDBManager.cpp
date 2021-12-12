@@ -202,12 +202,12 @@ QueryDBManager::RestoreEvent(entry_ref ref)
 
 	char oldLeaf[B_FILE_NAME_LENGTH] = {'\0'};
 	entry.GetName(oldLeaf);
-	BString leaf = _UniqueFilename(fEventDir, BString(oldLeaf));
+	BString leaf = _UniqueFilename(parentDir, BString(oldLeaf));
 
 	Event* event = _FileToEvent(&ref);
 	if (event != NULL) {
 		BString eventName = _UniqueEventName(event->GetName(),
-			event->GetStartDateTime());
+			event->GetStartDateTime(), event->GetId());
 		event->SetName(eventName);
 		_EventToFile(event, &file);
 	}

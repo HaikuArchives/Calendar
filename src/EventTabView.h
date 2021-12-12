@@ -28,7 +28,8 @@ const uint32 kListTabChanged = 'ketc';
 
 enum {
 	kAgendaView		= 1,
-	kDateView		= 2
+	kDateView		= 2,
+	kHiddenView		= 4
 };
 
 enum {

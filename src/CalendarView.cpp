@@ -8,51 +8,50 @@
 
 #include "CalendarView.h"
 
-#include <CalendarView.h>
-#include <DateFormat.h>
 #include <stdlib.h>
 
+#include <CalendarView.h>
+#include <DateFormat.h>
+
+#include "ColorConverter.h"
 #include "QueryDBManager.h"
 
 
-CalendarView::CalendarView(BRect frame, const char* name,
-	uint32 resizeMask, uint32 flags)
+CalendarView::CalendarView(BRect frame, const char* name, uint32 resizeMask,
+	uint32 flags)
 	:
 	BCalendarView(frame, name, resizeMask, flags)
 {
 	_Init();
 }
 
-CalendarView::CalendarView (const char* text)
-	:
-	BCalendarView(text)
-{
-	_Init();
-}
 
-CalendarView::CalendarView (BMessage* archive)
+CalendarView::CalendarView(BMessage* archive)
 	:
 	BCalendarView(archive)
 {
 	_Init();
 }
 
-CalendarView::CalendarView (const char* name, uint32 flags)
+
+CalendarView::CalendarView(const char* text)
+	:
+	BCalendarView(text)
+{
+	_Init();
+}
+
+
+CalendarView::CalendarView(const char* name, uint32 flags)
 	:
 	BCalendarView(name, flags)
 {
 	_Init();
 }
 
-void
-CalendarView::_Init ()
-{
-	fDBManager = new QueryDBManager();
-}
-
 
 void
-CalendarView::DrawDay (BView* owner, BRect frame, const char* text,
+CalendarView::DrawDay(BView* owner, BRect frame, const char* text,
 	bool isSelected, bool isEnabled, bool focus, bool isHighlight)
 {
 	int drawnYear  = Date().Year();
@@ -66,7 +65,7 @@ CalendarView::DrawDay (BView* owner, BRect frame, const char* text,
 	if (drawnMonth > 12) { drawnMonth -= 12; drawnYear++; }
 	BDate drawnDate = BDate(Date().Year(), drawnMonth, drawnDay);
 
-	int eventCount = fDBManager->GetEventsOfDay(drawnDate)->CountItems();
+	int eventCount = fDBManager->GetEventsOfDay(drawnDate, !fMarkHidden)->CountItems();
 	if (isEnabled == false && eventCount != 0)
 		eventCount = 1;
 
@@ -94,6 +93,24 @@ CalendarView::DrawDay (BView* owner, BRect frame, const char* text,
 
 	isHighlight = (eventCount > 0 && isEnabled == true);
 	_DrawItem(owner, frame, text, isHighlight, focus, bgColor, textColor);
+}
+
+
+void
+CalendarView::SetMarkHidden(bool show)
+{
+	if (fMarkHidden != show) {
+		fMarkHidden = show;
+		Invalidate();
+	}
+}
+
+
+void
+CalendarView::_Init()
+{
+	fDBManager = new QueryDBManager();
+	fMarkHidden = false;
 }
 
 
@@ -132,41 +149,6 @@ CalendarView::_DrawItem(BView* owner, BRect frame, const char* text,
 
 	SetLowColor(lColor);
 	SetHighColor(highColor);
-}
-
-
-rgb_color
-TintColor(rgb_color color, rgb_color base, int severity)
-{
-	bool dark = false;
-	if (base.Brightness() < 127)
-		dark = true;
-
-	switch (severity) {
-		case 0:
-			return color;
-		case 1:
-			if (dark == true)
-				return tint_color(color, B_LIGHTEN_1_TINT + 0.1f);
-			else
-				return tint_color(color, B_DARKEN_1_TINT);
-		case 2:
-			if (dark == true)
-				return tint_color(color, B_LIGHTEN_1_TINT);
-			else
-				return tint_color(color, B_DARKEN_2_TINT);
-		case 3: // intentional fallthrough
-		case 4:
-			if (dark == true)
-				return tint_color(color, B_LIGHTEN_2_TINT);
-			else
-				return tint_color(color, B_DARKEN_3_TINT);
-		default:
-			if (dark == true)
-				return tint_color(color, B_LIGHTEN_2_TINT - 0.1f);
-			else
-				return tint_color(color, B_DARKEN_4_TINT);
-	}
 }
 
 
