@@ -65,6 +65,8 @@ Preferences::Load(const char* filename)
 	if(result == B_OK)
 		storage.Unflatten(file);
 	fStartOfWeekOffset = storage.GetInt32("startOfWeekOffset", 0);
+	fSelectedTab = storage.GetInt32("selectedTab", 0);
+	fViewMode = storage.GetInt32("viewMode", 0);
 	fHeaderVisible = storage.GetBool("headerVisible", false);
 	fFirstDeletion = storage.GetBool("firstDeletion", true);
 	fDefaultCategory = storage.GetString("defaultCategory", B_TRANSLATE("Default"));
@@ -122,6 +124,8 @@ Preferences::Save(const char* filename)
 
 	BMessage storage;
 	storage.AddInt32("startOfWeekOffset", fStartOfWeekOffset);
+	storage.AddInt32("selectedTab", fSelectedTab);
+	storage.AddInt32("viewMode", fViewMode);
 	storage.AddBool("headerVisible", fHeaderVisible);
 	storage.AddBool("firstDeletion", fFirstDeletion);
 	storage.AddString("defaultCategory", fDefaultCategory);

@@ -28,7 +28,7 @@ EventTabView::EventTabView(const BDate& date)
 	_AddEventList("Week", B_TRANSLATE("Week"), kWeekTab);
 	_AddEventList("Month", B_TRANSLATE("Month"), kMonthTab);
 
-	fMode = 0;
+	fMode = ((App*)be_app)->GetPreferences()->fViewMode;
 	fPopUpEnabled = true;
 	fEventList = new BList();
 	fDBManager = new QueryDBManager();
@@ -39,8 +39,8 @@ EventTabView::EventTabView(const BDate& date)
 void
 EventTabView::AttachedToWindow()
 {
-	if (Selection() < 0)
-		Select(0);
+	Select(((App*)be_app)->GetPreferences()->fSelectedTab);
+	Window()->MessageReceived(new BMessage(kListModeChanged));
 
 	EventListView* list = ListAt(Selection());
 	if (list != NULL)
@@ -154,6 +154,8 @@ EventTabView::Select(int32 index)
 	ListAt(index)->SetPopUpMenuEnabled(fPopUpEnabled);
 	LoadEvents();
 
+	((App*)be_app)->GetPreferences()->fSelectedTab = index;
+	((App*)be_app)->GetPreferences()->fViewMode = fMode;
 	Window()->MessageReceived(new BMessage(kListTabChanged));
 }
 
@@ -172,6 +174,7 @@ EventTabView::ToggleMode(uint8 flag)
 	fMode ^= flag;
 	_PopulateList();
 
+	((App*)be_app)->GetPreferences()->fViewMode = fMode;
 	Window()->MessageReceived(new BMessage(kListModeChanged));
 }
 
