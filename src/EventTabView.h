@@ -48,6 +48,7 @@ public:
 	virtual void	Select(int32 index);
 
 			void	SetDate(const BDate& date);
+
 			void	ToggleMode(uint8 flag);
 			uint8	Mode();
 

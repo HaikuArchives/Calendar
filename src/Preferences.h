@@ -7,9 +7,6 @@
 #ifndef PREFERENCES_H
 #define PREFERENCES_H
 
-
-#include <string>
-
 #include <Path.h>
 #include <String.h>
 
@@ -24,13 +21,13 @@ public:
 	BPath					fSettingsPath;
 
 	int32					fStartOfWeekOffset;
+	int32					fViewMode;
+	int32					fSelectedTab;
 	bool					fHeaderVisible;
+	bool					fFirstDeletion;
 	BString					fDefaultCategory;
 	BRect					fMainWindowRect;
 	BRect					fEventWindowRect;
-
-	bool					fFirstDeletion;
 };
-
 
 #endif
