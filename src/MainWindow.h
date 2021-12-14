@@ -24,6 +24,8 @@ static const uint32 kMenuAppPref = 'kmap';
 static const uint32 kMenuCategoryEdit = 'kmce';
 static const uint32 kMenuSyncGCAL = 'kmsg';
 
+static const int 	kAddEventMessage = 1005;
+
 
 class MainWindow: public BWindow {
 public:
@@ -43,7 +45,6 @@ private:
 	void			_ToggleEventMenu(BMessage* msg);
 
 	static const int	kMenuAppQuit		= 1000;
-	static const int 	kAddEvent 		= 1005;
 
 
 	MainView*		fMainView;

@@ -39,6 +39,7 @@ private:
 	static const int32 kHideActionInvoked	= 1003;
 
 	void			_ShowPopUpMenu(BPoint screen);
+	void			_ShowEmptyPopUpMenu(BPoint screen);
 
 	bool			fShowingPopUpMenu;
 	bool			fPopUpMenuEnabled;

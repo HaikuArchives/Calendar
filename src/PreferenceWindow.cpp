@@ -29,7 +29,7 @@
 #define B_TRANSLATION_CONTEXT "PreferenceWindow"
 
 PreferenceWindow::PreferenceWindow(Preferences* preferences)
-	:BWindow(BRect(), B_TRANSLATE("Preferences"), B_TITLED_WINDOW,
+	:BWindow(BRect(), B_TRANSLATE("Settings"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	fCurrentPreferences = preferences;

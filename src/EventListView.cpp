@@ -11,6 +11,7 @@
 #include <PopUpMenu.h>
 #include <String.h>
 
+#include "App.h"
 #include "Event.h"
 #include "EventListItem.h"
 #include "EventTabView.h"
@@ -149,12 +150,6 @@ EventListView::MessageReceived(BMessage* message)
 void
 EventListView::MouseDown(BPoint position)
 {
-	BRect bounds(Bounds());
-	BRect itemFrame = ItemFrame(CountItems() - 1);
-	bounds.top = itemFrame.bottom;
-	if (bounds.Contains(position))
-		return;
-
 	uint32 buttons = 0;
 	if (Window() != NULL && Window()->CurrentMessage() != NULL)
 		buttons = Window()->CurrentMessage()->FindInt32("buttons");
@@ -246,21 +241,30 @@ EventListView::SetPopUpMenuEnabled(bool enable)
 void
 EventListView::_ShowPopUpMenu(BPoint screen)
 {
-	if (fShowingPopUpMenu || IsEmpty())
+	if (fShowingPopUpMenu == true)
 		return;
 
-	EventListItem* sItem = dynamic_cast<EventListItem *>
+	EventListItem* sItem = dynamic_cast<EventListItem*>
 		(ItemAt(CurrentSelection()));
+
+	if (CurrentSelection() < 0 || sItem == NULL) {
+		_ShowEmptyPopUpMenu(screen);
+		return;
+	}
+
 	uint16 eventStatus = sItem->GetEvent()->GetStatus();
 
 	PopUpMenu* menu = new PopUpMenu("PopUpMenu", this);
 
 	BMenuItem* item;
-	item = new BMenuItem(B_TRANSLATE("Edit"),
+	item = new BMenuItem(B_TRANSLATE("New" B_UTF8_ELLIPSIS),
+			new BMessage(kAddEventMessage), 'N');
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Edit" B_UTF8_ELLIPSIS),
 			new BMessage(kEditActionInvoked), 'E');
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Delete"),
-			new BMessage(kDeleteActionInvoked), 'D');
+			new BMessage(kDeleteActionInvoked), 'T');
 	item->SetMarked(eventStatus & EVENT_DELETED);
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Cancel"),
@@ -272,11 +276,28 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	item->SetMarked(eventStatus & EVENT_HIDDEN);
 	menu->AddItem(item);
 
-	if (!fPopUpMenuEnabled) {
+	if (fPopUpMenuEnabled == false)
 		menu->SetEnabled(false);
-	}
 
 	menu->SetTargetForItems(this);
+	menu->Go(screen, true, true, true);
+	fShowingPopUpMenu = true;
+}
+
+
+void
+EventListView::_ShowEmptyPopUpMenu(BPoint screen)
+{
+	PopUpMenu* menu = new PopUpMenu("PopUpMenu", this);
+
+	BMenuItem* item = new BMenuItem(B_TRANSLATE("New event" B_UTF8_ELLIPSIS),
+		new BMessage(kAddEventMessage), 'N');
+	item->SetTarget(((App*)be_app)->mainWindow());
+	menu->AddItem(item);
+
+	if (!fPopUpMenuEnabled)
+		menu->SetEnabled(false);
+
 	menu->Go(screen, true, true, true);
 	fShowingPopUpMenu = true;
 }

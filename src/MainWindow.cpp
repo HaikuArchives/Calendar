@@ -74,7 +74,7 @@ MainWindow::MessageReceived(BMessage* message)
 		case kMenuAppQuit:
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
-		case kAddEvent:
+		case kAddEventMessage:
 			_LaunchEventManager(NULL);
 			break;
 		case kEditEventMessage:
@@ -231,10 +231,12 @@ MainWindow::_InitInterface()
 	fMenuBar = new BMenuBar("MenuBar");
 
 	fAppMenu = new BMenu(B_TRANSLATE("App"));
-	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"), new BMessage(B_ABOUT_REQUESTED));
+	BMenuItem* item = new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS),
+		new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Preferences"), new BMessage(kMenuAppPref)));
+	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Settings" B_UTF8_ELLIPSIS),
+		new BMessage(kMenuAppPref), ',', B_COMMAND_KEY));
 	//
 	// Google Calendar support is broken.  It should be replaced with a generic solution to
 	// be able to sync with various calendars.  Leaving this here for now to give future
@@ -244,19 +246,25 @@ MainWindow::_InitInterface()
 	//fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
 	//fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
-	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
+	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit),
+		'Q', B_COMMAND_KEY));
 
 	fEventMenu = new BMenu(B_TRANSLATE("Event"));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Add event"), new BMessage(kAddEvent)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Edit event"), new BMessage(kEditEventMessage)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Remove event"), new BMessage(kDeleteEventMessage)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Cancel event"), new BMessage(kCancelEventMessage)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE("Hide event"), new BMessage(kHideEventMessage)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("New" B_UTF8_ELLIPSIS, "EventListView"),
+		new BMessage(kAddEventMessage), 'N', B_COMMAND_KEY));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Edit" B_UTF8_ELLIPSIS, "EventListView"),
+		new BMessage(kEditEventMessage), 'E', B_COMMAND_KEY));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Delete", "EventListView"),
+		new BMessage(kDeleteEventMessage), 'T', B_COMMAND_KEY));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Cancel", "EventListView"),
+		new BMessage(kCancelEventMessage)));
+	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Hide", "EventListView"),
+		new BMessage(kHideEventMessage)));
 	for (int i = 1; i < fEventMenu->CountItems(); i++)
 		fEventMenu->ItemAt(i)->SetEnabled(false);
 
 	fCategoryMenu = new BMenu(B_TRANSLATE("Category"));
-	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage categories" B_UTF8_ELLIPSIS),
+	fCategoryMenu->AddItem(new BMenuItem(B_TRANSLATE("Manage" B_UTF8_ELLIPSIS),
 		new BMessage(kMenuCategoryEdit)));
 
 	BMessage* agendaMsg = new BMessage(kChangeListMode);
@@ -272,10 +280,11 @@ MainWindow::_InitInterface()
 	monthMsg->AddInt32("tab", kMonthTab);
 
 	fViewMenu = new BMenu(B_TRANSLATE("View"));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Day view"), dayMsg));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Week view"), weekMsg));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Month view"), monthMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Day", "DayView"), dayMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Week", "DayView"), weekMsg));
+	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Month", "DayView"), monthMsg));
 	fViewMenu->AddSeparatorItem();
+
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda mode"), agendaMsg));
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Show hidden/deleted events"), hiddenMsg));
 	fViewMenu->AddSeparatorItem();
