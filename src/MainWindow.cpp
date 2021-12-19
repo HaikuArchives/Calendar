@@ -13,6 +13,9 @@
 #include <MenuItem.h>
 #include <MenuBar.h>
 #include <NodeInfo.h>
+#include <PathFinder.h>
+#include <Roster.h>
+#include <StringList.h>
 #include <vector>
 
 #include "App.h"
@@ -188,6 +191,9 @@ MainWindow::MessageReceived(BMessage* message)
 		case kMenuSyncGCAL:
 			be_app->PostMessage(message);
 			break;
+		case kMenuHelp:
+			_OpenHelp();
+			break;
 		case kRefreshCategoryList:
 		{
 			_UpdateEventsView();
@@ -235,6 +241,8 @@ MainWindow::_InitInterface()
 		new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
+	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Help" B_UTF8_ELLIPSIS),
+		new BMessage(kMenuHelp)));
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Settings" B_UTF8_ELLIPSIS),
 		new BMessage(kMenuAppPref), ',', B_COMMAND_KEY));
 	//
@@ -336,6 +344,29 @@ MainWindow::_LaunchEventManager(Event* event, entry_ref* ref)
 	}
 
 	fEventWindow->Activate();
+}
+
+
+void
+MainWindow::_OpenHelp()
+{
+	BPathFinder pathFinder;
+	BStringList paths;
+	BPath path;
+	BEntry entry;
+
+	status_t error = pathFinder.FindPaths(B_FIND_PATH_DOCUMENTATION_DIRECTORY,
+		"packages/calendar", paths);
+
+	for (int i = 0; i < paths.CountStrings(); ++i) {
+		if (error == B_OK && path.SetTo(paths.StringAt(i)) == B_OK
+			&& path.Append("Documentation.html") == B_OK) {
+			entry = path.Path();
+			entry_ref ref;
+			entry.GetRef(&ref);
+			be_roster->Launch(&ref);
+		}
+	}
 }
 
 
