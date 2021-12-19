@@ -1,22 +1,22 @@
 /*
  * Copyright 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
  * All rights reserved. Distributed under the terms of the MIT license.
+ * Contributed by:
+ *	Humdinger <humdingerb@gmail.com>, 2021
  */
 
 
 #include "PreferenceWindow.h"
 
 #include <Application.h>
-#include <Box.h>
 #include <Button.h>
 #include <Catalog.h>
-#include <ColorMenuItem.h>
 #include <CheckBox.h>
+#include <ColorMenuItem.h>
 #include <LayoutBuilder.h>
 #include <PopUpMenu.h>
 #include <MenuField.h>
-#include <StringView.h>
-#include <View.h>
+#include <SeparatorView.h>
 #include <Window.h>
 
 #include "App.h"
@@ -28,9 +28,10 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "PreferenceWindow"
 
-PreferenceWindow::PreferenceWindow(Preferences* preferences)
-	:BWindow(BRect(), B_TRANSLATE("Settings"), B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_NOT_RESIZABLE| B_AUTO_UPDATE_SIZE_LIMITS)
+PreferenceWindow::PreferenceWindow(BRect frame, Preferences* preferences)
+	:
+	BWindow(BRect(), B_TRANSLATE("Settings"), B_TITLED_WINDOW,
+		B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	fCurrentPreferences = preferences;
 
@@ -43,8 +44,8 @@ PreferenceWindow::PreferenceWindow(Preferences* preferences)
 	fDBManager = new QueryDBManager();
 
 	_InitInterface();
-	CenterOnScreen();
 
+	CenterIn(frame);
 	_SyncPreferences(fCurrentPreferences);
 }
 
@@ -101,6 +102,7 @@ PreferenceWindow::MessageReceived(BMessage* message)
 			BMenuItem* item = fDefaultCatMenu->FindMarked();
 			fTempPreferences->fDefaultCategory = BString(item->Label());
 			_PreferencesModified();
+			break;
 		}
 
 		default:
@@ -121,9 +123,6 @@ PreferenceWindow::QuitRequested()
 void
 PreferenceWindow::_InitInterface()
 {
-	fMainView = new BView("MainView", B_WILL_DRAW);
-	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
-
 	fDayOfWeekMenu = new BPopUpMenu("DayOfWeekMenu");
 	fDefaultCatMenu = new BPopUpMenu("DefaultCatMenu");
 
@@ -136,7 +135,8 @@ PreferenceWindow::_InitInterface()
 		fDayOfWeekMenu->AddItem(new BMenuItem(startOfWeekItems[i],
 			new BMessage(kStartOfWeekChangeMessage)));
 	fDayOfWeekMenu->ItemAt(0)->SetMarked(true);
-	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", NULL, fDayOfWeekMenu);
+	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", B_TRANSLATE(
+		"First day of the week:"), fDayOfWeekMenu);
 
 	BList* categories = fDBManager->GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++) {
@@ -145,22 +145,11 @@ PreferenceWindow::_InitInterface()
 			new BMessage(kDefaultCategoryChangeMessage), category->GetColor()));
 	}
 	fDefaultCatMenu->ItemAt(0)->SetMarked(true);
-	fDefaultCatMenuField = new BMenuField("DefaultCatMenu", NULL, fDefaultCatMenu);
+	fDefaultCatMenuField = new BMenuField("DefaultCatMenu", B_TRANSLATE(
+		"Default category:"), fDefaultCatMenu);
 
-	fWeekCategoryLabel = new BStringView("PrefCategory", "Week");
-	fOrgCategoryLabel = new BStringView("PrefCategory", "Organization");
-	BFont font;
-	fWeekCategoryLabel->GetFont(&font);
-	font.SetSize(font.Size() * 1.2);
-	font.SetFace(B_BOLD_FACE);
-	fWeekCategoryLabel->SetFont(&font, B_FONT_ALL);
-	fOrgCategoryLabel->SetFont(&font, B_FONT_ALL);
-
-	fStartOfWeekLabel = new BStringView("StartOfWeek", B_TRANSLATE("First day of week"));
-	fDefaultCatLabel = new BStringView("DefaultCat", B_TRANSLATE("Default category"));
-
-	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
-		B_TRANSLATE("Show week number in Calendar"), new BMessage(kShowWeekChangeMessage));
+	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader", B_TRANSLATE(
+		"Show week numbers in calendar"), new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
 	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
@@ -169,53 +158,31 @@ PreferenceWindow::_InitInterface()
 	fApplyButton->SetEnabled(false);
 	fRevertButton->SetEnabled(false);
 
-	fWeekPreferencesBox = new BBox("Week");
-	fOrgPreferencesBox = new BBox("Organization");
-
-	BLayoutBuilder::Group<>(fWeekPreferencesBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
-			.SetInsets(B_USE_ITEM_INSETS)
-			.AddStrut(B_USE_ITEM_SPACING)
-			.Add(fStartOfWeekLabel)
-			.Add(fDayOfWeekMenuField)
-			.AddStrut(B_USE_HALF_ITEM_SPACING)
-			.Add(fWeekNumberHeaderCB)
-	.End();
-	fWeekPreferencesBox->SetLabel(fWeekCategoryLabel);
-
-	BLayoutBuilder::Group<>(fOrgPreferencesBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
-			.SetInsets(B_USE_ITEM_INSETS)
-			.AddStrut(B_USE_HALF_ITEM_SPACING)
-			.Add(fDefaultCatLabel)
-			.Add(fDefaultCatMenuField)
-	.End();
-	fOrgPreferencesBox->SetLabel(fOrgCategoryLabel);
-
-
-	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_DEFAULT_SPACING)
-			.SetInsets(B_USE_SMALL_INSETS)
-			.Add(fWeekPreferencesBox)
-			.Add(fOrgPreferencesBox)
-			.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-				.Add(fRevertButton)
-				.AddGlue()
-				.Add(fApplyButton)
+	BLayoutBuilder::Group<>(this, B_VERTICAL, B_USE_DEFAULT_SPACING)
+		.AddGrid(B_USE_DEFAULT_SPACING, B_USE_SMALL_SPACING)
+			.SetInsets(B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, 0)
+			.AddMenuField(fDefaultCatMenuField, 0, 0)
+			.AddMenuField(fDayOfWeekMenuField, 0, 1)
+			.Add(fWeekNumberHeaderCB, 0, 2, 2)
 			.End()
-	.End();
-
-	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-			.Add(fMainView)
-	.End();
+		.Add(new BSeparatorView(B_HORIZONTAL))
+		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
+			.SetInsets(B_USE_SMALL_INSETS, 0, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS)
+			.Add(fRevertButton)
+			.AddGlue()
+			.Add(fApplyButton)
+			.End()
+		.End();
 }
 
 
 void
 PreferenceWindow::_SyncPreferences(Preferences* preferences)
 {
-	if(preferences->fHeaderVisible == true) {
+	if (preferences->fHeaderVisible == true)
 		fWeekNumberHeaderCB->SetValue(B_CONTROL_ON);
-	} else {
+	else
 		fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
-	}
 
 	BMenuItem* item = fDayOfWeekMenu->ItemAt(preferences->fStartOfWeekOffset);
 	item->SetMarked(true);
