@@ -186,7 +186,7 @@ CategoryWindow::_InitInterface()
 	fCategoryListView->SetSelectionMessage(new BMessage(kCategorySelected));
 	fCategoryListView->SetInvocationMessage(new BMessage(kCategoryEditSelected));
 
-	fAddButton = new BButton("AddButton", B_TRANSLATE("Add" B_UTF8_ELLIPSIS),
+	fNewButton = new BButton("NewButton", B_TRANSLATE("New" B_UTF8_ELLIPSIS),
 		new BMessage(kAddPressed));
 	fDeleteButton = new BButton("DeleteButton", B_TRANSLATE("Delete"),
 		new BMessage(kDeletePressed));
@@ -200,7 +200,7 @@ CategoryWindow::_InitInterface()
 		.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 			.Add(fDeleteButton)
 			.AddGlue()
-			.Add(fAddButton)
+			.Add(fNewButton)
 			.Add(fEditButton)
 		.End()
 	.End();

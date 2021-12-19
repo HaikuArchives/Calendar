@@ -43,7 +43,7 @@ private:
 	BView*			fMainView;
 	BListView*		fCategoryListView;
 	BScrollView*	fCategoryScroll;
-	BButton*		fAddButton;
+	BButton*		fNewButton;
 	BButton*		fDeleteButton;
 	BButton*		fEditButton;
 	CategoryEditWindow*	fCategoryEditWindow;
