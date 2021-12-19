@@ -67,7 +67,7 @@ App::AboutRequested()
 {
 	const char* authors[] = {
 		"Akshay Agarwal",
-		"humdinger",
+		"Humdinger",
 		"Jaidyn Levesque",
 		"malbx",
 		"Fredrik Modéen",
@@ -75,7 +75,8 @@ App::AboutRequested()
 		NULL
 	};
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
-	aboutW->AddDescription(B_TRANSLATE("A native Calendar application for Haiku."));
+	aboutW->AddDescription(B_TRANSLATE(
+		"A calendar application to manage your appointments."));
 	aboutW->AddCopyright(2017, "Akshay Agarwal");
 	aboutW->AddAuthors(authors);
 	aboutW->Show();
@@ -122,7 +123,8 @@ App::MessageReceived(BMessage* message)
 		case kMenuAppPref:
 		{
 			if (fPreferenceWindow == NULL) {
-				fPreferenceWindow = new PreferenceWindow(fPreferences);
+				fPreferenceWindow = new PreferenceWindow(fMainWindow->Frame(),
+					fPreferences);
 				fPreferenceWindow->Show();
 			}
 
