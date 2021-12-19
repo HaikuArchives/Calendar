@@ -22,6 +22,7 @@ class SidePanelView;
 
 static const uint32 kMenuAppPref = 'kmap';
 static const uint32 kMenuCategoryEdit = 'kmce';
+static const uint32 kMenuHelp = 'kmhl';
 static const uint32 kMenuSyncGCAL = 'kmsg';
 
 static const int 	kAddEventMessage = 1005;
@@ -38,6 +39,7 @@ public:
 private:
 	void			_InitInterface();
 	void			_LaunchEventManager(Event* event, entry_ref* ref = NULL);
+	void			_OpenHelp();
 	void			_SyncWithPreferences();
 	void			_UpdateEventsView();
 	void			_SetEventListPopUpEnabled(bool state);
