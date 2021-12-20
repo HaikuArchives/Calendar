@@ -63,6 +63,11 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 		bgColor = ui_color(B_LIST_BACKGROUND_COLOR);
 	bgColor = TintColor(bgColor, bgColor, severity);
 
+	if (severity >= 1) {
+		rgb_color hideDeleteColor = { 255, 0, 0, 255 };
+		bgColor = mix_color(bgColor, hideDeleteColor, 64);
+	}
+
 	view->SetHighColor(bgColor);
 	view->SetLowColor(bgColor);
 	view->FillRect(rect);
@@ -99,7 +104,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	else
 		textColor = ui_color(B_LIST_ITEM_TEXT_COLOR);
 	view->SetHighColor(TintColor(textColor, textColor, 1));
-	
+
 	view->MovePenTo(offset,
 		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
 		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
