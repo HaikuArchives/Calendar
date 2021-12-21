@@ -52,7 +52,7 @@ Event::Event(Event& event)
 
 
 time_t
-Event::GetStartDateTime()
+Event::GetStartDateTime() const
 {
 	return fStart;
 }
@@ -66,7 +66,7 @@ Event::SetStartDateTime(time_t start)
 
 
 time_t
-Event::GetEndDateTime()
+Event::GetEndDateTime() const
 {
 	return fEnd;
 }
@@ -81,14 +81,14 @@ Event::SetEndDateTime(time_t end)
 
 
 const char*
-Event::GetId()
+Event::GetId() const
 {
 	return fId.String();
 }
 
 
 Category*
-Event::GetCategory()
+Event::GetCategory() const
 {
 	return fCategory;
 }
@@ -102,7 +102,7 @@ Event::SetName(const char* name)
 
 
 const char*
-Event::GetName()
+Event::GetName() const
 {
 	return fName.String();
 }
@@ -116,7 +116,7 @@ Event::SetPlace(const char* place)
 
 
 const char*
-Event::GetPlace()
+Event::GetPlace() const
 {
 	return fPlace.String();
 }
@@ -129,7 +129,7 @@ Event::SetDescription(const char* description)
 
 
 const char*
-Event::GetDescription()
+Event::GetDescription() const
 {
 	return fDescription.String();
 }
@@ -143,14 +143,14 @@ Event::SetAllDay(bool allday)
 
 
 bool
-Event::IsAllDay()
+Event::IsAllDay() const
 {
 	return fAllDay;
 }
 
 
 uint16
-Event::GetStatus()
+Event::GetStatus() const
 {
 	return fStatus;
 }
@@ -171,14 +171,14 @@ Event::SetUpdated(time_t updated)
 
 
 time_t
-Event::GetUpdated()
+Event::GetUpdated() const
 {
 	return fUpdated;
 }
 
 
 bool
-Event::Equals(Event &e)
+Event::Equals(Event &e) const
 {
     return (fId == e.GetId());
 }

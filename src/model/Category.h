@@ -6,6 +6,7 @@
 #define CATEGORY_H
 
 #include <GraphicsDefs.h>
+#include <ObjectList.h>
 #include <String.h>
 
 
@@ -30,5 +31,8 @@ private:
 		rgb_color 		fColor;
 
 };
+
+
+typedef BObjectList<Category> CategoryList;
 
 #endif

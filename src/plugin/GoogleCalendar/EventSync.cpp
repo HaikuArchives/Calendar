@@ -8,7 +8,6 @@
 #include <Button.h>
 #include <DateFormat.h>
 #include <LayoutBuilder.h>
-#include <List.h>
 #include <Key.h>
 #include <KeyStore.h>
 #include <Roster.h>
@@ -418,10 +417,10 @@ EventSync::ParseEvent(BMessage* eventJson)
 
 		notified = (difftime(startDateTime, BDateTime::CurrentDateTime(B_LOCAL_TIME).Time_t()) < 0) ? true : false;
 
-		BList* categoryList = fDBManager->GetAllCategories();
+		CategoryList* categories = fDBManager->GetAllCategories();
 		Category* category;
-		for (int32 i = 0; i < categoryList->CountItems(); i++) {
-			category = ((Category*)categoryList->ItemAt(i));
+		for (int32 i = 0; i < categories->CountItems(); i++) {
+			category = categories->ItemAt(i);
 			if (BString(category->GetName()) == BString("Default"))
 				break;
 		}

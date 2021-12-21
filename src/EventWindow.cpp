@@ -36,7 +36,6 @@
 
 #include "App.h"
 #include "CalendarMenuWindow.h"
-#include "Category.h"
 #include "CategoryEditWindow.h"
 #include "Event.h"
 #include "MainWindow.h"
@@ -296,7 +295,7 @@ EventWindow::OnSaveClick()
 	Category* category = NULL;
 	BMenuItem* item = fCategoryMenu->FindMarked();
 	int32 index = fCategoryMenu->IndexOf(item);
-	Category* c = ((Category*)fCategoryList->ItemAt(index));
+	Category* c = fCategoryList->ItemAt(index);
 	category = new Category(*c);
 
 
@@ -441,7 +440,7 @@ EventWindow::_InitInterface()
 	fCategoryMenu = new BMenu("CategoryMenu");
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-		category = ((Category*)fCategoryList->ItemAt(i));
+		category = fCategoryList->ItemAt(i);
 		fCategoryMenu->AddItem(new BColorMenuItem(category->GetName(), NULL, category->GetColor()));
 	}
 	fCategoryMenu->SetRadioMode(true);
@@ -574,7 +573,7 @@ EventWindow::_PopulateWithEvent(Event* event)
 
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-		category = ((Category*)fCategoryList->ItemAt(i));
+		category = fCategoryList->ItemAt(i);
 		if (category->Equals(*event->GetCategory())) {
 			fCategoryMenu->ItemAt(i)->SetMarked(true);
 			break;
@@ -615,9 +614,10 @@ EventWindow::_UpdateCategoryMenu()
 	Category* selectedCategory = NULL;
 	BMenuItem* item = fCategoryMenu->FindMarked();
 	int32 index = fCategoryMenu->IndexOf(item);
-	Category* c = ((Category*)fCategoryList->ItemAt(index));
+	Category* c = fCategoryList->ItemAt(index);
 	selectedCategory = new Category(*c);
 
+	delete fCategoryList;
 	fCategoryList = fDBManager->GetAllCategories();
 
 	Category* category;
@@ -626,7 +626,7 @@ EventWindow::_UpdateCategoryMenu()
 	fCategoryMenu->RemoveItems(0, fCategoryMenu->CountItems(), true);
 
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-		category = ((Category*)fCategoryList->ItemAt(i));
+		category = fCategoryList->ItemAt(i);
 		fCategoryMenu->AddItem(new BMenuItem(category->GetName(),
 			new BMessage)); // TODO: Should this be sending a message?
 		if (category->Equals(*selectedCategory) && (marked == false)) {

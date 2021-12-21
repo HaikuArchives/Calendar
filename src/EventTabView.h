@@ -9,7 +9,8 @@
 #include <DateTime.h>
 #include <TabView.h>
 
-class BList;
+#include "Event.h"
+
 class Event;
 class EventListView;
 class QueryDBManager;
@@ -42,6 +43,7 @@ enum {
 class EventTabView : public BTabView {
 public:
 					EventTabView(const BDate& date);
+					~EventTabView();
 
 	virtual void	AttachedToWindow();
 	virtual void	MessageReceived(BMessage* message);
@@ -63,13 +65,12 @@ private:
 			void	_AddEventList(const char* name, const char* label, int32 tab);
 			void	_PopulateList();
 
-	static int		_CompareFunc(const void* a, const void* b);
+	static int		_CompareFunc(const Event* a, const Event* b);
 
-			BList*	fEventList;
+		EventList*	fEventList;
 			BDate	fDate;
 			uint8	fMode;
 			bool	fPopUpEnabled;
-	EventTabView*	fEventTabView;
 	QueryDBManager*	fDBManager;
 
 	static const uint32	kInvokationMessage = 1000;

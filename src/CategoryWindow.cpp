@@ -5,7 +5,6 @@
 
 #include "CategoryWindow.h"
 
-
 #include <Alert.h>
 #include <Application.h>
 #include <Button.h>
@@ -17,7 +16,6 @@
 #include <View.h>
 
 #include "App.h"
-#include "Category.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
 #include "QueryDBManager.h"
@@ -61,7 +59,7 @@ CategoryWindow::MessageReceived(BMessage* message)
 		{
 			int32 selection = fCategoryListView->CurrentSelection();
 			if (selection >= 0) {
-				Category* category = ((Category*)fCategoryList->ItemAt(selection));
+				Category* category = fCategoryList->ItemAt(selection);
 				_OpenCategoryWindow(category);
 			}
 			break;
@@ -135,11 +133,8 @@ CategoryWindow::LoadCategories()
 	LockLooper();
 
 	int32 selection = fCategoryListView->CurrentSelection();
-	if(!fCategoryList->IsEmpty()) {
-		fCategoryListView->MakeEmpty();
-		fCategoryList->MakeEmpty();
-	}
 
+	delete fCategoryList;
 	fCategoryList = fDBManager->GetAllCategories();
 
 	Category* category;
@@ -180,7 +175,7 @@ CategoryWindow::_InitInterface()
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
 	fDBManager = new QueryDBManager();
-	fCategoryList = new BList();
+	fCategoryList = NULL;
 	LoadCategories();
 
 	fCategoryListView->SetSelectionMessage(new BMessage(kCategorySelected));
@@ -232,7 +227,7 @@ CategoryWindow::_OnDeletePressed()
 	if (selection < 0)
 		return;
 
-	Category* category = ((Category*)fCategoryList->ItemAt(selection));
+	Category* category = fCategoryList->ItemAt(selection);
 	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
 
 	if (category->GetName() == defaultCat) {

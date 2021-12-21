@@ -23,7 +23,7 @@ NotificationLoop(void* data)
 	QueryDBManager dbManager;
 	BString notificationContent;
 	BString startTime;
-	BList* events;
+	EventList* events;
 	Event* event;
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 	notification.SetGroup(kAppName);
@@ -34,7 +34,7 @@ NotificationLoop(void* data)
 	{
 		events = dbManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 		for (int32 i = 0; i < events->CountItems(); i++) {
-			event = ((Event*)events->ItemAt(i));
+			event = events->ItemAt(i);
 			startTime = "";
 			notificationContent = B_TRANSLATE("%event% is starting at %time%.");
 			if (!(event->GetStatus() & EVENT_NOTIFIED)

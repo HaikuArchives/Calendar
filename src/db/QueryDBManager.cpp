@@ -3,32 +3,24 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
+#include "QueryDBManager.h"
+
 #include <stdio.h>
 #include <time.h>
 
 #include <Alert.h>
 #include <Catalog.h>
-#include <Directory.h>
-#include <Entry.h>
-#include <File.h>
 #include <FindDirectory.h>
 #include <fs_index.h>
 #include <fs_info.h>
-#include <List.h>
-#include <Message.h>
-#include <MimeType.h>
 #include <Query.h>
-#include <String.h>
 #include <StringList.h>
 #include <VolumeRoster.h>
 
 #include "App.h"
-#include "Category.h"
-#include "Event.h"
 #include "Preferences.h"
 #include "ResourceLoader.h"
 #include "SQLiteManager.h"
-#include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "QueryDBManager"
@@ -246,17 +238,17 @@ QueryDBManager::GetEvent(entry_ref ref)
 }
 
 
-BList*
+EventList*
 QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 {
 	time_t dayStart	= BDateTime(date, BTime(0, 0, 0)).Time_t();
 	time_t dayEnd	= BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return GetEventsOfInterval(dayStart, dayEnd, ignoreHidden);
+	return GetEventsInInterval(dayStart, dayEnd, ignoreHidden);
 }
 
 
-BList*
+EventList*
 QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 {
 	date.AddDays(-date.DayOfWeek()+1);
@@ -264,11 +256,11 @@ QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 	date.AddDays(6);
 	time_t weekEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
 
-	return GetEventsOfInterval(weekStart, weekEnd, ignoreHidden);
+	return GetEventsInInterval(weekStart, weekEnd, ignoreHidden);
 }
 
 
-BList*
+EventList*
 QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 {
 	BDate startDate(date.Year(), date.Month(), 1);
@@ -276,14 +268,47 @@ QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 	time_t monthStart = BDateTime(startDate, BTime(0, 0, 0)).Time_t();
 	time_t monthEnd = BDateTime(endDate, BTime(23, 59, 59)).Time_t();
 
-	return GetEventsOfInterval(monthStart, monthEnd, ignoreHidden);
+	return GetEventsInInterval(monthStart, monthEnd, ignoreHidden);
 }
 
 
-BList*
+EventList*
+QueryDBManager::GetEventsInInterval(time_t start, time_t end,
+	bool ignoreHidden)
+{
+	EventList* events = new EventList(20, true);
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
+
+	query.PushAttr("Event:End");
+	query.PushUInt32(start);
+	query.PushOp(B_GE);
+	query.PushAttr("Event:Start");
+	query.PushUInt32(end);
+	query.PushOp(B_LE);
+	query.PushOp(B_AND);
+
+	query.Fetch();
+	entry_ref ref;
+
+	BFile evFile;
+	Event* event;
+
+	while (query.GetNextRef(&ref) == B_OK) {
+		event = _FileToEvent(&ref);
+		uint16 status = event->GetStatus();
+		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
+		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
+			events->AddItem(event);
+	}
+	return events;
+}
+
+
+EventList*
 QueryDBManager::GetEventsOfCategory(Category* category)
 {
-	BList* events = new BList();
+	EventList* events = new EventList(20, true);
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -303,15 +328,14 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
-
 	return events;
 }
 
 
-BList*
+EventList*
 QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 {
-	BList* events = new BList();
+	EventList* events = new EventList(20, true);
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -338,7 +362,6 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 		event = _FileToEvent(&ref);
 		events->AddItem(event);
 	}
-
 	return events;
 }
 
@@ -352,7 +375,7 @@ QueryDBManager::AddCategory(Category* category)
 		return false;
 
 	BString color = category->GetHexColor();
-	BList* categories = GetAllCategories();
+	CategoryList* categories = GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++)
 		if (color == ((Category*)categories->ItemAt(i))->GetHexColor())
 			return false;
@@ -418,10 +441,10 @@ QueryDBManager::EnsureCategory(const char* name)
 }
 
 
-BList*
+CategoryList*
 QueryDBManager::GetAllCategories()
 {
-	BList* categories = new BList();
+	CategoryList* categories = new CategoryList(20, true);
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -447,7 +470,6 @@ QueryDBManager::GetAllCategories()
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);
 	}
-
 	return categories;
 }
 
@@ -467,7 +489,7 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	BString catName = BString();
 	BNode(&entry).ReadAttrString("Category:Name", &catName);
 
-	BList* ev = GetEventsOfCategory(new Category(catName, BString("FFFFFF")));
+	EventList* ev = GetEventsOfCategory(new Category(catName, BString("FFFFFF")));
 	if (ev->CountItems() > 0)
 		return false;
 
@@ -527,39 +549,6 @@ QueryDBManager::_GetCategoryRef(const char* name)
 		query.GetNextRef(&ref);
 
 	return ref;
-}
-
-
-BList*
-QueryDBManager::GetEventsOfInterval(time_t start, time_t end,
-	bool ignoreHidden)
-{
-	BList* events = new BList();
-	BQuery query;
-	query.SetVolume(&fQueryVolume);
-
-	query.PushAttr("Event:End");
-	query.PushUInt32(start);
-	query.PushOp(B_GE);
-	query.PushAttr("Event:Start");
-	query.PushUInt32(end);
-	query.PushOp(B_LE);
-	query.PushOp(B_AND);
-
-	query.Fetch();
-	entry_ref ref;
-
-	BFile evFile;
-	Event* event;
-
-	while (query.GetNextRef(&ref) == B_OK) {
-		event = _FileToEvent(&ref);
-		uint16 status = event->GetStatus();
-		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
-		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
-			events->AddItem(event);
-	}
-	return events;
 }
 
 

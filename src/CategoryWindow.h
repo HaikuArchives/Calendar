@@ -7,6 +7,8 @@
 
 #include <Window.h>
 
+#include "Category.h"
+
 class BButton;
 class BListView;
 class BScrollView;
@@ -48,7 +50,7 @@ private:
 	BButton*		fEditButton;
 	CategoryEditWindow*	fCategoryEditWindow;
 
-	BList*			fCategoryList;
+	CategoryList* fCategoryList;
 	QueryDBManager*	fDBManager;
 
 };
