@@ -12,7 +12,6 @@
 #include <Window.h>
 
 #include "App.h"
-#include "Event.h"
 #include "EventListItem.h"
 #include "EventListView.h"
 #include "SidePanelView.h"
@@ -30,9 +29,16 @@ EventTabView::EventTabView(const BDate& date)
 
 	fMode = ((App*)be_app)->GetPreferences()->fViewMode;
 	fPopUpEnabled = true;
-	fEventList = new BList();
+	fEventList = NULL;
 	fDBManager = new QueryDBManager();
 	SetDate(date);
+}
+
+
+EventTabView::~EventTabView()
+{
+	delete fEventList;
+	delete fDBManager;
 }
 
 
@@ -207,7 +213,7 @@ EventTabView::SelectedEvent()
 void
 EventTabView::LoadEvents()
 {
-	fEventList->MakeEmpty();
+	delete fEventList;
 	switch (Selection()) {
 		case kDayTab:
 			fEventList = fDBManager->GetEventsOfDay(fDate, false);
@@ -215,12 +221,12 @@ EventTabView::LoadEvents()
 		case kWeekTab:
 			fEventList = fDBManager->GetEventsOfWeek(fDate, false);
 			break;
-		case kMonthTab:
+		default:
 			fEventList = fDBManager->GetEventsOfMonth(fDate, false);
 			break;
 	}
 
-	fEventList->SortItems((int (*)(const void *, const void *))_CompareFunc);
+	fEventList->SortItems(_CompareFunc);
 	_PopulateList();
 }
 
@@ -264,7 +270,7 @@ EventTabView::_PopulateList()
 
 	list->MakeEmpty();
 	for (int32 i = 0; i < fEventList->CountItems(); i++) {
-		Event* event = ((Event*)fEventList->ItemAt(i));
+		Event* event = fEventList->ItemAt(i);
 		if (event == NULL)
 			continue;
 
@@ -282,15 +288,15 @@ EventTabView::_PopulateList()
 
 
 int
-EventTabView::_CompareFunc(const void* a, const void* b)
+EventTabView::_CompareFunc(const Event* a, const Event* b)
 {
-	if ((*(Event**) a)->IsAllDay() && !(*(Event**) b)->IsAllDay())
+	if (a->IsAllDay() == true && b->IsAllDay() == false)
 		return -1;
-	else if ((*(Event**) b)->IsAllDay() && !(*(Event**) a)->IsAllDay())
+	else if (b->IsAllDay() == true && a->IsAllDay())
 		return 1;
-	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) < 0 )
+	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0 )
 		return -1;
-	else if (difftime((*(Event**) a)->GetStartDateTime(), (*(Event**) b)->GetStartDateTime()) > 0)
+	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) > 0)
 		return 1;
 	else
 		return 0;

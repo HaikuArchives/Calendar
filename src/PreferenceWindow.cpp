@@ -138,9 +138,9 @@ PreferenceWindow::_InitInterface()
 	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", B_TRANSLATE(
 		"First day of the week:"), fDayOfWeekMenu);
 
-	BList* categories = fDBManager->GetAllCategories();
+	CategoryList* categories = fDBManager->GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++) {
-		Category* category = (Category*)categories->ItemAt(i);
+		Category* category = categories->ItemAt(i);
 		fDefaultCatMenu->AddItem(new BColorMenuItem(category->GetName(),
 			new BMessage(kDefaultCategoryChangeMessage), category->GetColor()));
 	}

@@ -31,33 +31,33 @@ public:
 				const char* id = NULL);
 			Event(Event& event);
 
-	time_t		GetStartDateTime();
+	time_t		GetStartDateTime() const;
 	void		SetStartDateTime(time_t start);
 
-	time_t		GetEndDateTime();
+	time_t		GetEndDateTime() const;
 	void		SetEndDateTime(time_t end);
 
-	const char*	GetId();
-	Category*	GetCategory();
+	const char*	GetId() const;
+	Category*	GetCategory() const;
 
-	const char*	GetName();
-	const char*	GetPlace();
-	const char*	GetDescription();
+	const char*	GetName() const;
+	const char*	GetPlace() const;
+	const char*	GetDescription() const;
 
 	void		SetName(const char* name);
 	void		SetPlace(const char* place);
 	void		SetDescription(const char* description);
 
-	bool		IsAllDay();
+	bool		IsAllDay() const;
 	void		SetAllDay(bool allday);
 
-	uint16		GetStatus();
+	uint16		GetStatus() const;
 	void		SetStatus(uint16 status);
 
-	time_t		GetUpdated();
+	time_t		GetUpdated() const;
 	void		SetUpdated(time_t updated);
 
-	bool 		Equals(Event& e);
+	bool 		Equals(Event& e) const;
 
 private:
 	BString		fName;
@@ -76,5 +76,7 @@ private:
 
 };
 
+
+typedef BObjectList<Event> EventList;
 
 #endif

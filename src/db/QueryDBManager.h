@@ -11,6 +11,8 @@
 #include <Path.h>
 #include <Volume.h>
 
+#include "Category.h"
+#include "Event.h"
 #include "Preferences.h"
 
 class Category;
@@ -36,13 +38,15 @@ public:
 		Event*		GetEvent(const char* id);
 		Event*		GetEvent(const char* name, time_t startTime);
 		Event*		GetEvent(entry_ref ref);
-		BList*		GetEventsOfDay(BDate& date, bool ignoreHidden = true);
-		BList*		GetEventsOfWeek(BDate date, bool ignoreHidden = true);
-		BList*		GetEventsOfMonth(BDate date, bool ignoreHidden = true);
-		BList*		GetEventsOfInterval(time_t start, time_t end,
+
+		EventList*	GetEventsOfDay(BDate& date, bool ignoreHidden = true);
+		EventList*	GetEventsOfWeek(BDate date, bool ignoreHidden = true);
+		EventList*	GetEventsOfMonth(BDate date, bool ignoreHidden = true);
+		EventList*	GetEventsInInterval(time_t start, time_t end,
 						bool ignoreHidden = true);
-		BList*		GetEventsOfCategory(Category* category);
-		BList*		GetEventsToNotify(BDateTime dateTime);
+		EventList*	GetEventsOfCategory(Category* category);
+		EventList*	GetEventsToNotify(BDateTime dateTime);
+
 		bool		RemoveEvent(Event* event);
 		bool		RemoveEvent(entry_ref eventRef,
 						const char* restorePath = NULL);
@@ -54,7 +58,7 @@ public:
 		Category*	GetCategory(const char* name);
 		Category*	GetCategory(entry_ref ref);
 		Category*	EnsureCategory(const char* name);
-		BList*		GetAllCategories();
+		CategoryList* GetAllCategories();
 		bool		RemoveCategory(Category* category);
 		bool		RemoveCategory(entry_ref categoryRef);
 

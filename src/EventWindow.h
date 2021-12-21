@@ -5,16 +5,15 @@
 #ifndef EVENTWINDOW_H
 #define EVENTWINDOW_H
 
-
 #include <DateTime.h>
 #include <Messenger.h>
 #include <Window.h>
 
+#include "Category.h"
 
 class BBox;
 class BButton;
 class BCheckBox;
-class BList;
 class BMenu;
 class BMenuField;
 class BPopUpMenu;
@@ -119,10 +118,11 @@ private:
 	BDate			fStartDate;
 	BDate			fEndDate;
 
+	bool			fNew;
+
 	Event*			fEvent;
 	entry_ref		fEventRef;
-	BList*			fCategoryList;
-	bool			fNew;
+	CategoryList*	fCategoryList;
 
 	QueryDBManager*	fDBManager;
 };
