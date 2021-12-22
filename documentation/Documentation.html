@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+<!-- 
+ * Copyright 2017-2021
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+		Akshay Agarwal
+ *		Humdinger <humdingerb@gmail.com>
+-->
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta name="robots" content="all" />
+	<title>Calendar's User Documentation</title>
+
+<style type="text/css">
+
+body {
+    font-size: 0.9em;
+	font-family: "DejaVu Sans",Arial,Helvetica,sans-serif;
+	line-height: 1.5;
+	margin: 40px;
+	min-width: 45em;
+	max-width: 70em;
+}
+/* link colors and text decoration */
+
+a:link {
+	font-weight: bold;
+	text-decoration: none;
+	color: #dc3c01;
+}
+a:visited {
+	font-weight: bold;
+	text-decoration: none;
+	color: #892601;
+}
+a:hover, a:active {
+	text-decoration: underline;
+	color: #ff4500;
+}
+
+hr {
+	border: dotted thin #e0e0e0;
+}
+h1 {
+	font-size: 1.3em;
+	border-bottom: dotted thin #e0e0e0;
+	margin-bottom: 45px;
+}
+h2 {
+	font-size: 1.2em;
+	border-bottom: dotted thin #e0e0e0;
+	margin-top: 40px;
+}
+h3 {
+	font-size: 1em;
+	border-bottom: none;
+	margin-bottom: 0px;
+}
+.key {				/* Shortcut (separate with &#160; */
+	-webkit-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	border-color: #c7c7c7;
+	border-style: solid;
+	border-width: 1px;
+	padding: 0px 2px 0px 2px;
+	background-color: #e8e8e8;
+    font-family: sans;
+	font-variant: small-caps;
+	font-size: 1em;
+}
+.menu {				/* Menu */
+    font-size: 1.0em;
+    font-family: serif;
+    font-style: italic;
+	color: #24225e;
+}
+.button {			/* Button */
+    font-size: 1.0em;
+    font-family: serif;
+    font-style: italic;
+	color: #33583c;
+}
+.path {				/* File path */
+    background-color: #e8e8e8;
+    font-size: 0.9em;
+    font-family: monospace;
+}
+td.onelinetop {
+	vertical-align: top;
+	white-space: nowrap;
+}
+ol {
+	padding-left: 20px;
+}
+ul {
+	padding-left: 14px;
+}
+
+/* Rounded corner boxes */
+/* Common declarations */
+.box-info {
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	border-style: dotted;
+	border-width: thin;
+	border-color: #dcdcdc;
+	padding: 10px 15px 10px 80px;
+	margin-bottom: 15px;
+	margin-top: 15px;
+	min-height: 42px;
+}
+.box-info {
+	background: #e4ffde url(images/alert_info_32.png) 15px 15px no-repeat;
+}
+</style>
+
+</head>
+<body>
+<div align = "center">
+<a href="https://github.com/HaikuArchives/Calendar">
+<img src="./images/calendar_icon_64.png" alt="Calendar icon" /></a>
+<p><span style="font-size: 1.5em; font-weight:bold">Calendar's User Documentation</span></p>
+<hr />
+<p id="index"><a href="#eventmanager">Event manager</a> — <a href="#categorymanager">Category manager</a> — <a href="#settings">Settings</a> — <a href="#help">Help</a></p>
+</div>
+<hr />
+<p><br /></p>
+
+<p>Calendar is a native Haiku application to manage your appointments. It was originally developed by Akshay Agarwal for the Google Summer of Code of 2017, see his <a href="https://www.haiku-os.org/blog/akshayagarwal007/">Blog posts</a> about it. It's further developed and maintained by developers at <a href="https://github.com/HaikuArchives/Calendar">HaikuArchives</a>.</p>
+<p>You can create, edit and delete events, and cancel or hide them, categorize events and show them in a day, week or month view.</p>
+
+<div align="center">
+<img src="images/main_window.png" alt="The main window" />
+</div>
+
+<p>At the top left is today's date (click it to jump back to "today" from whenever you are in the calendar). Below is a calendar view, highlighting the currently shown date. Days with events are tinted as well; the more events on a day, the darker they get. Go figure... :)</p>
+
+<p>To the right is the actual list of events. With the tabs at the top, you set the view to show all events for that <span class="menu">Day</span>, <span class="menu">Week</span>, or <span class="menu">Month</span>.</p>
+
+<p>Right-click an event to get a context menu to create a <span class="menu">New</span> event, or <span class="menu">Edit</span>, <span class="menu">Delete</span>, <span class="menu">Cancel</span> or <span class="menu">Hide</span> an existing event.<br />
+Hidden and deleted events can remain visible by activating <span class="menu">View | Show hidded/deleted events</span> and are then tinted red. Deleted events are moved to the system's Trash. If you empty the Trash, your events will be truely gone and cannot be "un-deleted" any more!</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="eventmanager" name="eventmanager">Event manager</a></h2>
+
+<p>Double-clicking an event also edits an event. As when creating a new event, it opens the <i>Event manager</i>.
+
+<div align="center">
+<img src="images/event_manager.png" alt="The event manager" />
+</div>
+
+<p>The <i>Event manager</i> lets you set all the details of an event:
+<ul>
+<li>Add a <span class="menu">Name</span>, <span class="menu">Place</span> and <span class="menu">Description</span>.</li>
+<li>Define as an <span class="menu">All day</span> event or set <span class="menu">Start/End date and time</span> (click the "▼" button for a pop-up calendar for the date, the time setting is HH:mm (24-hour format)).</li>
+<li>Optionally choose a monthly or yearly <span class="menu">Recurrence</span> (not implemented yet).</li>
+<li>Set the <span class="menu">Status</span> to <span class="menu">Cancelled</span> or <span class="menu">Hidden</span> (also done with the context menu of the main window).</li>
+</ul></p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="categorymanager" name="categorymanager">Category manager</a></h2>
+
+<p>You can create and edit event categories by invoking <span class="menu">Category | Manage...</span>.</p>
+
+<div align="center">
+<img src="images/category_manager.png" alt="The category manager" />
+</div>
+
+<p>Calendar comes with only two categories preinstalled: "Default" and "Birthday". The "Default" category
+cannot be deleted but can be modified. Click on <span class="button">New...</span> or select a category and click <span class="button">Edit...</span> to open the <i>Category edit</i> window:</p>
+
+<div align="center">
+<img src="images/category_edit.png" alt="The category edit window" />
+</div>
+
+<p>Here you simply enter the name of the category and choose a color for it.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="settings" name="settings">Settings</a></h2>
+
+<p><span class="menu">App | Settings...</span> opens a window with a few available options:</p>
+
+<div align="center">
+<img src="images/settings.png" alt="The settings window" />
+</div>
+
+<p>
+<ul><li>Set the <span class="menu">Default category</span> for newly created events.</li>
+<li>Have the <span class="menu">First day of the week</span> either to whatever the system locale says, or choose a specific day.</li>
+<li>Choose to <span class="menu">Show week numbers in calendar</span>.</li>
+</ul></p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="help" name="help">Help</a></h2>
+<p>Please report bugs or create feature requests at <a href="https://github.com/HaikuArchives/Calendar/issues">Calendar's issue tracker at GitHub.</a><br />
+You can help translate Calendar to even more languages at <a href="https://i18n.kacperkasper.pl/projects/28">Polyglot</a>.</p>
+
+</body>
+</html>
