@@ -21,20 +21,19 @@
 #include <Window.h>
 
 
-
 static const int32 kMsgMessageRunner = 'MsgR';
 
 
 //	#pragma mark - ColorPreview
 
 
-ColorPreview::ColorPreview(BRect frame, BMessage* message, uint32 resizingMode,
-	uint32 flags)
+ColorPreview::ColorPreview(
+	BRect frame, BMessage* message, uint32 resizingMode, uint32 flags)
 	:
-	BControl(frame, "ColorPreview", "", message, resizingMode,
-		flags | B_WILL_DRAW),
+	BControl(
+		frame, "ColorPreview", "", message, resizingMode, flags | B_WILL_DRAW),
 	fColor(ui_color(B_PANEL_BACKGROUND_COLOR)),
-	fDisabledColor((rgb_color){ 128, 128, 128 }),
+	fDisabledColor((rgb_color){128, 128, 128}),
 	fMessageRunner(NULL),
 	fIsRectangle(true)
 {
@@ -68,25 +67,25 @@ ColorPreview::Draw(BRect updateRect)
 
 			BeginLineArray(4);
 			AddLine(BPoint(bounds.left, bounds.bottom),
-			BPoint(bounds.left, bounds.top), shadow);
+				BPoint(bounds.left, bounds.top), shadow);
 			AddLine(BPoint(bounds.left + 1.0, bounds.top),
-			BPoint(bounds.right, bounds.top), shadow);
+				BPoint(bounds.right, bounds.top), shadow);
 			AddLine(BPoint(bounds.right, bounds.top + 1.0),
-			BPoint(bounds.right, bounds.bottom), light);
+				BPoint(bounds.right, bounds.bottom), light);
 			AddLine(BPoint(bounds.right - 1.0, bounds.bottom),
-			BPoint(bounds.left + 1.0, bounds.bottom), light);
+				BPoint(bounds.left + 1.0, bounds.bottom), light);
 			EndLineArray();
 			bounds.InsetBy(1.0, 1.0);
 
 			BeginLineArray(4);
 			AddLine(BPoint(bounds.left, bounds.bottom),
-			BPoint(bounds.left, bounds.top), darkShadow);
+				BPoint(bounds.left, bounds.top), darkShadow);
 			AddLine(BPoint(bounds.left + 1.0, bounds.top),
-			BPoint(bounds.right, bounds.top), darkShadow);
+				BPoint(bounds.right, bounds.top), darkShadow);
 			AddLine(BPoint(bounds.right, bounds.top + 1.0),
-			BPoint(bounds.right, bounds.bottom), background);
+				BPoint(bounds.right, bounds.bottom), background);
 			AddLine(BPoint(bounds.right - 1.0, bounds.bottom),
-			BPoint(bounds.left + 1.0, bounds.bottom), background);
+				BPoint(bounds.left + 1.0, bounds.bottom), background);
 			EndLineArray();
 			bounds.InsetBy(1.0, 1.0);
 
@@ -118,12 +117,13 @@ ColorPreview::MessageReceived(BMessage* message)
 		rgb_color* col;
 		uint8* ptr;
 		ssize_t size;
-		if (message->FindData("RGBColor", (type_code)'RGBC',
-				(const void**)&ptr,&size) == B_OK) {
-			col = (rgb_color*)ptr;
+		if (message->FindData(
+				"RGBColor", (type_code) 'RGBC', (const void**) &ptr, &size)
+			== B_OK) {
+			col = (rgb_color*) ptr;
 			SetHighColor(*col);
 		}
-	} else if ((int32)message->what == kMsgMessageRunner) {
+	} else if ((int32) message->what == kMsgMessageRunner) {
 		BPoint where;
 		uint32 buttons;
 		GetMouse(&where, &buttons);
@@ -142,11 +142,10 @@ ColorPreview::MouseDown(BPoint where)
 	if (window != NULL)
 		window->Activate();
 
-	fMessageRunner = new BMessageRunner(this, new BMessage(kMsgMessageRunner),
-		300000, 1);
+	fMessageRunner
+		= new BMessageRunner(this, new BMessage(kMsgMessageRunner), 300000, 1);
 
-	SetMouseEventMask(B_POINTER_EVENTS,
-		B_SUSPEND_VIEW_FOCUS | B_LOCK_WINDOW_FOCUS);
+	SetMouseEventMask(B_POINTER_EVENTS, B_SUSPEND_VIEW_FOCUS | B_LOCK_WINDOW_FOCUS);
 
 	BRect rect = Bounds().InsetByCopy(2.0f, 2.0f);
 	rect.top = roundf(rect.bottom / 2.0f + 1);
@@ -251,17 +250,16 @@ ColorPreview::_DragColor(BPoint where)
 		view->FillRect(rect);
 		rect.OffsetBy(-1.0f, -1.0f);
 
-		view->SetHighColor(std::min(255, (int)(1.2 * fColor.red + 40)),
-			std::min(255, (int)(1.2 * fColor.green + 40)),
-			std::min(255, (int)(1.2 * fColor.blue + 40)));
+		view->SetHighColor(std::min(255, (int) (1.2 * fColor.red + 40)),
+			std::min(255, (int) (1.2 * fColor.green + 40)),
+			std::min(255, (int) (1.2 * fColor.blue + 40)));
 		view->StrokeRect(rect);
 
 		++rect.left;
 		++rect.top;
 
 		view->SetHighColor((int32)(0.8 * fColor.red),
-			(int32)(0.8 * fColor.green),
-			(int32)(0.8 * fColor.blue));
+			(int32)(0.8 * fColor.green), (int32)(0.8 * fColor.blue));
 		view->StrokeRect(rect);
 
 		--rect.right;

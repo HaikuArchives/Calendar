@@ -16,8 +16,8 @@ RGBToHex(rgb_color color)
 {
 
 	BString hexColor;
-	hexColor.SetToFormat("%.6X", (color.red << 16)
-		|(color.green << 8)|color.blue);
+	hexColor.SetToFormat(
+		"%.6X", (color.red << 16) | (color.green << 8) | color.blue);
 	return hexColor;
 }
 
@@ -26,7 +26,7 @@ rgb_color
 HexToRGB(const BString& color)
 {
 	const char* hexColor = color.String();
-    int rgb = (int)strtol(hexColor, NULL, 16);
+	int rgb = (int) strtol(hexColor, NULL, 16);
 	uint8 r = rgb >> 16;
 	uint8 g = rgb >> 8 & 0xFF;
 	uint8 b = rgb & 0xFF;

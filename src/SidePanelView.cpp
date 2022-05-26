@@ -21,8 +21,7 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "SidePanelView"
 
-enum StartOfWeek
-{
+enum StartOfWeek {
 	kLocaleStartOfWeek,
 	kWeekDayMonday,
 	kWeekDayTuesday,
@@ -42,7 +41,7 @@ SidePanelView::SidePanelView()
 
 	fCalendarView = new CalendarView("calendar");
 	fCalendarView->SetWeekNumberHeaderVisible(false);
-	//fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
+	// fCalendarView->SetInvocationMessage(new BMessage(kInvokationMessage));
 	fCalendarView->SetSelectionMessage(new BMessage(kSelectionMessage));
 
 	fDateHeaderButton = new DateHeaderButton();
@@ -50,8 +49,10 @@ SidePanelView::SidePanelView()
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
 
-	fMonthUpButton = new BButton("MonthuUp", "►", new BMessage(kMonthUpMessage));
-	fMonthDownButton = new BButton("MonthDown", "◄", new BMessage(kMonthDownMessage));
+	fMonthUpButton
+		= new BButton("MonthuUp", "►", new BMessage(kMonthUpMessage));
+	fMonthDownButton
+		= new BButton("MonthDown", "◄", new BMessage(kMonthDownMessage));
 
 	fMonthUpButton->SetFlat(true);
 	fMonthDownButton->SetFlat(true);
@@ -63,8 +64,10 @@ SidePanelView::SidePanelView()
 
 	float width, height;
 	fMonthLabel->GetPreferredSize(&width, &height);
-	fMonthLabel->SetExplicitMinSize(BSize(font.StringWidth(B_TRANSLATE_COMMENT(
-		"September XXXX", "Choose the longest month name")), height));
+	fMonthLabel->SetExplicitMinSize(
+		BSize(font.StringWidth(B_TRANSLATE_COMMENT(
+				"September XXXX", "Choose the longest month name")),
+			height));
 
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
@@ -74,15 +77,15 @@ SidePanelView::SidePanelView()
 		.Add(fDateHeaderButton)
 		.AddStrut(30)
 		.AddGroup(B_HORIZONTAL)
-			.Add(fMonthLabel)
-			.AddGlue()
-			.Add(fMonthDownButton)
-			.Add(fMonthUpButton)
+		.Add(fMonthLabel)
+		.AddGlue()
+		.Add(fMonthDownButton)
+		.Add(fMonthUpButton)
 		.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
 		.AddGlue(10)
-	.End();
+		.End();
 
 	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 }
@@ -153,7 +156,7 @@ void
 SidePanelView::SetStartOfWeek(int32 index)
 {
 	StartOfWeek startOfWeekDay = static_cast<StartOfWeek>(index);
-		//Preference menu index to start of week map
+		// Preference menu index to start of week map
 	BWeekday firstDay;
 
 	if (startOfWeekDay == kLocaleStartOfWeek) {

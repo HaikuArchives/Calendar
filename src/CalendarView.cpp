@@ -17,8 +17,8 @@
 #include "QueryDBManager.h"
 
 
-CalendarView::CalendarView(BRect frame, const char* name, uint32 resizeMask,
-	uint32 flags)
+CalendarView::CalendarView(
+	BRect frame, const char* name, uint32 resizeMask, uint32 flags)
 	:
 	BCalendarView(frame, name, resizeMask, flags)
 {
@@ -54,18 +54,29 @@ void
 CalendarView::DrawDay(BView* owner, BRect frame, const char* text,
 	bool isSelected, bool isEnabled, bool focus, bool isHighlight)
 {
-	int drawnYear  = Date().Year();
+	int drawnYear = Date().Year();
 	int drawnMonth = Date().Month();
-	int drawnDay   = atoi(text);
+	int drawnDay = atoi(text);
 
 	// handle dates for (disabled) days prior or following current month
-	if (isEnabled == 0 && drawnDay > 15)  { drawnMonth--; }
-	if (isEnabled == 0 && drawnDay < 15)  { drawnMonth++; }
-	if (drawnMonth < 1)  { drawnMonth += 12; drawnYear--; }
-	if (drawnMonth > 12) { drawnMonth -= 12; drawnYear++; }
+	if (isEnabled == 0 && drawnDay > 15) {
+		drawnMonth--;
+	}
+	if (isEnabled == 0 && drawnDay < 15) {
+		drawnMonth++;
+	}
+	if (drawnMonth < 1) {
+		drawnMonth += 12;
+		drawnYear--;
+	}
+	if (drawnMonth > 12) {
+		drawnMonth -= 12;
+		drawnYear++;
+	}
 	BDate drawnDate = BDate(Date().Year(), drawnMonth, drawnDay);
 
-	int eventCount = fDBManager->GetEventsOfDay(drawnDate, !fMarkHidden)->CountItems();
+	int eventCount
+		= fDBManager->GetEventsOfDay(drawnDate, !fMarkHidden)->CountItems();
 	if (isEnabled == false && eventCount != 0)
 		eventCount = 1;
 
@@ -144,7 +155,8 @@ CalendarView::_DrawItem(BView* owner, BRect frame, const char* text,
 		font.SetFace(B_REGULAR_FACE);
 	SetFont(&font);
 
-	DrawString(text, BPoint(frame.right - offsetH - StringWidth(text) / 2.0,
+	DrawString(text,
+		BPoint(frame.right - offsetH - StringWidth(text) / 2.0,
 			frame.top + offsetV));
 
 	SetLowColor(lColor);

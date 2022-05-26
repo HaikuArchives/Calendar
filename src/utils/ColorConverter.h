@@ -17,4 +17,4 @@ rgb_color HexToRGB(const BString& color);
 rgb_color TintColor(rgb_color color, rgb_color base, int severity);
 
 
-#endif  //_COLOR_CONVERTER_H_
+#endif //_COLOR_CONVERTER_H_

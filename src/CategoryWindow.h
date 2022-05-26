@@ -21,10 +21,11 @@ class QueryDBManager;
 const uint32 kCategoryWindowQuitting = 'kcwq';
 
 
-class CategoryWindow: public BWindow {
+class CategoryWindow : public BWindow
+{
 public:
-				CategoryWindow();
-				~CategoryWindow();
+					CategoryWindow();
+					~CategoryWindow();
 
 	virtual void	MessageReceived(BMessage* message);
 	virtual bool	QuitRequested();
@@ -37,10 +38,10 @@ private:
 	void			_OpenCategoryWindow(Category* category);
 	void			_OnDeletePressed();
 
-	static const uint32	kAddPressed				= 1000;
-	static const uint32	kDeletePressed			= 1001;
-	static const uint32	kCategoryEditSelected	= 1002;
-	static const uint32	kCategorySelected		= 1003;
+	static const uint32 kAddPressed = 1000;
+	static const uint32 kDeletePressed = 1001;
+	static const uint32 kCategoryEditSelected = 1002;
+	static const uint32 kCategorySelected = 1003;
 
 	BView*			fMainView;
 	BListView*		fCategoryListView;
@@ -48,11 +49,10 @@ private:
 	BButton*		fNewButton;
 	BButton*		fDeleteButton;
 	BButton*		fEditButton;
-	CategoryEditWindow*	fCategoryEditWindow;
+	CategoryEditWindow* fCategoryEditWindow;
 
-	CategoryList* fCategoryList;
+	CategoryList*	fCategoryList;
 	QueryDBManager*	fDBManager;
-
 };
 
 

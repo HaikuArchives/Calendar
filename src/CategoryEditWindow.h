@@ -19,32 +19,33 @@ class ColorPreview;
 
 const uint32 kCategoryEditQuitting = 'kceq';
 const uint32 kRefreshCategoryList = 'krcl';
-const uint32 kColorDropped ='kcld';
+const uint32 kColorDropped = 'kcld';
 const uint32 kUpdateColor = 'kucl';
 
 
-class CategoryEditWindow: public BWindow {
+class CategoryEditWindow : public BWindow
+{
 public:
-				CategoryEditWindow();
+					CategoryEditWindow();
 
-	virtual void		MessageReceived(BMessage* message);
-	virtual bool		QuitRequested();
+	virtual void	MessageReceived(BMessage* message);
+	virtual bool	QuitRequested();
 
 	void			SetCategory(Category* category);
 
 private:
-	void			_InitInterface();
-	void			_SetCurrentColor(rgb_color color);
-	void			_OnOkPressed();
-	void			_OnRevertPressed();
-	void			_CategoryModified();
-	void			_RefreshWindows();
-	void			_CloseWindow();
-	bool			_SaveChanges();
+	void	_InitInterface();
+	void	_SetCurrentColor(rgb_color color);
+	void	_OnOkPressed();
+	void	_OnRevertPressed();
+	void	_CategoryModified();
+	void	_RefreshWindows();
+	void	_CloseWindow();
+	bool	_SaveChanges();
 
-	static const uint32	kOkPressed				= 1000;
-	static const uint32	kRevertPressed			= 1001;
-	static const uint32	kCategoryTextChanged	= 1002;
+	static const uint32 kOkPressed = 1000;
+	static const uint32 kRevertPressed = 1001;
+	static const uint32 kCategoryTextChanged = 1002;
 
 	BView*			fMainView;
 	BTextControl*	fCategoryText;

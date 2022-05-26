@@ -16,18 +16,19 @@
 
 #include <locale.h>
 
-#include "EventWindow.h"
-#include "EventSyncWindow.h"
 #include "CategoryWindow.h"
+#include "EventSyncWindow.h"
+#include "EventWindow.h"
 #include "MainWindow.h"
-#include "Preferences.h"
 #include "PreferenceWindow.h"
+#include "Preferences.h"
 
 const char* kAppName = B_TRANSLATE_SYSTEM_NAME("Calendar");
 const char* kSignature = "application/x-vnd.calendar";
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "App"
+
 
 App::App()
 	:
@@ -41,9 +42,9 @@ App::App()
 	find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
 	settingsPath.Append(kAppName);
 	BDirectory preferencesDir(settingsPath.Path());
-	if(preferencesDir.InitCheck() == B_ENTRY_NOT_FOUND) {
+	if (preferencesDir.InitCheck() == B_ENTRY_NOT_FOUND)
 		preferencesDir.CreateDirectory(settingsPath.Path(), &preferencesDir);
-	}
+
 
 	fPreferencesFile.SetTo(&preferencesDir, "settings");
 	fPreferences = new Preferences();
@@ -74,9 +75,10 @@ App::AboutRequested()
 		"Bach Nguyen",
 		NULL
 	};
+
 	BAboutWindow* aboutW = new BAboutWindow(kAppName, kSignature);
-	aboutW->AddDescription(B_TRANSLATE(
-		"A calendar application to manage your appointments."));
+	aboutW->AddDescription(
+		B_TRANSLATE("A calendar application to manage your appointments."));
 	aboutW->AddCopyright(2017, "Akshay Agarwal");
 	aboutW->AddAuthors(authors);
 	aboutW->Show();
@@ -118,13 +120,13 @@ App::categoryWindow()
 void
 App::MessageReceived(BMessage* message)
 {
-	switch(message->what) {
+	switch (message->what) {
 
 		case kMenuAppPref:
 		{
 			if (fPreferenceWindow == NULL) {
-				fPreferenceWindow = new PreferenceWindow(fMainWindow->Frame(),
-					fPreferences);
+				fPreferenceWindow
+					= new PreferenceWindow(fMainWindow->Frame(), fPreferences);
 				fPreferenceWindow->Show();
 			}
 
@@ -178,7 +180,8 @@ App::MessageReceived(BMessage* message)
 			fMainWindow->PostMessage(message);
 			break;
 
-		default: {
+		default:
+		{
 			BApplication::MessageReceived(message);
 			break;
 		}
@@ -204,8 +207,8 @@ App::RefsReceived(BMessage* message)
 		info.SetTo(&file);
 		info.GetType(type);
 
-		if (BString(type) == BString("application/x-calendar-event") ||
-			BString(type) == BString("text/calendar"))
+		if (BString(type) == BString("application/x-calendar-event")
+			|| BString(type) == BString("text/calendar"))
 			fMainWindow->PostMessage(&msg);
 		else if (BString(type) == BString("application/x-calendar-category")) {
 			MessageReceived(new BMessage(kMenuCategoryEdit));

@@ -28,9 +28,9 @@ const uint32 kListModeChanged = 'kemc';
 const uint32 kListTabChanged = 'ketc';
 
 enum {
-	kAgendaView		= 1,
-	kDateView		= 2,
-	kHiddenView		= 4
+	kAgendaView = 1,
+	kDateView = 2,
+	kHiddenView = 4
 };
 
 enum {
@@ -40,7 +40,8 @@ enum {
 };
 
 
-class EventTabView : public BTabView {
+class EventTabView : public BTabView
+{
 public:
 					EventTabView(const BDate& date);
 					~EventTabView();
@@ -49,31 +50,31 @@ public:
 	virtual void	MessageReceived(BMessage* message);
 	virtual void	Select(int32 index);
 
-			void	SetDate(const BDate& date);
+	void			SetDate(const BDate& date);
 
-			void	ToggleMode(uint8 flag);
-			uint8	Mode();
+	void			ToggleMode(uint8 flag);
+	uint8			Mode();
 
-			void	SetPopUpEnabled(bool state);
+	void			SetPopUpEnabled(bool state);
 
-			Event*	SelectedEvent();
-			void	LoadEvents();
+	Event*			SelectedEvent();
+	void			LoadEvents();
 
 	EventListView*	ListAt(int32 index);
 
 private:
-			void	_AddEventList(const char* name, const char* label, int32 tab);
-			void	_PopulateList();
+	void			_AddEventList(const char* name, const char* label, int32 tab);
+	void			_PopulateList();
 
 	static int		_CompareFunc(const Event* a, const Event* b);
 
-		EventList*	fEventList;
-			BDate	fDate;
-			uint8	fMode;
-			bool	fPopUpEnabled;
+	EventList*		fEventList;
+	BDate			fDate;
+	uint8			fMode;
+	bool			fPopUpEnabled;
 	QueryDBManager*	fDBManager;
 
-	static const uint32	kInvokationMessage = 1000;
+	static const uint32 kInvokationMessage = 1000;
 };
 
 #endif // EVENT_TAB_VIEW_H

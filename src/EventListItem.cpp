@@ -64,7 +64,7 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	bgColor = TintColor(bgColor, bgColor, severity);
 
 	if (severity >= 1) {
-		rgb_color hideDeleteColor = { 255, 0, 0, 255 };
+		rgb_color hideDeleteColor = {255, 0, 0, 255};
 		bgColor = mix_color(bgColor, hideDeleteColor, 64);
 	}
 
@@ -81,9 +81,10 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	BRect colorRect(rect);
 	colorRect.left += spacing + 2;
 	colorRect.right = colorRect.left + rect.Height() / 4;
-	colorRect.top = rect.top + ((rect.Height()
-		- (finfo.ascent + finfo.descent + finfo.leading)) / 2);
-		- timefont.Size();
+	colorRect.top = rect.top
+		+ ((rect.Height() - (finfo.ascent + finfo.descent + finfo.leading))
+			/ 2);
+	-timefont.Size();
 
 	colorRect.bottom = colorRect.top + rect.Height() / 4;
 	view->SetHighColor(fEvent->GetCategory()->GetColor());
@@ -106,12 +107,13 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 	view->SetHighColor(TintColor(textColor, textColor, 1));
 
 	view->MovePenTo(offset,
-		rect.top + timefont.Size() - namefont.Size() + 6 + ((rect.Height()
-		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
-		+ (finfo.ascent + finfo.descent));
+		rect.top + timefont.Size() - namefont.Size() + 6
+			+ ((rect.Height() - (finfo.ascent + finfo.descent + finfo.leading))
+				/ 2)
+			+ (finfo.ascent + finfo.descent));
 
 	BString timeText(fTimeText);
-	view->TruncateString(&timeText, B_TRUNCATE_END,  rect.Width() - offset - 2);
+	view->TruncateString(&timeText, B_TRUNCATE_END, rect.Width() - offset - 2);
 	view->DrawString(timeText.String());
 
 	// event name
@@ -128,9 +130,11 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 		namefont.SetFace(face | B_LIGHT_FACE);
 	view->SetFont(&namefont);
 
-	view->MovePenTo(offset, rect.top + ((rect.Height()
-		- (finfo.ascent + finfo.descent + finfo.leading)) / 2)
-		+ (finfo.ascent + finfo.descent) - timefont.Size() + 2);
+	view->MovePenTo(offset,
+		rect.top
+			+ ((rect.Height() - (finfo.ascent + finfo.descent + finfo.leading))
+				/ 2)
+			+ (finfo.ascent + finfo.descent) - timefont.Size() + 2);
 
 	BString name(fEvent->GetName());
 	view->TruncateString(&name, B_TRUNCATE_END, rect.Width() - offset - 2);
@@ -138,8 +142,8 @@ EventListItem::DrawItem(BView* view, BRect rect, bool complete)
 
 	// draw lines
 
-	view->SetHighColor(tint_color(ui_color(B_CONTROL_BACKGROUND_COLOR),
-		B_DARKEN_1_TINT));
+	view->SetHighColor(
+		tint_color(ui_color(B_CONTROL_BACKGROUND_COLOR), B_DARKEN_1_TINT));
 	view->StrokeLine(rect.LeftBottom(), rect.RightBottom());
 }
 
@@ -181,43 +185,44 @@ EventListItem::_CalcTimeText(int32 mode)
 
 	if (fEvent->IsAllDay() == true)
 		if ((mode & kAgendaView) || (mode & kDateView)) {
-			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
-				B_SHORT_DATE_FORMAT);
+			dateFormat.Format(
+				startDay, fEvent->GetStartDateTime(), B_SHORT_DATE_FORMAT);
 			BString startday(B_TRANSLATE("All day, %startDay%"));
 			startday.ReplaceAll("%startDay%", startDay);
 			timePeriod << startday;
-		}
-		else
+		} else
 			timePeriod << B_TRANSLATE("All day");
 	else {
-		timeFormat.Format(startTime, fEvent->GetStartDateTime(),
-			B_SHORT_TIME_FORMAT);
-		timeFormat.Format(endTime, fEvent->GetEndDateTime(),
-			B_SHORT_TIME_FORMAT);
+		timeFormat.Format(
+			startTime, fEvent->GetStartDateTime(), B_SHORT_TIME_FORMAT);
+		timeFormat.Format(
+			endTime, fEvent->GetEndDateTime(), B_SHORT_TIME_FORMAT);
 
 		if (mode & kAgendaView) {
 			BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
-			if (now.Time_t() >= fEvent->GetStartDateTime() && 
-			    now.Time_t() <= fEvent->GetEndDateTime()) {
-				formatter.Format(remaining, 0, difftime(fEvent->GetEndDateTime(), now.Time_t())*1000000);
+			if (now.Time_t() >= fEvent->GetStartDateTime()
+				&& now.Time_t() <= fEvent->GetEndDateTime()) {
+				formatter.Format(remaining, 0,
+					difftime(fEvent->GetEndDateTime(), now.Time_t()) * 1000000);
 				BString timeLeft(B_TRANSLATE("Now, %remaining% left"));
 				timeLeft.ReplaceAll("%remaining%", remaining);
-					timePeriod << timeLeft;
+				timePeriod << timeLeft;
 			} else if (now.Time_t() < fEvent->GetStartDateTime()) {
-				formatter.Format(remaining, 0, difftime(fEvent->GetStartDateTime(), now.Time_t())*1000000);
+				formatter.Format(remaining, 0,
+					difftime(fEvent->GetStartDateTime(), now.Time_t())
+						* 1000000);
 				BString timeLeft(B_TRANSLATE("Starts in %remaining%"));
 				timeLeft.ReplaceAll("%remaining%", remaining);
 				timePeriod << timeLeft;
 			} else
 				timePeriod = B_TRANSLATE("Finished!");
-		}
-		else if (mode & kDateView) {
-			dateFormat.Format(startDay, fEvent->GetStartDateTime(),
-				B_SHORT_DATE_FORMAT);
-			dateFormat.Format(endDay, fEvent->GetEndDateTime(),
-				B_SHORT_DATE_FORMAT);
-			timePeriod << startTime << ", " << startDay << " - " \
-							<< endTime << ", " << endDay;
+		} else if (mode & kDateView) {
+			dateFormat.Format(
+				startDay, fEvent->GetStartDateTime(), B_SHORT_DATE_FORMAT);
+			dateFormat.Format(
+				endDay, fEvent->GetEndDateTime(), B_SHORT_DATE_FORMAT);
+			timePeriod << startTime << ", " << startDay << " - " << endTime
+					   << ", " << endDay;
 		} else
 			timePeriod << startTime << " - " << endTime;
 	}

@@ -19,7 +19,8 @@ static const uint32 kEventSyncWindowQuitting = 'kswq';
 static const uint32 kSynchronizationComplete = 'kesc';
 
 
-class EventSyncWindow: public BWindow {
+class EventSyncWindow : public BWindow
+{
 public:
 					EventSyncWindow();
 					~EventSyncWindow();
@@ -36,7 +37,7 @@ private:
 	void			_StopSynchronizationThread();
 	void			_SetStatusLabel(bool status, time_t syncTime);
 
-	static const uint32	kSyncPressed = 1000;
+	static const uint32 kSyncPressed = 1000;
 
 	BStringView*	fStatusLabel;
 	BButton*		fSyncButton;

@@ -13,23 +13,20 @@
 
 
 enum {
-	EVENT_NOTIFIED		= 1,
-	EVENT_CANCELLED		= 2,
-	EVENT_DELETED		= 4,
-	EVENT_HIDDEN		= 8
+	EVENT_NOTIFIED = 1,
+	EVENT_CANCELLED = 2,
+	EVENT_DELETED = 4,
+	EVENT_HIDDEN = 8
 };
 
 
-class Event {
+class Event
+{
 public:
-
-			Event(const char* name, const char* place,
-				const char* description, bool allday,
-				time_t start, time_t end,
-				Category* category,
-				time_t updated = time(NULL), uint16 status = 0,
-				const char* id = NULL);
-			Event(Event& event);
+				Event(const char* name, const char* place, const char* description,
+					bool allday, time_t start, time_t end, Category* category,
+					time_t updated = time(NULL), uint16 status = 0, const char* id = NULL);
+				Event(Event& event);
 
 	time_t		GetStartDateTime() const;
 	void		SetStartDateTime(time_t start);
@@ -57,7 +54,7 @@ public:
 	time_t		GetUpdated() const;
 	void		SetUpdated(time_t updated);
 
-	bool 		Equals(Event& e) const;
+	bool		Equals(Event& e) const;
 
 private:
 	BString		fName;
@@ -73,7 +70,6 @@ private:
 	int16		fStatus;
 
 	Category*	fCategory;
-
 };
 
 

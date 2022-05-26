@@ -20,15 +20,15 @@
 class CategoryListItem : public BStringItem
 {
 public:
-							CategoryListItem(const char* text, rgb_color color);
+					CategoryListItem(const char* text, rgb_color color);
 
-	virtual void			DrawItem(BView* owner, BRect frame, bool complete);
+	virtual void	DrawItem(BView* owner, BRect frame, bool complete);
 
-			rgb_color		Color() { return fColor; };
-			void			SetColor(rgb_color color) { fColor = color; };
+	rgb_color		Color() { return fColor; };
+	void			SetColor(rgb_color color) { fColor = color; };
 
 private:
-			rgb_color		fColor;
+	rgb_color		fColor;
 };
 
 

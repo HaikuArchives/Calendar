@@ -23,10 +23,10 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "CategoryWindow"
 
+
 CategoryWindow::CategoryWindow()
 	:
-	BWindow(BRect(), B_TRANSLATE("Manage categories"),
-		B_TITLED_WINDOW,
+	BWindow(BRect(), B_TRANSLATE("Manage categories"), B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fCategoryEditWindow(NULL)
 {
@@ -45,7 +45,7 @@ CategoryWindow::~CategoryWindow()
 void
 CategoryWindow::MessageReceived(BMessage* message)
 {
-	switch(message->what) {
+	switch (message->what) {
 
 		case kAddPressed:
 			_OpenCategoryWindow(NULL);
@@ -101,7 +101,7 @@ CategoryWindow::MessageReceived(BMessage* message)
 				else {
 					BMessage msg = BMessage(B_REFS_RECEIVED);
 					msg.AddRef("refs", &ref);
-					((App*)be_app)->PostMessage(&msg);
+					((App*) be_app)->PostMessage(&msg);
 				}
 			}
 			break;
@@ -139,9 +139,9 @@ CategoryWindow::LoadCategories()
 
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
-		category = ((Category*)fCategoryList->ItemAt(i));
-		fCategoryListView->AddItem(new CategoryListItem(category->GetName(),
-			category->GetColor()));
+		category = ((Category*) fCategoryList->ItemAt(i));
+		fCategoryListView->AddItem(
+			new CategoryListItem(category->GetName(), category->GetColor()));
 	}
 
 	if (selection < fCategoryList->CountItems())
@@ -167,11 +167,11 @@ CategoryWindow::_InitInterface()
 	fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fCategoryListView = new BListView("CategoryListView", B_SINGLE_SELECTION_LIST,
-		B_WILL_DRAW);
+	fCategoryListView = new BListView(
+		"CategoryListView", B_SINGLE_SELECTION_LIST, B_WILL_DRAW);
 
-	fCategoryScroll = new BScrollView("CategoryScroll", fCategoryListView,
-		B_WILL_DRAW, false, true);
+	fCategoryScroll = new BScrollView(
+		"CategoryScroll", fCategoryListView, B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
 	fDBManager = new QueryDBManager();
@@ -179,12 +179,13 @@ CategoryWindow::_InitInterface()
 	LoadCategories();
 
 	fCategoryListView->SetSelectionMessage(new BMessage(kCategorySelected));
-	fCategoryListView->SetInvocationMessage(new BMessage(kCategoryEditSelected));
+	fCategoryListView->SetInvocationMessage(
+		new BMessage(kCategoryEditSelected));
 
 	fNewButton = new BButton("NewButton", B_TRANSLATE("New" B_UTF8_ELLIPSIS),
 		new BMessage(kAddPressed));
-	fDeleteButton = new BButton("DeleteButton", B_TRANSLATE("Delete"),
-		new BMessage(kDeletePressed));
+	fDeleteButton = new BButton(
+		"DeleteButton", B_TRANSLATE("Delete"), new BMessage(kDeletePressed));
 	fEditButton = new BButton("EditButton", B_TRANSLATE("Edit" B_UTF8_ELLIPSIS),
 		new BMessage(kCategoryEditSelected));
 	fEditButton->SetEnabled(false);
@@ -193,17 +194,17 @@ CategoryWindow::_InitInterface()
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.Add(fCategoryScroll)
 		.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
-			.Add(fDeleteButton)
-			.AddGlue()
-			.Add(fNewButton)
-			.Add(fEditButton)
+		.Add(fDeleteButton)
+		.AddGlue()
+		.Add(fNewButton)
+		.Add(fEditButton)
 		.End()
-	.End();
+		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.SetInsets(B_USE_WINDOW_SPACING)
 		.Add(fMainView)
-	.End();
+		.End();
 }
 
 
@@ -228,12 +229,12 @@ CategoryWindow::_OnDeletePressed()
 		return;
 
 	Category* category = fCategoryList->ItemAt(selection);
-	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
+	BString defaultCat = ((App*) be_app)->GetPreferences()->fDefaultCategory;
 
 	if (category->GetName() == defaultCat) {
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("You cannot delete the default category."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("You cannot delete the default category."), NULL,
+			B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->Go();
 		return;
@@ -241,22 +242,22 @@ CategoryWindow::_OnDeletePressed()
 
 	BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
 		B_TRANSLATE("Are you sure you want to delete the selected category?"),
-		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"),
-		B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL,
+		B_WARNING_ALERT);
 
 	alert->SetShortcut(1, B_ESCAPE);
 	int32 button_index = alert->Go();
 
 	if (button_index == 0) {
 		if (fDBManager->RemoveCategory(category) == false) {
-			BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-				B_TRANSLATE("Cannot delete category. Can't delete a category used by events."),
-				NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			BAlert* alert = new BAlert(B_TRANSLATE("Error"),
+				B_TRANSLATE("Cannot delete category. Can't delete a category "
+							"used by events."),
+				NULL, B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			return;
 		} else
 			LoadCategories();
 	}
 }
-
-

@@ -28,10 +28,11 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "CategoryEditWindow"
 
+
 CategoryEditWindow::CategoryEditWindow()
 	:
 	BWindow(BRect(), B_TRANSLATE("Edit category"), B_TITLED_WINDOW,
-			B_NOT_RESIZABLE | B_AUTO_UPDATE_SIZE_LIMITS)
+		B_NOT_RESIZABLE | B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	_InitInterface();
 	CenterOnScreen();
@@ -41,7 +42,7 @@ CategoryEditWindow::CategoryEditWindow()
 void
 CategoryEditWindow::MessageReceived(BMessage* message)
 {
-	switch(message->what) {
+	switch (message->what) {
 
 		case kUpdateColor:
 		{
@@ -74,7 +75,7 @@ bool
 CategoryEditWindow::QuitRequested()
 {
 	_RefreshWindows();
-	((App*)be_app)->categoryWindow()->PostMessage(kCategoryEditQuitting);
+	((App*) be_app)->categoryWindow()->PostMessage(kCategoryEditQuitting);
 	return true;
 }
 
@@ -94,8 +95,7 @@ CategoryEditWindow::SetCategory(Category* category)
 		fColorPreview->Invalidate();
 	}
 
-	else
-	{
+	else {
 		fPicker->SetValue((rgb_color){255, 255, 0});
 		fColorPreview->SetColor((rgb_color){255, 255, 0});
 		fColorPreview->Invalidate();
@@ -113,42 +113,40 @@ CategoryEditWindow::_InitInterface()
 	fCategoryText = new BTextControl("CategoryText", NULL,
 		B_TRANSLATE("New category"), new BMessage(kCategoryTextChanged));
 
-	fOkButton = new BButton("OkButton", B_TRANSLATE("OK"),
-		new BMessage(kOkPressed));
-	fRevertButton = new BButton("RevertButton", B_TRANSLATE("Revert"),
-		new BMessage(kRevertPressed));
-
+	fOkButton = new BButton("OkButton", B_TRANSLATE("OK"), new BMessage(kOkPressed));
+	fRevertButton = new BButton(
+		"RevertButton", B_TRANSLATE("Revert"), new BMessage(kRevertPressed));
 
 	BRect wellrect(0, 0, 49, 49);
 	fColorPreview = new ColorPreview(wellrect, new BMessage(kColorDropped), 0);
-	fColorPreview->SetExplicitAlignment(BAlignment(B_ALIGN_HORIZONTAL_CENTER,
-		B_ALIGN_BOTTOM));
+	fColorPreview->SetExplicitAlignment(
+		BAlignment(B_ALIGN_HORIZONTAL_CENTER, B_ALIGN_BOTTOM));
 
-	fPicker = new BColorControl(B_ORIGIN, B_CELLS_16x16, 1,
-		"picker", new BMessage(kUpdateColor));
+	fPicker = new BColorControl(
+		B_ORIGIN, B_CELLS_16x16, 1, "picker", new BMessage(kUpdateColor));
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING)
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-			.Add(fCategoryText)
+		.Add(fCategoryText)
 		.End()
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-			.Add(fColorPreview)
-			.Add(fPicker)
+		.Add(fColorPreview)
+		.Add(fPicker)
 		.End()
-	.End();
+		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.Add(fMainView)
 		.Add(new BSeparatorView(B_HORIZONTAL))
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-			.SetInsets(B_USE_WINDOW_SPACING, B_USE_DEFAULT_SPACING,
-				B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-			.Add(fRevertButton)
-			.AddGlue()
-			.Add(fOkButton)
+		.SetInsets(B_USE_WINDOW_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.Add(fRevertButton)
+		.AddGlue()
+		.Add(fOkButton)
 		.End()
-	.End();
+		.End();
 
 	fColorPreview->Parent()->SetExplicitMaxSize(
 		BSize(B_SIZE_UNSET, fCategoryText->Bounds().Height()));
@@ -194,7 +192,7 @@ CategoryEditWindow::_CloseWindow()
 void
 CategoryEditWindow::_RefreshWindows()
 {
-	((App*)be_app)->mainWindow()->PostMessage(kRefreshCategoryList);
+	((App*) be_app)->mainWindow()->PostMessage(kRefreshCategoryList);
 }
 
 
@@ -202,18 +200,19 @@ void
 CategoryEditWindow::_OnOkPressed()
 {
 	if (BString(fCategoryText->Text()).CountChars() < 3) {
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("The name must have a length greater than 2."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("The name must have a length greater than 2."), NULL,
+			B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 		alert->Go();
 		return;
 	}
 
 	if (_SaveChanges() == false) {
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
-			B_TRANSLATE("Cannot add/modify the category. A category with the same name or color already exists."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		BAlert* alert = new BAlert(B_TRANSLATE("Error"),
+			B_TRANSLATE("Cannot add/modify the category. A category with the "
+						"same name or color already exists."),
+			NULL, B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 		return;
 	}
@@ -226,7 +225,7 @@ CategoryEditWindow::_SaveChanges()
 {
 	if (BString(fCategoryText->Text()).CountChars() > 3) {
 		Category category(fCategoryText->Text(), fPicker->ValueAsColor());
-		CategoryWindow* parent = ((App*)be_app)->categoryWindow();
+		CategoryWindow* parent = ((App*) be_app)->categoryWindow();
 
 		if (fCategory == NULL)
 			return parent->GetDBManager()->AddCategory(&category);
@@ -235,5 +234,3 @@ CategoryEditWindow::_SaveChanges()
 	}
 	return false;
 }
-
-

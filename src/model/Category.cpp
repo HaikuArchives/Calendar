@@ -13,35 +13,31 @@
 #include "ColorConverter.h"
 
 
-Category::Category(BString name, rgb_color color,
-	const char* id /*= NULL*/)
+Category::Category(BString name, rgb_color color, const char* id /*= NULL*/)
 {
-		fName = name;
-        fColor = color;
+	fName = name;
+	fColor = color;
 
-		if (id == NULL) {
-			fId = BUuid().SetToRandom().ToString();
-		}
-		else
-			fId = id;
+	if (id == NULL)
+		fId = BUuid().SetToRandom().ToString();
+	else
+		fId = id;
 }
 
 
-Category::Category(BString name, BString color,
-	const char* id /*= NULL*/)
+Category::Category(BString name, BString color, const char* id /*= NULL*/)
 {
-		fName = name;
-		fColor = HexToRGB(color);
+	fName = name;
+	fColor = HexToRGB(color);
 
-		if (id == NULL) {
-			fId = BUuid().SetToRandom().ToString();
-		}
-		else
-			fId = id;
+	if (id == NULL)
+		fId = BUuid().SetToRandom().ToString();
+	else
+		fId = id;
 }
 
 
-Category::Category(Category &category)
+Category::Category(Category& category)
 {
 	fName = category.GetName();
 	fColor = category.GetColor();
@@ -78,7 +74,7 @@ Category::GetId()
 
 
 bool
-Category::Equals(Category &c)
+Category::Equals(Category& c)
 {
 	return (fId == c.GetId());
 }

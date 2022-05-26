@@ -23,8 +23,8 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "SQLiteManager"
 
-const char* kDirectoryName	= "Calendar";
-const char* kDatabaseName	= "events.sql";
+const char* kDirectoryName = "Calendar";
+const char* kDatabaseName = "events.sql";
 
 
 SQLiteManager::SQLiteManager()
@@ -38,6 +38,7 @@ SQLiteManager::~SQLiteManager()
 	sqlite3_close(db);
 }
 
+
 void
 SQLiteManager::_Initialise()
 {
@@ -50,9 +51,8 @@ SQLiteManager::_Initialise()
 	find_directory(B_USER_SETTINGS_DIRECTORY, &databasePath);
 	databasePath.Append(kDirectoryName);
 	BDirectory databaseDir(databasePath.Path());
-	if (databaseDir.InitCheck() == B_ENTRY_NOT_FOUND) {
+	if (databaseDir.InitCheck() == B_ENTRY_NOT_FOUND)
 		databaseDir.CreateDirectory(databasePath.Path(), &databaseDir);
-	}
 
 	fDatabaseFile.SetTo(&databaseDir, kDatabaseName);
 	if (!BEntry(fDatabaseFile.Path()).Exists())
@@ -66,45 +66,50 @@ SQLiteManager::_Initialise()
 
 		BString openErrorCode;
 		openErrorCode << rc;
-		BString openErrorMsg = 
-			B_TRANSLATE("Cannot open database (%code%). Your saved events will not be loaded.");
+		BString openErrorMsg
+			= B_TRANSLATE(
+				"Cannot open database (%code%). Your saved events "
+				"will not be loaded.");
 
 		BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
-			openErrorMsg.ReplaceAll("%code%", openErrorCode),
-			B_TRANSLATE("OK"), NULL, NULL,
-			B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
-			alert->Go();
+			openErrorMsg.ReplaceAll("%code%", openErrorCode), B_TRANSLATE("OK"),
+			NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+		alert->Go();
 	}
 
 	if (!exists) {
-		BString sql_tmp = 
-		"CREATE TABLE CATEGORIES(ID TEXT PRIMARY KEY, NAME TEXT NOT NULL UNIQUE, COLOR TEXT NOT NULL UNIQUE);"
-		"CREATE TABLE EVENTS(ID TEXT PRIMARY KEY, NAME TEXT, PLACE TEXT,"
-		"DESCRIPTION TEXT, ALLDAY INTEGER, START INTEGER, END INTEGER, CATEGORY TEXT, EVENT_NOTIFIED INTEGER,"
-		"UPDATED INTEGER, STATUS INTEGER,"
-		"FOREIGN KEY(CATEGORY) REFERENCES CATEGORIES(ID) ON DELETE RESTRICT);"
-		"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', '%default%', '1E90FF');"
-		"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4', '%birthday%', 'C25656');"
-		"PRAGMA foreign_keys = ON;";
+		BString sql_tmp =
+			"CREATE TABLE CATEGORIES(ID TEXT PRIMARY KEY, NAME TEXT NOT NULL "
+			"UNIQUE, COLOR TEXT NOT NULL UNIQUE);"
+			"CREATE TABLE EVENTS(ID TEXT PRIMARY KEY, NAME TEXT, PLACE TEXT,"
+			"DESCRIPTION TEXT, ALLDAY INTEGER, START INTEGER, END INTEGER, "
+			"CATEGORY TEXT, EVENT_NOTIFIED INTEGER, UPDATED INTEGER, STATUS INTEGER,"
+			"FOREIGN KEY(CATEGORY) REFERENCES CATEGORIES(ID) ON DELETE RESTRICT);"
+			"INSERT INTO CATEGORIES VALUES('1f1e4ffd-527d-4796-953f-df2e2c600a09', "
+			"'%default%', '1E90FF');"
+			"INSERT INTO CATEGORIES VALUES('47c30a47-7c79-4d45-883a-8f45b9ddcff4',"
+			"'%birthday%', 'C25656');"
+			"PRAGMA foreign_keys = ON;";
 		sql_tmp.ReplaceAll("%default%", B_TRANSLATE("Default"));
 		sql_tmp.ReplaceAll("%birthday%", B_TRANSLATE("Birthday"));
 
-		const char *sql = sql_tmp.String();
+		const char* sql = sql_tmp.String();
 
 		rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
 
-		if (rc != SQLITE_OK ) {
+		if (rc != SQLITE_OK) {
 			sqlite3_free(zErrMsg);
 			sqlite3_close(db);
 
 			BString creationErrorCode;
 			creationErrorCode << rc;
-			BString creationErrorMsg = B_TRANSLATE("There was an SQLite error (%code%).");
+			BString creationErrorMsg
+				= B_TRANSLATE("There was an SQLite error (%code%).");
 
 			BAlert* alert = new BAlert(B_TRANSLATE("SQLITE ERROR"),
 				creationErrorMsg.ReplaceAll("%code%", creationErrorCode),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->Go();
 		}
 	}
@@ -117,23 +122,25 @@ SQLiteManager::AddEvent(Event* event)
 	sqlite3_stmt* stmt;
 	char* zErrMsg = 0;
 
-	if ((BString(event->GetName()).CountChars() < 3) || (event->GetStartDateTime() >
-		event->GetEndDateTime()) || (event->GetCategory() == NULL))
+	if ((BString(event->GetName()).CountChars() < 3)
+		|| (event->GetStartDateTime() > event->GetEndDateTime())
+		|| (event->GetCategory() == NULL))
 		return false;
 
-	int rc = sqlite3_prepare_v2(db, "INSERT INTO EVENTS VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-		, -1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(db,
+		"INSERT INTO EVENTS VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", -1,
+		&stmt, NULL);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error in prepare: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		sqlite3_close(db);
 		return false;
 	}
 
-	int allday = (event->IsAllDay())? 1 : 0;
-	int notified = (event->GetStatus() & EVENT_NOTIFIED)? 1 : 0;
-	int status = (event->GetStatus() & EVENT_DELETED)? 0 : 1;
+	int allday = (event->IsAllDay()) ? 1 : 0;
+	int notified = (event->GetStatus() & EVENT_NOTIFIED) ? 1 : 0;
+	int status = (event->GetStatus() & EVENT_DELETED) ? 0 : 1;
 
 	sqlite3_bind_text(stmt, 1, event->GetId(), strlen(event->GetId()), 0);
 	sqlite3_bind_text(stmt, 2, event->GetName(), strlen(event->GetName()), 0);
@@ -150,7 +157,7 @@ SQLiteManager::AddEvent(Event* event)
 
 	rc = sqlite3_step(stmt);
 
-	if (rc != SQLITE_DONE ) {
+	if (rc != SQLITE_DONE) {
 		fprintf(stderr, "SQL error in commit: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
@@ -167,23 +174,25 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 	sqlite3_stmt* stmt;
 	char* zErrMsg = 0;
 
-	if ((BString(newEvent->GetName()).CountChars() < 3) || (newEvent->GetStartDateTime() >
-		newEvent->GetEndDateTime()) || (newEvent->GetCategory() == NULL))
+	if ((BString(newEvent->GetName()).CountChars() < 3)
+		|| (newEvent->GetStartDateTime() > newEvent->GetEndDateTime())
+		|| (newEvent->GetCategory() == NULL))
 		return false;
 
-	int rc = sqlite3_prepare_v2(db, "UPDATE EVENTS SET NAME=?, PLACE=?, DESCRIPTION=?, \
+	int rc = sqlite3_prepare_v2(db,
+		"UPDATE EVENTS SET NAME=?, PLACE=?, DESCRIPTION=?, \
 		ALLDAY = ?, START=?, END=?, CATEGORY=?, EVENT_NOTIFIED=?, UPDATED=?, STATUS=? WHERE ID=?;",
 		-1, &stmt, NULL);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error in prepare: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
 	}
 
-	int allday = (newEvent->IsAllDay())? 1 : 0;
-	int notified = (newEvent->GetStatus() & EVENT_NOTIFIED)? 1 : 0;
-	int status = (newEvent->GetStatus() & EVENT_DELETED)? 0 : 1;
+	int allday = (newEvent->IsAllDay()) ? 1 : 0;
+	int notified = (newEvent->GetStatus() & EVENT_NOTIFIED) ? 1 : 0;
+	int status = (newEvent->GetStatus() & EVENT_DELETED) ? 0 : 1;
 
 	sqlite3_bind_text(stmt, 1, newEvent->GetName(), strlen(newEvent->GetName()), 0);
 	sqlite3_bind_text(stmt, 2, newEvent->GetPlace(), strlen(newEvent->GetPlace()), 0);
@@ -191,7 +200,6 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 	sqlite3_bind_int(stmt, 4, allday);
 	sqlite3_bind_int(stmt, 5, newEvent->GetStartDateTime());
 	sqlite3_bind_int(stmt, 6, newEvent->GetEndDateTime());
-
 	sqlite3_bind_text(stmt, 7, newEvent->GetCategory()->GetId(),
 		strlen(newEvent->GetCategory()->GetId()), 0);
 	sqlite3_bind_int(stmt, 8, notified);
@@ -200,14 +208,15 @@ SQLiteManager::UpdateEvent(Event* event, Event* newEvent)
 	sqlite3_bind_text(stmt, 11, event->GetId(), strlen(event->GetId()), 0);
 
 	rc = sqlite3_step(stmt);
-	if (rc != SQLITE_DONE ) {
+	if (rc != SQLITE_DONE) {
 		fprintf(stderr, "SQL error in commit: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
 	}
 
 	sqlite3_finalize(stmt);
-	return true;;
+	return true;
+	;
 }
 
 
@@ -221,14 +230,13 @@ SQLiteManager::UpdateNotifiedEvent(const char* id)
 
 	int rc = sqlite3_exec(db, sql.String(), 0, 0, &zErrMsg);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 		return false;
 	}
 
 	return true;
-
 }
 
 
@@ -238,9 +246,10 @@ SQLiteManager::RemoveEvent(Event* event)
 	sqlite3_stmt* stmt;
 	char* zErrMsg = 0;
 
-	int rc = sqlite3_prepare_v2(db, "DELETE FROM EVENTS WHERE ID=?", -1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(
+		db, "DELETE FROM EVENTS WHERE ID=?", -1, &stmt, NULL);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error in prepare: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
@@ -248,7 +257,7 @@ SQLiteManager::RemoveEvent(Event* event)
 
 	sqlite3_bind_text(stmt, 1, event->GetId(), strlen(event->GetId()), 0);
 	rc = sqlite3_step(stmt);
-	if (rc != SQLITE_DONE ) {
+	if (rc != SQLITE_DONE) {
 		fprintf(stderr, "SQL error in commit: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
@@ -265,10 +274,10 @@ SQLiteManager::RemoveCancelledEvents()
 	sqlite3_stmt* stmt;
 	char* zErrMsg = 0;
 
-	int rc = sqlite3_prepare_v2(db, "DELETE FROM EVENTS WHERE STATUS=?",
-		-1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(
+		db, "DELETE FROM EVENTS WHERE STATUS=?", -1, &stmt, NULL);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error in prepare: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
@@ -277,7 +286,7 @@ SQLiteManager::RemoveCancelledEvents()
 	sqlite3_bind_int(stmt, 1, 0);
 
 	rc = sqlite3_step(stmt);
-	if (rc != SQLITE_DONE ) {
+	if (rc != SQLITE_DONE) {
 		fprintf(stderr, "SQL error in commit: %s\n", sqlite3_errmsg(db));
 		sqlite3_free(zErrMsg);
 		return false;
@@ -304,34 +313,34 @@ SQLiteManager::GetEvent(const char* id)
 	}
 
 	if (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* uuid = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* place = (const char*)sqlite3_column_text(stmt, 2);
-		const char* description = (const char*)sqlite3_column_text(stmt, 3);
-		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-		time_t start = (time_t)sqlite3_column_int(stmt, 5);
-		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+		const char* uuid = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* place = (const char*) sqlite3_column_text(stmt, 2);
+		const char* description = (const char*) sqlite3_column_text(stmt, 3);
+		bool allday = ((int) sqlite3_column_int(stmt, 4)) ? true : false;
+		time_t start = (time_t) sqlite3_column_int(stmt, 5);
+		time_t end = (time_t) sqlite3_column_int(stmt, 6);
 
-		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		Category* category
+			= GetCategory((const char*) sqlite3_column_text(stmt, 7));
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 			return NULL;
 		}
 
-		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+		time_t updated = (time_t) sqlite3_column_int(stmt, 9);
 		uint16 status = 0;
-		if (!((int)sqlite3_column_int(stmt, 10)))
+		if (!((int) sqlite3_column_int(stmt, 10)))
 			status |= EVENT_DELETED;
-		if ((int)sqlite3_column_int(stmt, 8))
+		if ((int) sqlite3_column_int(stmt, 8))
 			status |= EVENT_NOTIFIED;
 
-		Event* event = new Event(name, place, description, allday,
-			start, end, category, updated, status, uuid);
+		Event* event = new Event(name, place, description, allday, start, end,
+			category, updated, status, uuid);
 
 		sqlite3_finalize(stmt);
 		return event;
-	}
-	else
+	} else
 		return NULL;
 }
 
@@ -345,8 +354,10 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 	BDateTime endOfDay(date, BTime(23, 59, 59));
 
 	sqlite3_stmt* stmt;
-	int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
-		OR (START < ? AND END > ?)) AND (STATUS=?);", -1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(db,
+		"SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
+		OR (START < ? AND END > ?)) AND (STATUS=?);",
+		-1, &stmt, NULL);
 
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
@@ -360,50 +371,52 @@ SQLiteManager::GetEventsOfDay(BDate& date)
 	sqlite3_bind_int(stmt, 5, 1);
 
 	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* id = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* place = (const char*)sqlite3_column_text(stmt, 2);
-		const char* description = (const char*)sqlite3_column_text(stmt, 3);
-		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-		time_t start = (time_t)sqlite3_column_int(stmt, 5);
-		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+		const char* id = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* place = (const char*) sqlite3_column_text(stmt, 2);
+		const char* description = (const char*) sqlite3_column_text(stmt, 3);
+		bool allday = ((int) sqlite3_column_int(stmt, 4)) ? true : false;
+		time_t start = (time_t) sqlite3_column_int(stmt, 5);
+		time_t end = (time_t) sqlite3_column_int(stmt, 6);
 
-		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		Category* category
+			= GetCategory((const char*) sqlite3_column_text(stmt, 7));
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 			continue;
 		}
 
-		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+		time_t updated = (time_t) sqlite3_column_int(stmt, 9);
 		uint16 status = 0;
-		if ((int)sqlite3_column_int(stmt, 8))
+		if ((int) sqlite3_column_int(stmt, 8))
 			status |= EVENT_NOTIFIED;
-		if (!((int)sqlite3_column_int(stmt, 10)))
+		if (!((int) sqlite3_column_int(stmt, 10)))
 			status |= EVENT_DELETED;
 
-		Event* event = new Event(name, place, description, allday,
-			start, end, category, updated, status, id);
+		Event* event = new Event(name, place, description, allday, start, end,
+			category, updated, status, id);
 		events->AddItem(event);
 	}
 
 	sqlite3_finalize(stmt);
 	return events;
 }
-
 
 
 BList*
 SQLiteManager::GetEventsOfWeek(BDate date)
 {
 	BList* events = new BList();
-	date.AddDays(-date.DayOfWeek()+1);
+	date.AddDays(-date.DayOfWeek() + 1);
 	BDateTime startOfDay(date, BTime(0, 0, 0));
 	date.AddDays(6);
 	BDateTime endOfDay(date, BTime(23, 59, 59));
 
 	sqlite3_stmt* stmt;
-	int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
-		OR (START < ? AND END > ?)) AND (STATUS=?);", -1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(db,
+		"SELECT * FROM EVENTS WHERE ((START >= ? AND START <= ?) \
+		OR (START < ? AND END > ?)) AND (STATUS=?);",
+		-1, &stmt, NULL);
 
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
@@ -417,35 +430,37 @@ SQLiteManager::GetEventsOfWeek(BDate date)
 	sqlite3_bind_int(stmt, 5, 1);
 
 	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* id = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* place = (const char*)sqlite3_column_text(stmt, 2);
-		const char* description = (const char*)sqlite3_column_text(stmt, 3);
-		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-		time_t start = (time_t)sqlite3_column_int(stmt, 5);
-		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+		const char* id = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* place = (const char*) sqlite3_column_text(stmt, 2);
+		const char* description = (const char*) sqlite3_column_text(stmt, 3);
+		bool allday = ((int) sqlite3_column_int(stmt, 4)) ? true : false;
+		time_t start = (time_t) sqlite3_column_int(stmt, 5);
+		time_t end = (time_t) sqlite3_column_int(stmt, 6);
 
-		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		Category* category
+			= GetCategory((const char*) sqlite3_column_text(stmt, 7));
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 			continue;
 		}
 
-		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+		time_t updated = (time_t) sqlite3_column_int(stmt, 9);
 		uint16 status = 0;
-		if ((int)sqlite3_column_int(stmt, 8))
+		if ((int) sqlite3_column_int(stmt, 8))
 			status |= EVENT_NOTIFIED;
-		if (!((int)sqlite3_column_int(stmt, 10)))
+		if (!((int) sqlite3_column_int(stmt, 10)))
 			status |= EVENT_DELETED;
 
-		Event* event = new Event(name, place, description, allday,
-			start, end, category, updated, status, id);
+		Event* event = new Event(name, place, description, allday, start, end,
+			category, updated, status, id);
 		events->AddItem(event);
 	}
 
 	sqlite3_finalize(stmt);
 	return events;
 }
+
 
 BList*
 SQLiteManager::GetEventsToNotify(BDateTime dateTime)
@@ -455,8 +470,10 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 
 	time_t timestamp = dateTime.Time_t();
 
-	int rc = sqlite3_prepare_v2(db, "SELECT * FROM EVENTS WHERE EVENT_NOTIFIED = ? AND START < ?\
-		AND STATUS=?;",  -1, &stmt, NULL);
+	int rc = sqlite3_prepare_v2(db,
+		"SELECT * FROM EVENTS WHERE EVENT_NOTIFIED = ? AND START < ?\
+		AND STATUS=?;",
+		-1, &stmt, NULL);
 
 
 	if (rc != SQLITE_OK) {
@@ -469,35 +486,35 @@ SQLiteManager::GetEventsToNotify(BDateTime dateTime)
 	sqlite3_bind_int(stmt, 3, 1);
 
 	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* id = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* place = (const char*)sqlite3_column_text(stmt, 2);
-		const char* description = (const char*)sqlite3_column_text(stmt, 3);
-		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-		time_t start = (time_t)sqlite3_column_int(stmt, 5);
-		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+		const char* id = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* place = (const char*) sqlite3_column_text(stmt, 2);
+		const char* description = (const char*) sqlite3_column_text(stmt, 3);
+		bool allday = ((int) sqlite3_column_int(stmt, 4)) ? true : false;
+		time_t start = (time_t) sqlite3_column_int(stmt, 5);
+		time_t end = (time_t) sqlite3_column_int(stmt, 6);
 
-		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		Category* category
+			= GetCategory((const char*) sqlite3_column_text(stmt, 7));
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 			continue;
 		}
 
-		time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+		time_t updated = (time_t) sqlite3_column_int(stmt, 9);
 		uint16 status = 0;
-		if ((int)sqlite3_column_int(stmt, 8))
+		if ((int) sqlite3_column_int(stmt, 8))
 			status |= EVENT_NOTIFIED;
-		if (!((int)sqlite3_column_int(stmt, 10)))
+		if (!((int) sqlite3_column_int(stmt, 10)))
 			status |= EVENT_DELETED;
 
-		Event* event = new Event(name, place, description, allday,
-			start, end, category, updated, status, id);
+		Event* event = new Event(name, place, description, allday, start, end,
+			category, updated, status, id);
 		events->AddItem(event);
 	}
 
 	sqlite3_finalize(stmt);
 	return events;
-
 }
 
 
@@ -517,27 +534,28 @@ SQLiteManager::GetAllEvents()
 	}
 
 	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* uuid = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* place = (const char*)sqlite3_column_text(stmt, 2);
-		const char* description = (const char*)sqlite3_column_text(stmt, 3);
-		bool allday = ((int)sqlite3_column_int(stmt, 4))? true : false;
-		time_t start = (time_t)sqlite3_column_int(stmt, 5);
-		time_t end = (time_t)sqlite3_column_int(stmt, 6);
+		const char* uuid = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* place = (const char*) sqlite3_column_text(stmt, 2);
+		const char* description = (const char*) sqlite3_column_text(stmt, 3);
+		bool allday = ((int) sqlite3_column_int(stmt, 4)) ? true : false;
+		time_t start = (time_t) sqlite3_column_int(stmt, 5);
+		time_t end = (time_t) sqlite3_column_int(stmt, 6);
 
-		Category* category = GetCategory((const char*)sqlite3_column_text(stmt, 7));
+		Category* category
+			= GetCategory((const char*) sqlite3_column_text(stmt, 7));
 		if (category == NULL) {
 			fprintf(stderr, "Error: Received NULL category\n");
 		} else {
-			time_t updated = (time_t)sqlite3_column_int(stmt, 9);
+			time_t updated = (time_t) sqlite3_column_int(stmt, 9);
 			uint16 status = 0;
-			if ((int)sqlite3_column_int(stmt, 8))
+			if ((int) sqlite3_column_int(stmt, 8))
 				status |= EVENT_NOTIFIED;
-			if (!((int)sqlite3_column_int(stmt, 10)))
+			if (!((int) sqlite3_column_int(stmt, 10)))
 				status |= EVENT_DELETED;
 
-			Event* event = new Event(name, place, description, allday,
-				start, end, category, updated, status, uuid);
+			Event* event = new Event(name, place, description, allday, start,
+				end, category, updated, status, uuid);
 			events->AddItem(event);
 		}
 	}
@@ -563,7 +581,7 @@ SQLiteManager::AddCategory(Category* category)
 
 	int rc = sqlite3_exec(db, sql.String(), 0, 0, &zErrMsg);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 		return false;
@@ -574,8 +592,7 @@ SQLiteManager::AddCategory(Category* category)
 
 
 bool
-SQLiteManager::UpdateCategory(Category* category,
-	Category* newCategory)
+SQLiteManager::UpdateCategory(Category* category, Category* newCategory)
 {
 	if (BString(newCategory->GetName()).CountChars() < 3)
 		return false;
@@ -583,13 +600,14 @@ SQLiteManager::UpdateCategory(Category* category,
 	char* zErrMsg = 0;
 	BString sql;
 
-	sql.SetToFormat("UPDATE CATEGORIES SET NAME='%s', COLOR='%s' WHERE ID='%s';",
+	sql.SetToFormat(
+		"UPDATE CATEGORIES SET NAME='%s', COLOR='%s' WHERE ID='%s';",
 		newCategory->GetName().String(), newCategory->GetHexColor().String(),
 		category->GetId());
 
 	int rc = sqlite3_exec(db, sql.String(), 0, 0, &zErrMsg);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 		return false;
@@ -615,9 +633,9 @@ SQLiteManager::GetCategory(const char* id)
 	}
 
 	if ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-		const char* uuid = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* color = (const char*)sqlite3_column_text(stmt, 2);
+		const char* uuid = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* color = (const char*) sqlite3_column_text(stmt, 2);
 		Category* category = new Category(name, color, uuid);
 
 		sqlite3_finalize(stmt);
@@ -645,9 +663,9 @@ SQLiteManager::GetAllCategories()
 	}
 
 	while (rc = sqlite3_step(stmt) == SQLITE_ROW) {
-		const char* id = (const char*)sqlite3_column_text(stmt, 0);
-		const char* name = (const char*)sqlite3_column_text(stmt, 1);
-		const char* color = (const char*)sqlite3_column_text(stmt, 2);
+		const char* id = (const char*) sqlite3_column_text(stmt, 0);
+		const char* name = (const char*) sqlite3_column_text(stmt, 1);
+		const char* color = (const char*) sqlite3_column_text(stmt, 2);
 		Category* category = new Category(name, color, id);
 
 		categories->AddItem(category);
@@ -664,12 +682,13 @@ SQLiteManager::RemoveCategory(Category* category)
 	char* zErrMsg = 0;
 	BString sql;
 
-	sql.SetToFormat("PRAGMA foreign_keys = ON; DELETE FROM CATEGORIES WHERE ID = '%s';",
+	sql.SetToFormat(
+		"PRAGMA foreign_keys = ON; DELETE FROM CATEGORIES WHERE ID = '%s';",
 		category->GetId());
 
 	int rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
 
-	if (rc != SQLITE_OK ) {
+	if (rc != SQLITE_OK) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 		return false;

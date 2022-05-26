@@ -15,12 +15,13 @@ const uint32 kSystemDateChangeMessage = 'ksdm';
 const uint32 kDateChange = 'kdcm';
 
 
-class MainView : public BView {
+class MainView : public BView
+{
 public:
-				MainView();
+					MainView();
 
-	virtual	void	 	Pulse();
-	virtual	void		AttachedToWindow();
+	virtual void	Pulse();
+	virtual void 	AttachedToWindow();
 
 private:
 	void			_SendNotices();

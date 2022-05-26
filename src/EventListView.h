@@ -11,32 +11,33 @@
 
 class Event;
 
-static const uint32 kPopClosed	= 'kpop';
+static const uint32 kPopClosed = 'kpop';
 
 
-class EventListView : public BListView {
+class EventListView : public BListView
+{
 public:
 					EventListView(const char* name);
 					~EventListView();
 
 	virtual void	Draw(BRect rect);
-	virtual	void	FrameResized(float w, float h);
-	virtual	void	MessageReceived(BMessage* message);
+	virtual void	FrameResized(float w, float h);
+	virtual void	MessageReceived(BMessage* message);
 
 	virtual void	MouseDown(BPoint position);
 	virtual void	MouseUp(BPoint position);
 	virtual void	SelectionChanged();
 	virtual void	MakeEmpty();
 
-			Event*	SelectedEvent();
+	Event*			SelectedEvent();
 
 	void			SetPopUpMenuEnabled(bool enable);
 
 private:
-	static const int32 kEditActionInvoked	= 1000;
-	static const int32 kDeleteActionInvoked	= 1001;
-	static const int32 kCancelActionInvoked	= 1002;
-	static const int32 kHideActionInvoked	= 1003;
+	static const int32 kEditActionInvoked = 1000;
+	static const int32 kDeleteActionInvoked = 1001;
+	static const int32 kCancelActionInvoked = 1002;
+	static const int32 kHideActionInvoked = 1003;
 
 	void			_ShowPopUpMenu(BPoint screen);
 	void			_ShowEmptyPopUpMenu(BPoint screen);

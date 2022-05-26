@@ -15,20 +15,21 @@
 class Event;
 
 
-class EventListItem: public BListItem {
+class EventListItem : public BListItem
+{
 public:
-				EventListItem(Event* event, int32 mode);
-				~EventListItem();
+					EventListItem(Event* event, int32 mode);
+					~EventListItem();
 
-	virtual void		DrawItem(BView*, BRect, bool);
-	virtual	void		Update(BView*, const BFont*);
+	virtual void	DrawItem(BView*, BRect, bool);
+	virtual void	Update(BView*, const BFont*);
 
-			Event*		GetEvent();
+	Event*			GetEvent();
 
 private:
-			void		_CalcTimeText(int32 mode);
+	void			_CalcTimeText(int32 mode);
 
-	static const int 	fItemHeight	= 42;
+	static const int fItemHeight = 42;
 
 	Event*			fEvent;
 	BString			fTimeText;

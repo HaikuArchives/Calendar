@@ -10,26 +10,24 @@
 #include <String.h>
 
 
-class Category {
+class Category
+{
 public:
-		Category(BString name, rgb_color color,
-			const char* id = NULL);
-		Category(BString name, BString color,
-			const char* id = NULL);
-		Category(Category& category);
+				Category(BString name, rgb_color color, const char* id = NULL);
+				Category(BString name, BString color, const char* id = NULL);
+				Category(Category& category);
 
-		BString GetName();
-		rgb_color GetColor();
-		BString GetHexColor();
-		const char* GetId();
+	BString		GetName();
+	rgb_color	GetColor();
+	BString		GetHexColor();
+	const char*	GetId();
 
-		bool Equals(Category &c);
+	bool		Equals(Category& c);
 
 private:
-		BString			fId;
-		BString 		fName;
-		rgb_color 		fColor;
-
+	BString		fId;
+	BString		fName;
+	rgb_color	fColor;
 };
 
 

@@ -20,7 +20,7 @@
 
 // golden ratio
 #ifdef M_PHI
-#	undef M_PHI
+#undef M_PHI
 #endif
 #define M_PHI 1.61803398874989484820
 

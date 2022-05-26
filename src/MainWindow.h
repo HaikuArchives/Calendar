@@ -25,17 +25,19 @@ static const uint32 kMenuCategoryEdit = 'kmce';
 static const uint32 kMenuHelp = 'kmhl';
 static const uint32 kMenuSyncGCAL = 'kmsg';
 
-static const int 	kAddEventMessage = 1005;
+static const int kAddEventMessage = 1005;
 
 
-class MainWindow: public BWindow {
+class MainWindow : public BWindow
+{
 public:
-				MainWindow();
-	virtual void		MessageReceived(BMessage* message);
-	virtual bool		QuitRequested();
+					MainWindow();
+	virtual void	MessageReceived(BMessage* message);
+	virtual bool	QuitRequested();
 
 	void			StartNotificationThread();
 	void			StopNotificationThread();
+
 private:
 	void			_InitInterface();
 	void			_LaunchEventManager(Event* event, entry_ref* ref = NULL);
@@ -46,7 +48,7 @@ private:
 	BDate			_GetSelectedCalendarDate() const;
 	void			_ToggleEventMenu(BMessage* msg);
 
-	static const int	kMenuAppQuit		= 1000;
+	static const int kMenuAppQuit = 1000;
 
 
 	MainView*		fMainView;

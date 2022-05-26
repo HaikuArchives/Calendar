@@ -21,11 +21,11 @@ extern const char* kAppName;
 extern const char* kSignature;
 
 
-class App: public BApplication
+class App : public BApplication
 {
 public:
-				App();
-				~App();
+					App();
+					~App();
 
 	void			ArgvReceived(int32 argc, char** argv);
 	void			MessageReceived(BMessage* message);
@@ -35,16 +35,16 @@ public:
 	bool			QuitRequested();
 	Preferences*	GetPreferences();
 	MainWindow*		mainWindow();
-	CategoryWindow*		categoryWindow();
+	CategoryWindow*	categoryWindow();
 
 
 private:
 	MainWindow*		fMainWindow;
-	PreferenceWindow*	fPreferenceWindow;
-	CategoryWindow*		fCategoryWindow;
-	EventSyncWindow*	fEventSyncWindow;
+	PreferenceWindow* fPreferenceWindow;
+	CategoryWindow*	fCategoryWindow;
+	EventSyncWindow* fEventSyncWindow;
 
-	Preferences*		fPreferences;
+	Preferences*	fPreferences;
 	BPath			fPreferencesFile;
 };
 

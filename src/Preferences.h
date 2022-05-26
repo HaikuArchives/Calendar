@@ -11,23 +11,24 @@
 #include <String.h>
 
 
-class Preferences {
+class Preferences
+{
 public:
-	void					Load(const char* filename);
-	void					Save(const char* filename);
+	void	Load(const char* filename);
+	void	Save(const char* filename);
 
-	Preferences&			operator =(const Preferences& p);
+	Preferences& operator=(const Preferences& p);
 
-	BPath					fSettingsPath;
+	BPath	fSettingsPath;
 
-	int32					fStartOfWeekOffset;
-	int32					fViewMode;
-	int32					fSelectedTab;
-	bool					fHeaderVisible;
-	bool					fFirstDeletion;
-	BString					fDefaultCategory;
-	BRect					fMainWindowRect;
-	BRect					fEventWindowRect;
+	int32	fStartOfWeekOffset;
+	int32	fViewMode;
+	int32	fSelectedTab;
+	bool	fHeaderVisible;
+	bool	fFirstDeletion;
+	BString	fDefaultCategory;
+	BRect	fMainWindowRect;
+	BRect	fEventWindowRect;
 };
 
 #endif

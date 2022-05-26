@@ -8,13 +8,12 @@
 #include <Bitmap.h>
 
 
-BBitmap*	LoadVectorIcon(const char* name, int32 iconSize = 32,
-				int32 cropSize = 22);
+BBitmap*	LoadVectorIcon(
+				const char* name, int32 iconSize = 32, int32 cropSize = 22);
 void*		LoadVectorIcon(const char* name, size_t* length);
-uchar*		LoadRecoloredIcon(const char* name, size_t* length,
-				rgb_color newColor);
+uchar*		LoadRecoloredIcon(const char* name, size_t* length, rgb_color newColor);
 
-void		RecolorIcon(uchar* icon, rgb_color oldColor, rgb_color newColor,
-				size_t length);
+void		RecolorIcon(
+				uchar* icon, rgb_color oldColor, rgb_color newColor, size_t length);
 
 #endif

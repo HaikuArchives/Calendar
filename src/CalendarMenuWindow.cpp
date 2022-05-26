@@ -29,13 +29,17 @@ using BPrivate::BCalendarView;
 //	#pragma mark - FlatButton
 
 
-class FlatButton : public BButton {
+class FlatButton : public BButton
+{
 public:
-					FlatButton(const BString& label, uint32 what)
-						: BButton(label.String(), new BMessage(what)) {}
-	virtual			~FlatButton() {}
+	FlatButton(const BString& label, uint32 what)
+		:
+		BButton(label.String(), new BMessage(what))
+	{
+	}
+	virtual ~FlatButton() {}
 
-	virtual void	Draw(BRect updateRect);
+	virtual void Draw(BRect updateRect);
 };
 
 
@@ -55,8 +59,8 @@ FlatButton::Draw(BRect updateRect)
 	const float stringWidth = StringWidth(label);
 	const float x = (updateRect.right - stringWidth) / 2.0f;
 	const float labelY = updateRect.top
-		+ ((updateRect.Height() - fh.ascent - fh.descent) / 2.0f)
-		+ fh.ascent + 1.0f;
+		+ ((updateRect.Height() - fh.ascent - fh.descent) / 2.0f) + fh.ascent
+		+ 1.0f;
 
 	SetHighColor(highColor);
 	DrawString(label, BPoint(x, labelY));
@@ -75,7 +79,7 @@ CalendarMenuWindow::CalendarMenuWindow(BHandler* handler, BPoint where)
 	:
 	BWindow(BRect(0.0, 0.0, 100.0, 130.0), "", B_BORDERED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS | B_ASYNCHRONOUS_CONTROLS | B_CLOSE_ON_ESCAPE
-		| B_NOT_MINIMIZABLE | B_NOT_ZOOMABLE),
+			| B_NOT_MINIMIZABLE | B_NOT_ZOOMABLE),
 	fYearLabel(NULL),
 	fMonthLabel(NULL),
 	fHandler(handler),
@@ -101,22 +105,22 @@ CalendarMenuWindow::CalendarMenuWindow(BHandler* handler, BPoint where)
 	fMonthLabel->GetPreferredSize(&width, &height);
 
 	BGridLayout* gridLayout = BGridLayoutBuilder(5.0)
-		.Add(_SetupButton("-", kMonthDownMessage, height), 0, 0)
-		.Add(fMonthLabel, 1, 0)
-		.Add(_SetupButton("+", kMonthUpMessage, height), 2, 0)
-		.Add(BSpaceLayoutItem::CreateGlue(), 3, 0)
-		.Add(_SetupButton("-", kYearDownMessage, height), 4, 0)
-		.Add(fYearLabel, 5, 0)
-		.Add(_SetupButton("+", kYearUpMessage, height), 6, 0)
-		.SetInsets(5.0, 0.0, 5.0, 0.0);
+	  .Add(_SetupButton("-", kMonthDownMessage, height), 0, 0)
+	  .Add(fMonthLabel, 1, 0)
+	  .Add(_SetupButton("+", kMonthUpMessage, height), 2, 0)
+	  .Add(BSpaceLayoutItem::CreateGlue(), 3, 0)
+	  .Add(_SetupButton("-", kYearDownMessage, height), 4, 0)
+	  .Add(fYearLabel, 5, 0)
+	  .Add(_SetupButton("+", kYearUpMessage, height), 6, 0)
+	  .SetInsets(5.0, 0.0, 5.0, 0.0);
 	gridLayout->SetMinColumnWidth(1, be_plain_font->StringWidth("September"));
 
 	BGroupView* groupView = new BGroupView(B_VERTICAL, 10.0);
 	BView* view = BGroupLayoutBuilder(B_VERTICAL, 5.0)
-		.Add(gridLayout->View())
-		.Add(fCalendarView)
-		.SetInsets(5.0, 5.0, 5.0, 5.0)
-		.TopView();
+	  .Add(gridLayout->View())
+	  .Add(fCalendarView)
+	  .SetInsets(5.0, 5.0, 5.0, 5.0)
+	  .TopView();
 	groupView->AddChild(view);
 	AddChild(groupView);
 
