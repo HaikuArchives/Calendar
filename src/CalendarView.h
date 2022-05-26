@@ -16,38 +16,37 @@
 
 
 namespace BPrivate {
-	class BCalendarView;
+class BCalendarView;
 }
 
 using BPrivate::BCalendarView;
 
 
-class CalendarView: public BCalendarView {
+class CalendarView : public BCalendarView
+{
 public:
-					CalendarView(BRect frame, const char* name,
-						uint32 resizeMask, uint32 flags);
+					CalendarView(
+						BRect frame, const char* name, uint32 resizeMask, uint32 flags);
 					CalendarView(BMessage* archive);
 					CalendarView(const char* text);
 					CalendarView(const char* name, uint32 flags);
 
-	virtual	void	DrawDay(BView* owner, BRect frame, const char* text,
-						bool isSelected, bool isEnabled, bool focus,
-						bool isHighlight);
+	virtual void	DrawDay(BView* owner, BRect frame, const char* text,
+	bool			isSelected, bool isEnabled, bool focus, bool isHighlight);
 
-			void	SetMarkHidden(bool show);
+	void 			SetMarkHidden(bool show);
 
 private:
-			void	_Init();
-			void	_DrawItem(BView* owner, BRect frame, const char* text,
-						bool isHighlight, bool focus, rgb_color bgColor,
-						rgb_color textColor);
+	void			_Init();
+	void			_DrawItem(BView* owner, BRect frame, const char* text,
+	bool			isHighlight, bool focus, rgb_color bgColor, rgb_color textColor);
 
-		bool fMarkHidden;
-		QueryDBManager*	fDBManager;
+	bool			fMarkHidden;
+	QueryDBManager*	fDBManager;
 };
 
 
-float		FontHeight(const BView* view);
+float FontHeight(const BView* view);
 
 
 #endif

@@ -11,11 +11,11 @@
 #include <Alert.h>
 #include <Catalog.h>
 #include <FindDirectory.h>
-#include <fs_index.h>
-#include <fs_info.h>
 #include <Query.h>
 #include <StringList.h>
 #include <VolumeRoster.h>
+#include <fs_index.h>
+#include <fs_info.h>
 
 #include "App.h"
 #include "Preferences.h"
@@ -25,8 +25,8 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "QueryDBManager"
 
-const char* kEventDir		= "events";
-const char* kCategoryDir	= "categories";
+const char* kEventDir = "events";
+const char* kCategoryDir = "categories";
 
 
 QueryDBManager::QueryDBManager()
@@ -37,7 +37,7 @@ QueryDBManager::QueryDBManager()
 
 QueryDBManager::~QueryDBManager()
 {
-	delete(fEventDir, fCategoryDir);
+	delete (fEventDir, fCategoryDir);
 }
 
 
@@ -62,10 +62,10 @@ QueryDBManager::_Initialize()
 
 	// Create default categories if need be
 	if (GetAllCategories()->CountItems() == 0) {
-		Category* defaultCategory =
-			new Category(B_TRANSLATE("Default"), BString("1E90FF"));
-		Category* birthdayCategory =
-			new Category(B_TRANSLATE("Birthday"), BString("C25656"));
+		Category* defaultCategory
+			= new Category(B_TRANSLATE("Default"), BString("1E90FF"));
+		Category* birthdayCategory
+			= new Category(B_TRANSLATE("Birthday"), BString("C25656"));
 		AddCategory(defaultCategory);
 		AddCategory(birthdayCategory);
 	}
@@ -132,8 +132,8 @@ QueryDBManager::UpdateEvent(Event* event, entry_ref ref)
 bool
 QueryDBManager::UpdateNotifiedEvent(const char* id)
 {
-	 BFile evFile = BFile();
-	 entry_ref ref;
+	BFile evFile = BFile();
+	entry_ref ref;
 	_GetFileOfId(id, &evFile, &ref);
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
@@ -168,8 +168,8 @@ QueryDBManager::RemoveEvent(entry_ref eventRef, const char* restorePath)
 
 	BEntry trashEnt;
 	fTrashDir->GetEntry(&trashEnt);
-	printf("Trashing event %s to %s/%s…\n",
-			path.String(), BPath(&trashEnt).Path(), leaf.String());
+	printf("Trashing event %s to %s/%s…\n", path.String(),
+		BPath(&trashEnt).Path(), leaf.String());
 
 	return (_TrashStatusSwitch(entry.MoveTo(fTrashDir, leaf)) == B_OK);
 }
@@ -198,8 +198,8 @@ QueryDBManager::RestoreEvent(entry_ref ref)
 
 	Event* event = _FileToEvent(&ref);
 	if (event != NULL) {
-		BString eventName = _UniqueEventName(event->GetName(),
-			event->GetStartDateTime(), event->GetId());
+		BString eventName = _UniqueEventName(
+			event->GetName(), event->GetStartDateTime(), event->GetId());
 		event->SetName(eventName);
 		_EventToFile(event, &file);
 	}
@@ -241,8 +241,8 @@ QueryDBManager::GetEvent(entry_ref ref)
 EventList*
 QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 {
-	time_t dayStart	= BDateTime(date, BTime(0, 0, 0)).Time_t();
-	time_t dayEnd	= BDateTime(date, BTime(23, 59, 59)).Time_t();
+	time_t dayStart = BDateTime(date, BTime(0, 0, 0)).Time_t();
+	time_t dayEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
 
 	return GetEventsInInterval(dayStart, dayEnd, ignoreHidden);
 }
@@ -251,7 +251,7 @@ QueryDBManager::GetEventsOfDay(BDate& date, bool ignoreHidden)
 EventList*
 QueryDBManager::GetEventsOfWeek(BDate date, bool ignoreHidden)
 {
-	date.AddDays(-date.DayOfWeek()+1);
+	date.AddDays(-date.DayOfWeek() + 1);
 	time_t weekStart = BDateTime(date, BTime(0, 0, 0)).Time_t();
 	date.AddDays(6);
 	time_t weekEnd = BDateTime(date, BTime(23, 59, 59)).Time_t();
@@ -273,8 +273,7 @@ QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 
 
 EventList*
-QueryDBManager::GetEventsInInterval(time_t start, time_t end,
-	bool ignoreHidden)
+QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 {
 	EventList* events = new EventList(20, true);
 	BQuery query;
@@ -377,12 +376,12 @@ QueryDBManager::AddCategory(Category* category)
 	BString color = category->GetHexColor();
 	CategoryList* categories = GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++)
-		if (color == ((Category*)categories->ItemAt(i))->GetHexColor())
+		if (color == ((Category*) categories->ItemAt(i))->GetHexColor())
 			return false;
 
 	BFile catFile = BFile();
-	status_t result =
-		_CreateUniqueFile(fCategoryDir, category->GetName(), &catFile);
+	status_t result
+		= _CreateUniqueFile(fCategoryDir, category->GetName(), &catFile);
 
 	if (_CategoryStatusSwitch(result) != B_OK)
 		return false;
@@ -457,7 +456,7 @@ QueryDBManager::GetAllCategories()
 
 	BFile catFile;
 	Category* category;
-	BString defaultCat = ((App*)be_app)->GetPreferences()->fDefaultCategory;
+	BString defaultCat = ((App*) be_app)->GetPreferences()->fDefaultCategory;
 
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
@@ -489,7 +488,8 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	BString catName = BString();
 	BNode(&entry).ReadAttrString("Category:Name", &catName);
 
-	EventList* ev = GetEventsOfCategory(new Category(catName, BString("FFFFFF")));
+	EventList* ev
+		= GetEventsOfCategory(new Category(catName, BString("FFFFFF")));
 	if (ev->CountItems() > 0)
 		return false;
 
@@ -584,8 +584,8 @@ QueryDBManager::_FileToCategory(BFile* file)
 	file->ReadAttrString("Calendar:ID", &idStr);
 
 	rgb_color color = {28, 144, 255};
-	file->ReadAttr("Category:Color", B_RGB_COLOR_TYPE, 0, &color,
-		sizeof(rgb_color));
+	file->ReadAttr(
+		"Category:Color", B_RGB_COLOR_TYPE, 0, &color, sizeof(rgb_color));
 
 	return new Category(name, color, idStr.String());
 }
@@ -599,10 +599,10 @@ QueryDBManager::_FileToEvent(entry_ref* ref)
 	if (node.InitCheck() != B_OK || entry.InitCheck() != B_OK)
 		return NULL;
 
-	BString name  = BString();
+	BString name = BString();
 	BString catName = BString();
 	BString idStr = BString();
-	BString desc  = BString();
+	BString desc = BString();
 	BString place = BString();
 	BString statusStr = BString();
 	node.ReadAttrString("Event:Name", &name);
@@ -612,18 +612,18 @@ QueryDBManager::_FileToEvent(entry_ref* ref)
 	node.ReadAttrString("Event:Place", &place);
 	node.ReadAttrString("Event:Status", &statusStr);
 
-	time_t start	= time(NULL);
-	time_t end		= time(NULL);
-	time_t updated	= time(NULL);
+	time_t start = time(NULL);
+	time_t end = time(NULL);
+	time_t updated = time(NULL);
 	node.ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
 	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
 
 	bool allDay = false;
-	time_t dayStart	= BDateTime(BDate(start), BTime(0, 0, 0)).Time_t();
-	time_t dayEnd	= BDateTime(BDate(end), BTime(23, 59, 0)).Time_t();
-	if (dayStart <= start && start <= dayStart + 59
-		&& dayEnd <= end && end <= dayEnd + 59)
+	time_t dayStart = BDateTime(BDate(start), BTime(0, 0, 0)).Time_t();
+	time_t dayEnd = BDateTime(BDate(end), BTime(23, 59, 0)).Time_t();
+	if (dayStart <= start && start <= dayStart + 59 && dayEnd <= end
+		&& end <= dayEnd + 59)
 		allDay = true;
 
 	uint16 status = 0;
@@ -637,8 +637,8 @@ QueryDBManager::_FileToEvent(entry_ref* ref)
 		status |= EVENT_DELETED;
 
 	return new Event(name.String(), place.String(), desc.String(), allDay,
-					start, end, EnsureCategory(catName.String()), updated,
-					status, idStr.String());
+		start, end, EnsureCategory(catName.String()), updated, status,
+		idStr.String());
 }
 
 
@@ -653,23 +653,23 @@ QueryDBManager::_CategoryToFile(Category* category, BFile* file)
 
 	BString type = BString("application/x-calendar-category");
 	file->WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, type.String(),
-					type.CountChars() + 1);
+		type.CountChars() + 1);
 
 	BString name = BString(category->GetName());
 	file->WriteAttr("Category:Name", B_STRING_TYPE, 0, name.String(),
-					name.CountChars() + 1);
-	
+		name.CountChars() + 1);
+
 	BString id = BString(category->GetId());
-	file->WriteAttr("Calendar:ID", B_STRING_TYPE, 0, id.String(),
-						id.CountChars() + 1);
+	file->WriteAttr(
+		"Calendar:ID", B_STRING_TYPE, 0, id.String(), id.CountChars() + 1);
 
 	rgb_color color = category->GetColor();
-	file->WriteAttr("Category:Color", B_RGB_COLOR_TYPE, 0, &color,
-		sizeof(rgb_color));
+	file->WriteAttr(
+		"Category:Color", B_RGB_COLOR_TYPE, 0, &color, sizeof(rgb_color));
 
 	size_t length = 0;
-	uchar* icon = LoadRecoloredIcon("CATEGORY_ICON", &length,
-		category->GetColor());
+	uchar* icon
+		= LoadRecoloredIcon("CATEGORY_ICON", &length, category->GetColor());
 	if (icon != NULL) {
 		file->WriteAttr("BEOS:ICON", B_VECTOR_ICON_TYPE, 0, icon, length);
 		delete icon;
@@ -706,35 +706,34 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 	}
 
 	file->WriteAttr("Event:Status", B_STRING_TYPE, 0, status.String(),
-						status.CountChars() + 1);
+		status.CountChars() + 1);
 
 	BString type = BString("application/x-calendar-event");
 	file->WriteAttr("BEOS:TYPE", B_MIME_STRING_TYPE, 0, type.String(),
-					type.CountChars() + 1);
+		type.CountChars() + 1);
 
 	BString name = BString(event->GetName());
-	file->WriteAttr("Event:Name", B_STRING_TYPE, 0, name.String(),
-					name.CountChars() + 1);
+	file->WriteAttr(
+		"Event:Name", B_STRING_TYPE, 0, name.String(), name.CountChars() + 1);
 
 	BString id = BString(event->GetId());
-	file->WriteAttr("Calendar:ID", B_STRING_TYPE, 0, id.String(),
-					id.CountChars() + 1);
+	file->WriteAttr(
+		"Calendar:ID", B_STRING_TYPE, 0, id.String(), id.CountChars() + 1);
 
 	BString catName = BString(event->GetCategory()->GetName());
 	file->WriteAttr("Event:Category", B_STRING_TYPE, 0, catName.String(),
-					catName.CountChars() + 1);
+		catName.CountChars() + 1);
 
 	BString place = event->GetPlace();
 	file->WriteAttr("Event:Place", B_STRING_TYPE, 0, place.String(),
-					place.CountChars() + 1);
+		place.CountChars() + 1);
 
 	BString desc = event->GetDescription();
 	file->WriteAttr("Event:Description", B_STRING_TYPE, 0, desc.String(),
-					desc.CountChars() + 1);
+		desc.CountChars() + 1);
 
 	time_t updated = event->GetUpdated();
-	file->WriteAttr("Event:Updated", B_TIME_TYPE, 0, &updated,
-					sizeof(time_t));
+	file->WriteAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
 
 	time_t start = event->GetStartDateTime();
 	file->WriteAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
@@ -749,8 +748,8 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 		icon_type = "EVENT_CANCELLED_ICON";
 
 	size_t length = 0;
-	uchar* icon = LoadRecoloredIcon(icon_type, &length,
-		event->GetCategory()->GetColor());
+	uchar* icon = LoadRecoloredIcon(
+		icon_type, &length, event->GetCategory()->GetColor());
 	if (icon != NULL) {
 		file->WriteAttr("BEOS:ICON", B_VECTOR_ICON_TYPE, 0, icon, length);
 		delete icon;
@@ -788,39 +787,46 @@ QueryDBManager::_ReplaceCategory(BString oldCategory, BString newCategory)
 status_t
 QueryDBManager::_CategoryStatusSwitch(status_t result)
 {
-	switch (result)
-	{
+	switch (result) {
 		case B_BAD_VALUE:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Category file"),
-				B_TRANSLATE("Couldn't open category file because the path is not specified. "
-				"It usually means that the programmer made a mistake. "
-				"There is nothing you can do about it. Sorry."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"Couldn't open category file because the path is not "
+					"specified. "
+					"It usually means that the programmer made a mistake. "
+					"There is nothing you can do about it. Sorry."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
 		case B_PERMISSION_DENIED:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Category file"),
-				B_TRANSLATE("Couldn't open category file because permission was denied. "
-				"It usually means that you don't have read permissions to the event "
-				"file or its parent directory, usually within the settings directory."
-				"Find out the file's location and try changing its permissions."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"Couldn't open category file because permission "
+					"was denied. "
+					"It usually means that you don't have read "
+					"permissions to the event file or its parent directory, "
+					"usually within the settings directory."
+					"Find out the file's location and try changing its "
+					"permissions."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
 		case B_NO_MEMORY:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Category file"),
-				B_TRANSLATE("There is not enough memory available on your system to save the "
-				"category file. If you want to have event updates saved, try closing a few"
-				"applications and try again."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"There is not enough memory available on your "
+					"system to save the  category file. If you want to "
+					"have event updates saved, try closing a few"
+					"applications and try again."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
@@ -832,39 +838,44 @@ QueryDBManager::_CategoryStatusSwitch(status_t result)
 status_t
 QueryDBManager::_EventStatusSwitch(status_t result)
 {
-	switch (result)
-	{
+	switch (result) {
 		case B_BAD_VALUE:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Event file"),
-				B_TRANSLATE("Couldn't open event file because the path is not specified. "
-				"It usually means that the programmer made a mistake. "
-				"There is nothing you can do about it. Sorry."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"Couldn't open event file because the path is not "
+					"specified. "
+					"It usually means that the programmer made a mistake. "
+					"There is nothing you can do about it. Sorry."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
 		case B_PERMISSION_DENIED:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Event file"),
-				B_TRANSLATE("Couldn't open event file because permission was denied. "
-				"It usually means that you don't have read permissions to the event "
-				"file or its parent directory, usually within the settings directory."
-				"Find out the file's location and try changing its permissions."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"Couldn't open event file because permission was denied. "
+					"It usually means that you don't have read permissions to "
+					"the event file or its parent directory, usually within "
+					"the settings directory."
+					"Find out the file's location and try changing its "
+					"permissions."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
 		case B_NO_MEMORY:
 		{
 			BAlert* alert = new BAlert(B_TRANSLATE("Event file"),
-				B_TRANSLATE("There is not enough memory available on your system to save the "
-				"event file. If you want to have event updates saved, try closing a few"
-				"applications and try again."),
-				B_TRANSLATE("OK"), NULL, NULL,
-				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				B_TRANSLATE(
+					"There is not enough memory available on your "
+					"system to save the event file. If you want to have event "
+					"updates saved, try closing a few applications and try again."),
+				B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL,
+				B_WARNING_ALERT);
 			alert->Go();
 			break;
 		}
@@ -878,20 +889,20 @@ QueryDBManager::_TrashStatusSwitch(status_t result)
 {
 	if (result == B_ENTRY_NOT_FOUND) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
-			B_TRANSLATE("Couldn't move the event to trash― it seems that the event "
-			"couldn't be found or doesn't exist. You might want to "
-			"use a Tracker query to find this event and manually "
-			"delete it."),
-			B_TRANSLATE("OK"), NULL, NULL,
-			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			B_TRANSLATE(
+				"Couldn't move the event to trash― it seems that the event "
+				"couldn't be found or doesn't exist. You might want to "
+				"use a Tracker query to find this event and manually "
+				"delete it."),
+			B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
-	}
-	else if (result != B_OK) {
+	} else if (result != B_OK) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Moving to Trash"),
-			B_TRANSLATE("Couldn't move the event to Trash― you might want to "
-			"use a Tracker query to find this event and manually delete it."),
-			B_TRANSLATE("OK"), NULL, NULL,
-			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			B_TRANSLATE(
+				"Couldn't move the event to Trash― you might want to "
+				"use a Tracker query to find this event and manually "
+				"delete it."),
+			B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 	}
 	return result;
@@ -903,19 +914,20 @@ QueryDBManager::_RestoreStatusSwitch(status_t result)
 {
 	if (result == B_ENTRY_NOT_FOUND) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
-			B_TRANSLATE("Couldn't restore the deleted event― it seems that it "
-			"couldn't be found or doesn't exist. You might want to "
-			"look in the Trash to find this event and manually restore it."),
-			B_TRANSLATE("OK"), NULL, NULL,
-			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			B_TRANSLATE(
+				"Couldn't restore the deleted event― it seems that it "
+				"couldn't be found or doesn't exist. You might want to "
+				"look in the Trash to find this event and manually "
+				"restore it."),
+			B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
-	}
-	else if (result != B_OK) {
+	} else if (result != B_OK) {
 		BAlert* alert = new BAlert(B_TRANSLATE("Restoring event"),
-			B_TRANSLATE("Couldn't restore the deleted event― you might want to "
-			"look in the Trash to find this event and manually restore it."),
-			B_TRANSLATE("OK"), NULL, NULL,
-			B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			B_TRANSLATE(
+				"Couldn't restore the deleted event― you might want to "
+				"look in the Trash to find this event and manually "
+				"restore it."),
+			B_TRANSLATE("OK"), NULL, NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		alert->Go();
 	}
 	return result;
@@ -928,7 +940,7 @@ QueryDBManager::_CategoryMimetype()
 	BMessage info;
 	uint8* iconData;
 	size_t iconLength = 0;
-	BMimeType mime("application/x-calendar-category" );
+	BMimeType mime("application/x-calendar-category");
 	if (mime.IsInstalled()
 		&& mime.GetIcon(&iconData, &iconLength) != B_ENTRY_NOT_FOUND)
 		return true;
@@ -939,15 +951,15 @@ QueryDBManager::_CategoryMimetype()
 	mime.SetLongDescription("Category of calendar events");
 	mime.SetPreferredApp("application/x-vnd.calendar");
 
-	_AddAttribute(info, "Category:Name",	"Name", B_STRING_TYPE, true, 300);
-	_AddAttribute(info, "Category:Color",	"Color", B_RGB_COLOR_TYPE, false, 100);
-	_AddAttribute(info, "Calendar:ID",		"ID", B_STRING_TYPE, true, 100);
+	_AddAttribute(info, "Category:Name", "Name", B_STRING_TYPE, true, 300);
+	_AddAttribute(info, "Category:Color", "Color", B_RGB_COLOR_TYPE, false, 100);
+	_AddAttribute(info, "Calendar:ID", "ID", B_STRING_TYPE, true, 100);
 
 	const void* icon = LoadVectorIcon("CATEGORY_ICON", &iconLength);
 	if (icon != NULL)
-		mime.SetIcon((uint8*)icon, iconLength);
+		mime.SetIcon((uint8*) icon, iconLength);
 
-	return mime.SetAttrInfo( &info );
+	return mime.SetAttrInfo(&info);
 }
 
 
@@ -957,7 +969,7 @@ QueryDBManager::_EventMimetype()
 	BMessage info;
 	uint8* iconData;
 	size_t iconLength = 0;
-	BMimeType mime("application/x-calendar-event" );
+	BMimeType mime("application/x-calendar-event");
 	if (mime.IsInstalled()
 		&& mime.GetIcon(&iconData, &iconLength) != B_ENTRY_NOT_FOUND)
 		return true;
@@ -968,23 +980,21 @@ QueryDBManager::_EventMimetype()
 	mime.SetLongDescription("Generic calendar event");
 	mime.SetPreferredApp("application/x-vnd.calendar");
 
-	_AddAttribute(info, "Event:Name",	"Name",		B_STRING_TYPE, true, 300);
-	_AddAttribute(info, "Event:Start",	"Start",	B_TIME_TYPE, true, 150);
-	_AddAttribute(info, "Event:End",	"End",		B_TIME_TYPE, true, 150);
-	_AddAttribute(info, "Event:Category", "Category",
-													B_STRING_TYPE, false, 200);
-	_AddAttribute(info, "Event:Description", "Description",
-													B_STRING_TYPE, true, 200);
-	_AddAttribute(info, "Event:Place",	"Place",	B_STRING_TYPE, true, 200);
-	_AddAttribute(info, "Event:Updated", "Updated",	B_TIME_TYPE, true, 150);
-	_AddAttribute(info, "Event:Status",	"Status",	B_STRING_TYPE, true, 50);
-	_AddAttribute(info, "Calendar:ID",	"ID",		B_STRING_TYPE, true, 100);
+	_AddAttribute(info, "Event:Name", "Name", B_STRING_TYPE, true, 300);
+	_AddAttribute(info, "Event:Start", "Start", B_TIME_TYPE, true, 150);
+	_AddAttribute(info, "Event:End", "End", B_TIME_TYPE, true, 150);
+	_AddAttribute(info, "Event:Category", "Category", B_STRING_TYPE, false, 200);
+	_AddAttribute(info, "Event:Description", "Description", B_STRING_TYPE, true, 200);
+	_AddAttribute(info, "Event:Place", "Place", B_STRING_TYPE, true, 200);
+	_AddAttribute(info, "Event:Updated", "Updated", B_TIME_TYPE, true, 150);
+	_AddAttribute(info, "Event:Status", "Status", B_STRING_TYPE, true, 50);
+	_AddAttribute(info, "Calendar:ID", "ID", B_STRING_TYPE, true, 100);
 
 	const void* icon = LoadVectorIcon("EVENT_ICON", &iconLength);
 	if (icon != NULL)
-		mime.SetIcon((uint8*)icon, iconLength);
+		mime.SetIcon((uint8*) icon, iconLength);
 
-	return mime.SetAttrInfo( &info );
+	return mime.SetAttrInfo(&info);
 }
 
 
@@ -1000,33 +1010,32 @@ QueryDBManager::_AddIndices()
 			|| (info.flags & B_FS_HAS_QUERY) == 0)
 			continue;
 
-		fs_create_index(device, "Event:Name",		B_STRING_TYPE, 0);
-		fs_create_index(device, "Event:Category",	B_STRING_TYPE, 0);
-		fs_create_index(device, "Event:Place",		B_STRING_TYPE, 0);
-		fs_create_index(device, "Event:Description",B_STRING_TYPE, 0);
-		fs_create_index(device, "Event:Start",		B_INT32_TYPE, 0);
-		fs_create_index(device, "Event:End",		B_INT32_TYPE, 0);
-		fs_create_index(device, "Event:Updated",	B_INT32_TYPE, 0);
-		fs_create_index(device, "Event:Status",		B_STRING_TYPE, 0);
-		fs_create_index(device, "Calendar:ID",		B_STRING_TYPE, 0);
-		fs_create_index(device, "Category:Name",	B_STRING_TYPE, 0);
+		fs_create_index(device, "Event:Name", B_STRING_TYPE, 0);
+		fs_create_index(device, "Event:Category", B_STRING_TYPE, 0);
+		fs_create_index(device, "Event:Place", B_STRING_TYPE, 0);
+		fs_create_index(device, "Event:Description", B_STRING_TYPE, 0);
+		fs_create_index(device, "Event:Start", B_INT32_TYPE, 0);
+		fs_create_index(device, "Event:End", B_INT32_TYPE, 0);
+		fs_create_index(device, "Event:Updated", B_INT32_TYPE, 0);
+		fs_create_index(device, "Event:Status", B_STRING_TYPE, 0);
+		fs_create_index(device, "Calendar:ID", B_STRING_TYPE, 0);
+		fs_create_index(device, "Category:Name", B_STRING_TYPE, 0);
 	}
 }
 
 
 void
 QueryDBManager::_AddAttribute(BMessage& msg, const char* name,
-							const char* publicName, int32 type, bool viewable,
-							int32 width)
+	const char* publicName, int32 type, bool viewable, int32 width)
 {
-	msg.AddString( "attr:name", name );
-	msg.AddString( "attr:public_name", publicName );
-	msg.AddInt32( "attr:type", type );
-	msg.AddInt32( "attr:width", width );
-	msg.AddInt32( "attr:alignment", B_ALIGN_LEFT );
-	msg.AddBool( "attr:extra", false );
-	msg.AddBool( "attr:viewable", viewable );
-	msg.AddBool( "attr:editable", true );
+	msg.AddString("attr:name", name);
+	msg.AddString("attr:public_name", publicName);
+	msg.AddInt32("attr:type", type);
+	msg.AddInt32("attr:width", width);
+	msg.AddInt32("attr:alignment", B_ALIGN_LEFT);
+	msg.AddBool("attr:extra", false);
+	msg.AddBool("attr:viewable", viewable);
+	msg.AddBool("attr:editable", true);
 }
 
 
@@ -1038,12 +1047,12 @@ QueryDBManager::_ImportFromSQL(BPath dbPath)
 	BList* categories = sql->GetAllCategories();
 
 	for (int i = 0; i < categories->CountItems(); i++)
-		AddCategory((Category*)categories->ItemAt(i));
+		AddCategory((Category*) categories->ItemAt(i));
 
 	for (int i = 0; i < events->CountItems(); i++)
-		AddEvent((Event*)events->ItemAt(i));
+		AddEvent((Event*) events->ItemAt(i));
 
-	delete(sql);
+	delete (sql);
 	BEntry(dbPath.Path()).Rename("events.sql.bak");
 }
 
@@ -1074,8 +1083,9 @@ QueryDBManager::_MigrateCancellations(BPath cancelPath)
 status_t
 QueryDBManager::_CreateUniqueFile(BDirectory* dir, BString name, BFile* newFile)
 {
-	return dir->CreateFile(_UniqueFilename(dir,
-		name.ReplaceAllChars("/","∕", 0)).String(), newFile, true);
+	return dir->CreateFile(
+		_UniqueFilename(dir, name.ReplaceAllChars("/", "∕", 0)).String(),
+		newFile, true);
 }
 
 

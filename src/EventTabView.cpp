@@ -14,20 +14,22 @@
 #include "App.h"
 #include "EventListItem.h"
 #include "EventListView.h"
-#include "SidePanelView.h"
 #include "QueryDBManager.h"
+#include "SidePanelView.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
 
+
 EventTabView::EventTabView(const BDate& date)
-	: BTabView("EventsView")
+	:
+	BTabView("EventsView")
 {
 	_AddEventList("Day", B_TRANSLATE("Day"), kDayTab);
 	_AddEventList("Week", B_TRANSLATE("Week"), kWeekTab);
 	_AddEventList("Month", B_TRANSLATE("Month"), kMonthTab);
 
-	fMode = ((App*)be_app)->GetPreferences()->fViewMode;
+	fMode = ((App*) be_app)->GetPreferences()->fViewMode;
 	fPopUpEnabled = true;
 	fEventList = NULL;
 	fDBManager = new QueryDBManager();
@@ -45,7 +47,7 @@ EventTabView::~EventTabView()
 void
 EventTabView::AttachedToWindow()
 {
-	Select(((App*)be_app)->GetPreferences()->fSelectedTab);
+	Select(((App*) be_app)->GetPreferences()->fSelectedTab);
 	Window()->MessageReceived(new BMessage(kListModeChanged));
 
 	EventListView* list = ListAt(Selection());
@@ -85,7 +87,8 @@ EventTabView::MessageReceived(BMessage* message)
 			int32 button_index = 0;
 			if (message->what == kDeleteEventMessage && isDeleted == false) {
 				BAlert* alert = new BAlert(B_TRANSLATE("Confirm delete"),
-					B_TRANSLATE("Are you sure you want to move the selected event to Trash?"),
+					B_TRANSLATE("Are you sure you want to move the selected "
+								"event to Trash?"),
 					NULL, B_TRANSLATE("OK"), B_TRANSLATE("Cancel"),
 					B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 				alert->SetShortcut(1, B_ESCAPE);
@@ -95,17 +98,21 @@ EventTabView::MessageReceived(BMessage* message)
 			if (button_index == 0) {
 				Event newEvent(*event);
 				newEvent.SetUpdated(time(NULL));
-				if (message->what == kCancelEventMessage && isCancelled == false)
+				if (message->what == kCancelEventMessage
+					&& isCancelled == false)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_CANCELLED);
 				else if (message->what == kCancelEventMessage)
 					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_CANCELLED);
-				else if (message->what == kHideEventMessage && isHidden == false)
+				else if (message->what == kHideEventMessage
+					&& isHidden == false)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_HIDDEN);
 				else if (message->what == kHideEventMessage)
 					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_HIDDEN);
-				else if (message->what == kDeleteEventMessage && isDeleted == false)
+				else if (message->what == kDeleteEventMessage
+					&& isDeleted == false)
 					newEvent.SetStatus(newEvent.GetStatus() | EVENT_DELETED);
-				else if (message->what == kDeleteEventMessage && isDeleted == true)
+				else if (message->what == kDeleteEventMessage
+					&& isDeleted == true)
 					newEvent.SetStatus(newEvent.GetStatus() & ~EVENT_DELETED);
 
 				fDBManager->UpdateEvent(event, &newEvent);
@@ -114,25 +121,28 @@ EventTabView::MessageReceived(BMessage* message)
 				Window()->UnlockLooper();
 			}
 
-			if ((message->what == kDeleteEventMessage || message->what == kHideEventMessage)
-				&& ((App*)be_app)->GetPreferences()->fFirstDeletion == true)
-			{
-				((App*)be_app)->GetPreferences()->fFirstDeletion = false;
+			if ((message->what == kDeleteEventMessage
+					|| message->what == kHideEventMessage)
+				&& ((App*) be_app)->GetPreferences()->fFirstDeletion == true) {
+				((App*) be_app)->GetPreferences()->fFirstDeletion = false;
 				BAlert* alert = new BAlert(B_TRANSLATE("Managing events"),
-					B_TRANSLATE("Keep in mind, you can manage deleted and hidden events by "
-						"toggling \"Show hidden/deleted events\" in the \"View\" menu."),
+					B_TRANSLATE("Keep in mind, you can manage deleted and "
+								"hidden events by toggling "
+								"\"Show hidden/deleted events\" in the \"View\" menu."),
 					B_TRANSLATE("OK"));
 				alert->Go();
 			}
 			break;
 		}
-		case kChangeListMode: {
+		case kChangeListMode:
+		{
 			uint8 mode = 0;
 			if (message->FindUInt8("mode", &mode) == B_OK)
 				ToggleMode(mode);
 			break;
 		}
-		case kChangeListTab: {
+		case kChangeListTab:
+		{
 			int32 tab = message->GetInt32("tab", -1);
 			Select(tab);
 			break;
@@ -160,8 +170,8 @@ EventTabView::Select(int32 index)
 	ListAt(index)->SetPopUpMenuEnabled(fPopUpEnabled);
 	LoadEvents();
 
-	((App*)be_app)->GetPreferences()->fSelectedTab = index;
-	((App*)be_app)->GetPreferences()->fViewMode = fMode;
+	((App*) be_app)->GetPreferences()->fSelectedTab = index;
+	((App*) be_app)->GetPreferences()->fViewMode = fMode;
 	Window()->MessageReceived(new BMessage(kListTabChanged));
 }
 
@@ -180,7 +190,7 @@ EventTabView::ToggleMode(uint8 flag)
 	fMode ^= flag;
 	_PopulateList();
 
-	((App*)be_app)->GetPreferences()->fViewMode = fMode;
+	((App*) be_app)->GetPreferences()->fViewMode = fMode;
 	Window()->MessageReceived(new BMessage(kListModeChanged));
 }
 
@@ -237,9 +247,9 @@ EventTabView::ListAt(int32 index)
 	BTab* tab = TabAt(index);
 	EventListView* list = NULL;
 	if (tab != NULL) {
-		BScrollView* scroll = (BScrollView*)tab->View();
+		BScrollView* scroll = (BScrollView*) tab->View();
 		if (scroll != NULL)
-			list = (EventListView*)scroll->Target();
+			list = (EventListView*) scroll->Target();
 	}
 	return list;
 }
@@ -248,11 +258,12 @@ EventTabView::ListAt(int32 index)
 void
 EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
 {
-	EventListView* listView = new EventListView(BString(name).Append("EventList"));
+	EventListView* listView
+		= new EventListView(BString(name).Append("EventList"));
 	listView->SetInvocationMessage(new BMessage(kInvokationMessage));
 
-	BScrollView* scrollView = new BScrollView(BString(name).Append("Scroll"),
-		listView, B_WILL_DRAW, false, true);
+	BScrollView* scrollView = new BScrollView(
+		BString(name).Append("Scroll"), listView, B_WILL_DRAW, false, true);
 	scrollView->SetExplicitMinSize(BSize(260, 260));
 	scrollView->SetBorders(0);
 
@@ -276,8 +287,8 @@ EventTabView::_PopulateList()
 
 		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
-		if (hidden == false &&
-			((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN)))
+		if (hidden == false
+			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN)))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);
@@ -294,7 +305,7 @@ EventTabView::_CompareFunc(const Event* a, const Event* b)
 		return -1;
 	else if (b->IsAllDay() == true && a->IsAllDay())
 		return 1;
-	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0 )
+	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0)
 		return -1;
 	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) > 0)
 		return 1;

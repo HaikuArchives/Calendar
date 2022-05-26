@@ -20,34 +20,33 @@ class BMessageRunner;
 class ColorPreview : public BControl
 {
 public:
-							ColorPreview(BRect frame, BMessage *msg,
-								uint32 resizingMode = B_FOLLOW_LEFT
-									| B_FOLLOW_TOP,
-								uint32 flags = B_WILL_DRAW);
-							~ColorPreview(void);
+					ColorPreview(BRect frame, BMessage* msg,
+						uint32 resizingMode = B_FOLLOW_LEFT | B_FOLLOW_TOP,
+						uint32 flags = B_WILL_DRAW);
+					~ColorPreview(void);
 
-	virtual	void			Draw(BRect updateRect);
-	virtual	void			MessageReceived(BMessage* message);
-	virtual	void			MouseDown(BPoint where);
-	virtual	void			MouseMoved(BPoint where, uint32 transit,
-								const BMessage* message);
-	virtual	void			MouseUp(BPoint where);
+	virtual void	Draw(BRect updateRect);
+	virtual void	MessageReceived(BMessage* message);
+	virtual void	MouseDown(BPoint where);
+	virtual void	MouseMoved(
+						BPoint where, uint32 transit, const BMessage* message);
+	virtual void	MouseUp(BPoint where);
 
-			rgb_color		Color(void) const;
-			void			SetColor(rgb_color color);
-			void			SetColor(uint8 r, uint8 g, uint8 b);
+	rgb_color		Color(void) const;
+	void			SetColor(rgb_color color);
+	void			SetColor(uint8 r, uint8 g, uint8 b);
 
-			void			SetMode(bool rectangle);
+	void			SetMode(bool rectangle);
 
 private:
-			void			_DragColor(BPoint where);
+	void			_DragColor(BPoint where);
 
-			rgb_color		fColor;
-			rgb_color		fDisabledColor;
+	rgb_color		fColor;
+	rgb_color		fDisabledColor;
 
-			BMessageRunner*	fMessageRunner;
+	BMessageRunner*	fMessageRunner;
 
-			bool			fIsRectangle;
+	bool			fIsRectangle;
 };
 
 #endif

@@ -9,10 +9,8 @@
 #include <Uuid.h>
 
 
-Event::Event(const char* name,
-	const char* place, const char* description,
-	bool allday, time_t start, time_t end,
-	Category* category,
+Event::Event(const char* name, const char* place, const char* description,
+	bool allday, time_t start, time_t end, Category* category,
 	time_t updated /*=time(NULL)*/, uint16 status /*= 0 */,
 	const char* id /*= NULL*/)
 {
@@ -27,12 +25,10 @@ Event::Event(const char* name,
 
 	fCategory = new Category(*category);
 
-	if (id == NULL) {
+	if (id == NULL)
 		fId = BUuid().SetToRandom().ToString();
-	}
 	else
 		fId = id;
-
 }
 
 
@@ -121,6 +117,7 @@ Event::GetPlace() const
 	return fPlace.String();
 }
 
+
 void
 Event::SetDescription(const char* description)
 {
@@ -178,8 +175,7 @@ Event::GetUpdated() const
 
 
 bool
-Event::Equals(Event &e) const
+Event::Equals(Event& e) const
 {
-    return (fId == e.GetId());
+	return (fId == e.GetId());
 }
-

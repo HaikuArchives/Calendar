@@ -36,9 +36,8 @@ EventSyncWindow::EventSyncWindow()
 	find_directory(B_USER_SETTINGS_DIRECTORY, &syncDataPath);
 	syncDataPath.Append(kAppName);
 	BDirectory syncDataDir(syncDataPath.Path());
-	if(syncDataDir.InitCheck() == B_ENTRY_NOT_FOUND) {
+	if (syncDataDir.InitCheck() == B_ENTRY_NOT_FOUND)
 		syncDataDir.CreateDirectory(syncDataPath.Path(), &syncDataDir);
-	}
 
 	fSyncDataFile.SetTo(&syncDataDir, "sync");
 
@@ -59,7 +58,7 @@ void
 EventSyncWindow::MessageReceived(BMessage* message)
 {
 
-	switch(message->what) {
+	switch (message->what) {
 
 		case kSyncPressed:
 			_Sync();
@@ -98,19 +97,19 @@ EventSyncWindow::_InitInterface()
 	BView* fMainView = new BView("MainView", B_WILL_DRAW);
 	fMainView->SetViewUIColor(B_PANEL_BACKGROUND_COLOR);
 
-	fStatusLabel = new BStringView("Status Label",
-		B_TRANSLATE("No Data Available"));
+	fStatusLabel
+		= new BStringView("Status Label", B_TRANSLATE("No Data Available"));
 	fSyncButton = new BButton(NULL, "Sync", new BMessage(kSyncPressed));
 
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.Add(fStatusLabel)
 		.Add(fSyncButton)
-	.End();
+		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
 		.SetInsets(B_USE_WINDOW_SPACING)
-			.Add(fMainView)
-	.End();
+		.Add(fMainView)
+		.End();
 }
 
 
@@ -150,12 +149,13 @@ void
 EventSyncWindow::_SetStatusLabel(bool status, time_t syncTime)
 {
 	BString statusText(B_TRANSLATE("Last Sync: %status% at %time%."));
-	BString statusString = (status)? B_TRANSLATE("Success") : B_TRANSLATE("Failed");
+	BString statusString
+		= (status) ? B_TRANSLATE("Success") : B_TRANSLATE("Failed");
 
 
 	BString timeString;
-	BDateTimeFormat().Format(timeString, syncTime, B_SHORT_DATE_FORMAT,
-		B_SHORT_TIME_FORMAT);
+	BDateTimeFormat().Format(
+		timeString, syncTime, B_SHORT_DATE_FORMAT, B_SHORT_TIME_FORMAT);
 
 	statusText.ReplaceAll("%status%", statusString);
 	statusText.ReplaceAll("%time%", timeString);
@@ -177,47 +177,44 @@ EventSyncWindow::_LoadSyncData()
 			message->FindBool("syncStatus", &lastSyncStatus);
 			time_t* lastSyncTime;
 			ssize_t size;
-			message->FindData("syncTime", B_RAW_TYPE,
-				(const void**)&lastSyncTime, &size);
+			message->FindData(
+				"syncTime", B_RAW_TYPE, (const void**) &lastSyncTime, &size);
 			_SetStatusLabel(lastSyncStatus, *lastSyncTime);
 		}
 	}
 
-	else
-	{
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+	else {
+		BAlert* alert = new BAlert(B_TRANSLATE("Error"),
 			B_TRANSLATE("There was an error in loading the last sync data."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+			NULL, B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 	}
 
 
 	delete file;
 	delete message;
-
 }
+
 
 void
 EventSyncWindow::_SaveSyncData(bool status)
 {
 	BMessage* message = new BMessage();
-	BFile* file = new BFile(fSyncDataFile.Path(),
-		B_READ_WRITE | B_CREATE_FILE | B_ERASE_FILE);
+	BFile* file = new BFile(
+		fSyncDataFile.Path(), B_READ_WRITE | B_CREATE_FILE | B_ERASE_FILE);
 
 	time_t syncTime = time(NULL);
 
 	if (file->InitCheck() == B_OK) {
 		message->AddBool("syncStatus", status);
-		message->AddData("syncTime", B_RAW_TYPE, (void*)&syncTime,
-			sizeof(time_t));
+		message->AddData(
+			"syncTime", B_RAW_TYPE, (void*) &syncTime, sizeof(time_t));
 		message->Flatten(file);
 	}
 
-	else
-	{
-		BAlert* alert  = new BAlert(B_TRANSLATE("Error"),
+	else {
+		BAlert* alert = new BAlert(B_TRANSLATE("Error"),
 			B_TRANSLATE("There was an error in saving the recent sync data."),
-			NULL, B_TRANSLATE("OK"),NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-
+			NULL, B_TRANSLATE("OK"), NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 	}
 
 	_SetStatusLabel(status, syncTime);

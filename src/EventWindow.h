@@ -33,14 +33,15 @@ static const uint32 kShowPopUpCalendar = 'kspc';
 static const uint32 kStartDateChanged = 'ksdc';
 static const uint32 kEndDateChanged = 'kedc';
 
-class EventWindow: public BWindow {
+class EventWindow : public BWindow
+{
 public:
-				EventWindow();
-				~EventWindow();
+					EventWindow();
+					~EventWindow();
 
-	virtual void		MessageReceived(BMessage* message);
-	virtual bool		QuitRequested();
-	virtual void		FrameMoved(BPoint newPosition);
+	virtual void	MessageReceived(BMessage* message);
+	virtual bool	QuitRequested();
+	virtual void	FrameMoved(BPoint newPosition);
 
 	void			SetEvent(Event* event);
 	void			SetEvent(entry_ref ref);
@@ -55,29 +56,28 @@ public:
 
 	BString			GetDateString(BDate& date);
 	BString			GetLocaleTimeString(time_t timeValue);
-	void			GetDateFromMessage(BMessage* message,
-					BDate& date);
+	void			GetDateFromMessage(BMessage* message, BDate& date);
 
 private:
 	void			_InitInterface();
 	void			_PopulateWithEvent(Event* event);
-	void 			_DisableControls();
+	void			_DisableControls();
 	void			_UpdateCategoryMenu();
 	void			_ShowPopUpCalendar(int8 which);
 
-	static const uint32	kDeletePressed	= 1000;
-	static const uint32	kCancelPressed	= 1001;
-	static const uint32	kSavePressed	= 1002;
-	static const uint32	kAllDayPressed	= 1003;
-	static const uint32	kOptEveryMonth	= 1004;
-	static const uint32	kOptEveryYear	= 1005;
+	static const uint32 kDeletePressed = 1000;
+	static const uint32 kCancelPressed = 1001;
+	static const uint32 kSavePressed = 1002;
+	static const uint32 kAllDayPressed = 1003;
+	static const uint32 kOptEveryMonth = 1004;
+	static const uint32 kOptEveryYear = 1005;
 
-	BTextControl*		fTextName;
-	BTextControl*		fTextPlace;
-	BTextControl*		fTextStartDate;
-	BTextControl*		fTextEndDate;
-	BTextControl*		fTextStartTime;
-	BTextControl*		fTextEndTime;
+	BTextControl*	fTextName;
+	BTextControl*	fTextPlace;
+	BTextControl*	fTextStartDate;
+	BTextControl*	fTextEndDate;
+	BTextControl*	fTextStartTime;
+	BTextControl*	fTextEndTime;
 
 	BTextView*		fTextDescription;
 	BView*			fMainView;
@@ -88,22 +88,22 @@ private:
 
 	BMenuField*		fCategoryMenuField;
 
-	BStringView*		fNameLabel;
-	BStringView*		fPlaceLabel;
-	BStringView*		fDescriptionLabel;
-	BStringView*		fCategoryLabel;
-	BStringView*		fAllDayLabel;
-	BStringView*		fStartDateLabel;
-	BStringView*		fStartTimeLabel;
-	BStringView*		fEndDateLabel;
-	BStringView*		fEndTimeLabel;
+	BStringView*	fNameLabel;
+	BStringView*	fPlaceLabel;
+	BStringView*	fDescriptionLabel;
+	BStringView*	fCategoryLabel;
+	BStringView*	fAllDayLabel;
+	BStringView*	fStartDateLabel;
+	BStringView*	fStartTimeLabel;
+	BStringView*	fEndDateLabel;
+	BStringView*	fEndTimeLabel;
 
 	BButton*		fDeleteButton;
 	BButton*		fStartCalButton;
 	BButton*		fEndCalButton;
 
-	BRadioButton*		fEveryMonth;
-	BRadioButton*		fEveryYear;
+	BRadioButton*	fEveryMonth;
+	BRadioButton*	fEveryYear;
 
 	BCheckBox*		fAllDayCheckBox;
 	BCheckBox*		fCancelledCheckBox;

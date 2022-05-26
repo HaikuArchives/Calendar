@@ -25,26 +25,26 @@ enum {
 };
 
 
-class SidePanelView: public BView {
+class SidePanelView : public BView
+{
 public:
 					SidePanelView();
 
-		void			MessageReceived(BMessage* message);
-		BDate			GetSelectedDate() const;
-		void	 		SetStartOfWeek(int32);
-		void			ShowWeekHeader(bool);
+	void			MessageReceived(BMessage* message);
+	BDate			GetSelectedDate() const;
+	void			SetStartOfWeek(int32);
+	void			ShowWeekHeader(bool);
 
 private:
+	void			_UpdateDate(const BDate&);
+	void			_UpdateDateLabel();
 
-		void 			_UpdateDate(const BDate&);
-		void			_UpdateDateLabel();
-
-		BStringView*		fYearLabel;
-		BStringView*		fMonthLabel;
-		CalendarView*   	fCalendarView;
-		DateHeaderButton*	fDateHeaderButton;
-		BButton*		fMonthUpButton;
-		BButton*		fMonthDownButton;
+	BStringView*	fYearLabel;
+	BStringView*	fMonthLabel;
+	CalendarView*	fCalendarView;
+	DateHeaderButton* fDateHeaderButton;
+	BButton*		fMonthUpButton;
+	BButton*		fMonthDownButton;
 };
 
 #endif

@@ -11,11 +11,12 @@
 
 #include "App.h"
 #include "Event.h"
-#include "ResourceLoader.h"
 #include "QueryDBManager.h"
+#include "ResourceLoader.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "NotificationLoop"
+
 
 int32
 NotificationLoop(void* data)
@@ -30,18 +31,17 @@ NotificationLoop(void* data)
 	notification.SetTitle(B_TRANSLATE("Reminder"));
 	notification.SetIcon(LoadVectorIcon("BEOS:ICON", 32, 32));
 
-	while (true)
-	{
-		events = dbManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
+	while (true) {
+		events = dbManager.GetEventsToNotify(
+			BDateTime::CurrentDateTime(B_LOCAL_TIME));
 		for (int32 i = 0; i < events->CountItems(); i++) {
 			event = events->ItemAt(i);
 			startTime = "";
 			notificationContent = B_TRANSLATE("%event% is starting at %time%.");
 			if (!(event->GetStatus() & EVENT_NOTIFIED)
-				&& !(event->GetStatus() & EVENT_CANCELLED))
-			{
-				BTimeFormat().Format(startTime, event->GetStartDateTime(),
-					B_SHORT_TIME_FORMAT);
+				&& !(event->GetStatus() & EVENT_CANCELLED)) {
+				BTimeFormat().Format(
+					startTime, event->GetStartDateTime(), B_SHORT_TIME_FORMAT);
 				notificationContent.ReplaceAll("%event%", event->GetName());
 				notificationContent.ReplaceAll("%time%", startTime.String());
 				notification.SetContent(notificationContent);

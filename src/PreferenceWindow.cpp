@@ -14,8 +14,8 @@
 #include <CheckBox.h>
 #include <ColorMenuItem.h>
 #include <LayoutBuilder.h>
-#include <PopUpMenu.h>
 #include <MenuField.h>
+#include <PopUpMenu.h>
 #include <SeparatorView.h>
 #include <Window.h>
 
@@ -27,6 +27,7 @@
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "PreferenceWindow"
+
 
 PreferenceWindow::PreferenceWindow(BRect frame, Preferences* preferences)
 	:
@@ -60,7 +61,7 @@ PreferenceWindow::~PreferenceWindow()
 void
 PreferenceWindow::MessageReceived(BMessage* message)
 {
-	switch(message->what) {
+	switch (message->what) {
 
 		case kStartOfWeekChangeMessage:
 		{
@@ -127,16 +128,15 @@ PreferenceWindow::_InitInterface()
 	fDefaultCatMenu = new BPopUpMenu("DefaultCatMenu");
 
 	const char* startOfWeekItems[] = {B_TRANSLATE("Locale based"),
-		B_TRANSLATE("Monday"), B_TRANSLATE("Tuesday"),
-		B_TRANSLATE("Wednesday"), B_TRANSLATE("Thursday"),
-		B_TRANSLATE("Friday"), B_TRANSLATE("Saturday"),
+		B_TRANSLATE("Monday"), B_TRANSLATE("Tuesday"), B_TRANSLATE("Wednesday"),
+		B_TRANSLATE("Thursday"), B_TRANSLATE("Friday"), B_TRANSLATE("Saturday"),
 		B_TRANSLATE("Sunday"), NULL};
 	for (int i = 0; startOfWeekItems[i]; ++i)
-		fDayOfWeekMenu->AddItem(new BMenuItem(startOfWeekItems[i],
-			new BMessage(kStartOfWeekChangeMessage)));
+		fDayOfWeekMenu->AddItem(new BMenuItem(
+			startOfWeekItems[i], new BMessage(kStartOfWeekChangeMessage)));
 	fDayOfWeekMenu->ItemAt(0)->SetMarked(true);
-	fDayOfWeekMenuField = new BMenuField("DayOfWeekMenu", B_TRANSLATE(
-		"First day of the week:"), fDayOfWeekMenu);
+	fDayOfWeekMenuField = new BMenuField(
+		"DayOfWeekMenu", B_TRANSLATE("First day of the week:"), fDayOfWeekMenu);
 
 	CategoryList* categories = fDBManager->GetAllCategories();
 	for (int i = 0; i < categories->CountItems(); i++) {
@@ -145,33 +145,38 @@ PreferenceWindow::_InitInterface()
 			new BMessage(kDefaultCategoryChangeMessage), category->GetColor()));
 	}
 	fDefaultCatMenu->ItemAt(0)->SetMarked(true);
-	fDefaultCatMenuField = new BMenuField("DefaultCatMenu", B_TRANSLATE(
-		"Default category:"), fDefaultCatMenu);
+	fDefaultCatMenuField = new BMenuField(
+		"DefaultCatMenu", B_TRANSLATE("Default category:"), fDefaultCatMenu);
 
-	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader", B_TRANSLATE(
-		"Show week numbers in calendar"), new BMessage(kShowWeekChangeMessage));
+	fWeekNumberHeaderCB = new BCheckBox("WeekNumberHeader",
+		B_TRANSLATE("Show week numbers in calendar"),
+		new BMessage(kShowWeekChangeMessage));
 	fWeekNumberHeaderCB->SetValue(B_CONTROL_OFF);
 
-	fApplyButton = new BButton(B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
-	fRevertButton = new BButton(B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));
+	fApplyButton = new BButton(
+		B_TRANSLATE("Apply"), new BMessage(kApplyPreferencesMessage));
+	fRevertButton = new BButton(
+		B_TRANSLATE("Revert"), new BMessage(kRevertPreferencesMessage));
 
 	fApplyButton->SetEnabled(false);
 	fRevertButton->SetEnabled(false);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, B_USE_DEFAULT_SPACING)
 		.AddGrid(B_USE_DEFAULT_SPACING, B_USE_SMALL_SPACING)
-			.SetInsets(B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, 0)
-			.AddMenuField(fDefaultCatMenuField, 0, 0)
-			.AddMenuField(fDayOfWeekMenuField, 0, 1)
-			.Add(fWeekNumberHeaderCB, 0, 2, 2)
-			.End()
+		.SetInsets(
+			B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, 0)
+		.AddMenuField(fDefaultCatMenuField, 0, 0)
+		.AddMenuField(fDayOfWeekMenuField, 0, 1)
+		.Add(fWeekNumberHeaderCB, 0, 2, 2)
+		.End()
 		.Add(new BSeparatorView(B_HORIZONTAL))
 		.AddGroup(B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-			.SetInsets(B_USE_SMALL_INSETS, 0, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS)
-			.Add(fRevertButton)
-			.AddGlue()
-			.Add(fApplyButton)
-			.End()
+		.SetInsets(
+			B_USE_SMALL_INSETS, 0, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS)
+		.Add(fRevertButton)
+		.AddGlue()
+		.Add(fApplyButton)
+		.End()
 		.End();
 }
 
@@ -195,4 +200,3 @@ PreferenceWindow::_PreferencesModified()
 	fApplyButton->SetEnabled(true);
 	fRevertButton->SetEnabled(true);
 }
-

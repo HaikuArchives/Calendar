@@ -5,9 +5,9 @@
 #ifndef ICAL_H
 #define ICAL_H
 
-#include <List.h>
 #include <DataIO.h>
 #include <DateTime.h>
+#include <List.h>
 #include <TimeZone.h>
 
 
@@ -17,7 +17,8 @@ class BNotification;
 
 
 int32 ImportICalEvents(void* icalFilePtr);
-BList* ICalToEvents(BPositionIO* ical, QueryDBManager* DBManager, BNotification* progress);
+BList* ICalToEvents(
+	BPositionIO* ical, QueryDBManager* DBManager, BNotification* progress);
 
 Event* VEventToEvent(BStringList* vevent, QueryDBManager* DBManager);
 

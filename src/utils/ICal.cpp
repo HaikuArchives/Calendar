@@ -5,8 +5,8 @@
 
 #include "ICal.h"
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 #include <Catalog.h>
@@ -14,8 +14,8 @@
 #include <DateTime.h>
 #include <List.h>
 #include <Notification.h>
-#include <StringList.h>
 #include <StringFormat.h>
+#include <StringList.h>
 #include <TimeZone.h>
 
 #include "App.h"
@@ -35,7 +35,7 @@ int32
 ImportICalEvents(void* icalFilePtr)
 {
 	QueryDBManager* DBManager = new QueryDBManager;
-	BFile* icalFile = (BFile*)icalFilePtr;
+	BFile* icalFile = (BFile*) icalFilePtr;
 	if (icalFile->InitCheck() != B_OK) {
 		return 0;
 	}
@@ -51,21 +51,22 @@ ImportICalEvents(void* icalFilePtr)
 
 	if (iEvents->CountItems() == 1) {
 		BMessage* evmsg = new BMessage(kLaunchEventManagerToModify);
-		evmsg->AddPointer("event", (Event*)iEvents->FirstItem());
-		((App*)be_app)->mainWindow()->MessageReceived(evmsg);
+		evmsg->AddPointer("event", (Event*) iEvents->FirstItem());
+		((App*) be_app)->mainWindow()->MessageReceived(evmsg);
 
 	} else if (iEvents->CountItems() > 1) {
 		int success = 0;
 		for (int i = 0; i < iEvents->CountItems(); i++) {
-			if (DBManager->AddEvent((Event*)iEvents->ItemAt(i)))
+			if (DBManager->AddEvent((Event*) iEvents->ItemAt(i)))
 				success++;
 		}
 
 		BString progressTitle;
-		static BStringFormat titleFormat(B_TRANSLATE("{0, plural,"
-			"=0{No events imported.}"
-			"=1{Imported one event.}"
-			"other{Imported # events.}}"));
+		static BStringFormat titleFormat(
+			B_TRANSLATE("{0, plural,"
+						"=0{No events imported.}"
+						"=1{Imported one event.}"
+						"other{Imported # events.}}"));
 		titleFormat.Format(progressTitle, success);
 
 		progress.SetTitle(progressTitle);
@@ -78,8 +79,8 @@ ImportICalEvents(void* icalFilePtr)
 
 
 BList*
-ICalToEvents(BPositionIO* ical, QueryDBManager* DBManager,
-	BNotification* progress)
+ICalToEvents(
+	BPositionIO* ical, QueryDBManager* DBManager, BNotification* progress)
 {
 	BList* events = new BList();
 	off_t size = 0;
@@ -141,7 +142,8 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 
 	BStringList* properties = VCardProperties(vevent);
 
-	BString defaultCatName = ((App*)be_app)->GetPreferences()->fDefaultCategory;
+	BString defaultCatName
+		= ((App*) be_app)->GetPreferences()->fDefaultCategory;
 	Category* category = DBManager->GetCategory(defaultCatName.String());
 
 	for (int i = 0; i < properties->CountStrings(); i++) {
@@ -163,8 +165,7 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 		else if (propName == "comment"
 			&& !properties->HasString("description", true))
 			desc = propValue;
-		else if (propName == "geo"
-			&& !properties->HasString("location", true))
+		else if (propName == "geo" && !properties->HasString("location", true))
 			desc = propValue;
 
 		else if (propName == "dtstart")
@@ -314,7 +315,7 @@ VCardDateToBDate(BString property, BDateTime* dateTime)
 	BTime time = BTime(tm.tm_hour, tm.tm_min, tm.tm_sec, 0);
 	dateTime->SetDateTime(date, time);
 
-	// If a time-zone was specified, convert to UTC 
+	// If a time-zone was specified, convert to UTC
 	BString tzid;
 	status_t tzStatus = VCardPropertyParam(property, "tzid", &tzid);
 	if (tzStatus == B_OK) {
@@ -382,5 +383,3 @@ DateTimeAddHours(BDateTime* dt, int hours)
 {
 	DateTimeAddMinutes(dt, hours * 60);
 }
-
-

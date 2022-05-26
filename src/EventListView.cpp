@@ -20,13 +20,14 @@
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "EventListView"
 
-class PopUpMenu : public BPopUpMenu {
+class PopUpMenu : public BPopUpMenu
+{
 public:
-				PopUpMenu(const char* name, BMessenger target);
-	virtual 	~PopUpMenu();
+	PopUpMenu(const char* name, BMessenger target);
+	virtual ~PopUpMenu();
 
 private:
-	BMessenger 	fTarget;
+	BMessenger fTarget;
 };
 
 
@@ -174,10 +175,9 @@ EventListView::MouseDown(BPoint position)
 void
 EventListView::MouseUp(BPoint position)
 {
-	if ((fCurrentItemIndex == IndexOf(position)
-			&& fPrimaryButton == true)) {
-			fPrimaryButton = false;
-			fCurrentItemIndex = -1;
+	if ((fCurrentItemIndex == IndexOf(position) && fPrimaryButton == true)) {
+		fPrimaryButton = false;
+		fCurrentItemIndex = -1;
 	}
 
 	Invalidate();
@@ -193,8 +193,8 @@ EventListView::SelectionChanged()
 	msg.AddInt32("index", CurrentSelection());
 
 	if (CurrentSelection() > -1) {
-		EventListItem* sItem = dynamic_cast<EventListItem *>
-			(ItemAt(CurrentSelection()));
+		EventListItem* sItem
+			= dynamic_cast<EventListItem*>(ItemAt(CurrentSelection()));
 		if (sItem != NULL) {
 			uint16 status = sItem->GetEvent()->GetStatus();
 			msg.AddBool("_cancelled", (status & EVENT_CANCELLED));
@@ -222,8 +222,8 @@ EventListView::SelectedEvent()
 {
 	Event* event = NULL;
 	if (CurrentSelection() > -1) {
-		EventListItem* sItem = dynamic_cast<EventListItem *>
-			(ItemAt(CurrentSelection()));
+		EventListItem* sItem
+			= dynamic_cast<EventListItem*>(ItemAt(CurrentSelection()));
 		if (sItem != NULL && sItem->GetEvent() != NULL)
 			event = sItem->GetEvent();
 	}
@@ -244,8 +244,8 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 	if (fShowingPopUpMenu == true)
 		return;
 
-	EventListItem* sItem = dynamic_cast<EventListItem*>
-		(ItemAt(CurrentSelection()));
+	EventListItem* sItem
+		= dynamic_cast<EventListItem*>(ItemAt(CurrentSelection()));
 
 	if (CurrentSelection() < 0 || sItem == NULL) {
 		_ShowEmptyPopUpMenu(screen);
@@ -258,21 +258,20 @@ EventListView::_ShowPopUpMenu(BPoint screen)
 
 	BMenuItem* item;
 	item = new BMenuItem(B_TRANSLATE("New" B_UTF8_ELLIPSIS),
-			new BMessage(kAddEventMessage), 'N');
+		new BMessage(kAddEventMessage), 'N');
 	menu->AddItem(item);
 	item = new BMenuItem(B_TRANSLATE("Edit" B_UTF8_ELLIPSIS),
-			new BMessage(kEditActionInvoked), 'E');
+		new BMessage(kEditActionInvoked), 'E');
 	menu->AddItem(item);
-	item = new BMenuItem(B_TRANSLATE("Delete"),
-			new BMessage(kDeleteActionInvoked), 'T');
+	item = new BMenuItem(
+		B_TRANSLATE("Delete"), new BMessage(kDeleteActionInvoked), 'T');
 	item->SetMarked(eventStatus & EVENT_DELETED);
 	menu->AddItem(item);
-	item = new BMenuItem(B_TRANSLATE("Cancel"),
-			new BMessage(kCancelActionInvoked));
+	item = new BMenuItem(
+		B_TRANSLATE("Cancel"), new BMessage(kCancelActionInvoked));
 	item->SetMarked(eventStatus & EVENT_CANCELLED);
 	menu->AddItem(item);
-	item = new BMenuItem(B_TRANSLATE("Hide"),
-			new BMessage(kHideActionInvoked));
+	item = new BMenuItem(B_TRANSLATE("Hide"), new BMessage(kHideActionInvoked));
 	item->SetMarked(eventStatus & EVENT_HIDDEN);
 	menu->AddItem(item);
 
@@ -292,7 +291,7 @@ EventListView::_ShowEmptyPopUpMenu(BPoint screen)
 
 	BMenuItem* item = new BMenuItem(B_TRANSLATE("New event" B_UTF8_ELLIPSIS),
 		new BMessage(kAddEventMessage), 'N');
-	item->SetTarget(((App*)be_app)->mainWindow());
+	item->SetTarget(((App*) be_app)->mainWindow());
 	menu->AddItem(item);
 
 	if (!fPopUpMenuEnabled)

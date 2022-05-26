@@ -10,8 +10,8 @@
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
 #include <Menu.h>
-#include <MenuItem.h>
 #include <MenuBar.h>
+#include <MenuItem.h>
 #include <NodeInfo.h>
 #include <PathFinder.h>
 #include <Roster.h>
@@ -27,8 +27,8 @@
 #include "EventTabView.h"
 #include "EventWindow.h"
 #include "MainView.h"
-#include "Preferences.h"
 #include "PreferenceWindow.h"
+#include "Preferences.h"
 #include "ResourceLoader.h"
 #include "SidePanelView.h"
 
@@ -42,7 +42,7 @@ extern int32 ImportICalEvents(void* icalFilePtr);
 
 MainWindow::MainWindow()
 	:
-	BWindow(((App*)be_app)->GetPreferences()->fMainWindowRect,
+	BWindow(((App*) be_app)->GetPreferences()->fMainWindowRect,
 		B_TRANSLATE_SYSTEM_NAME("Calendar"), B_TITLED_WINDOW,
 		B_AUTO_UPDATE_SIZE_LIMITS),
 	fEventWindow(NULL)
@@ -51,7 +51,7 @@ MainWindow::MainWindow()
 
 	_InitInterface();
 
-	if (((App*)be_app)->GetPreferences()->fMainWindowRect == BRect()) {
+	if (((App*) be_app)->GetPreferences()->fMainWindowRect == BRect()) {
 		ResizeTo(640, 360);
 		CenterOnScreen();
 	}
@@ -73,7 +73,7 @@ MainWindow::QuitRequested()
 void
 MainWindow::MessageReceived(BMessage* message)
 {
-	switch(message->what) {
+	switch (message->what) {
 		case kMenuAppQuit:
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
@@ -100,10 +100,11 @@ MainWindow::MessageReceived(BMessage* message)
 			bool agenda = (fEventsView->Mode() & kAgendaView);
 			bool hidden = (fEventsView->Mode() & kHiddenView);
 			fViewMenu->FindItem(B_TRANSLATE("Agenda mode"))->SetMarked(agenda);
-			fViewMenu->FindItem(B_TRANSLATE("Show hidden/deleted events"))->SetMarked(hidden);
+			fViewMenu->FindItem(B_TRANSLATE("Show hidden/deleted events"))
+				->SetMarked(hidden);
 
 			if (hidden == true)
-				((App*)be_app)->GetPreferences()->fFirstDeletion = false;
+				((App*) be_app)->GetPreferences()->fFirstDeletion = false;
 
 			message->AddBool("hidden", hidden);
 			fSidePanelView->MessageReceived(message);
@@ -112,7 +113,7 @@ MainWindow::MessageReceived(BMessage* message)
 		case kLaunchEventManagerToModify:
 		{
 			Event* event;
-			message->FindPointer("event", (void**)(&event));
+			message->FindPointer("event", (void**) (&event));
 			_LaunchEventManager(event);
 			break;
 		}
@@ -144,7 +145,7 @@ MainWindow::MessageReceived(BMessage* message)
 			break;
 		case B_LOCALE_CHANGED:
 		{
-			Preferences* preferences = ((App*)be_app)->GetPreferences();
+			Preferences* preferences = ((App*) be_app)->GetPreferences();
 			fSidePanelView->MessageReceived(message);
 			fSidePanelView->SetStartOfWeek(preferences->fStartOfWeekOffset);
 			_UpdateEventsView();
@@ -170,15 +171,15 @@ MainWindow::MessageReceived(BMessage* message)
 					_LaunchEventManager(NULL, &ref);
 
 				else if (BString(type) == BString("text/calendar")) {
-					thread_id icalThread = spawn_thread(ImportICalEvents,
-						"ICal import thread", B_NORMAL_PRIORITY,
-						new BFile(&ref, B_READ_ONLY));
+					thread_id icalThread
+						= spawn_thread(ImportICalEvents, "ICal import thread",
+							B_NORMAL_PRIORITY, new BFile(&ref, B_READ_ONLY));
 					resume_thread(icalThread);
 
 				} else {
 					BMessage msg = BMessage(B_REFS_RECEIVED);
 					msg.AddRef("refs", &ref);
-					((App*)be_app)->PostMessage(&msg);
+					((App*) be_app)->PostMessage(&msg);
 				}
 			}
 			break;
@@ -213,8 +214,8 @@ void
 MainWindow::StartNotificationThread()
 {
 	if (fNotificationThread < 0) {
-		fNotificationThread = spawn_thread(NotificationLoop, "Notification thread",
-			B_NORMAL_PRIORITY, NULL);
+		fNotificationThread = spawn_thread(
+			NotificationLoop, "Notification thread", B_NORMAL_PRIORITY, NULL);
 		resume_thread(fNotificationThread);
 	}
 }
@@ -229,6 +230,7 @@ MainWindow::StopNotificationThread()
 	}
 }
 
+
 void
 MainWindow::_InitInterface()
 {
@@ -237,37 +239,42 @@ MainWindow::_InitInterface()
 	fMenuBar = new BMenuBar("MenuBar");
 
 	fAppMenu = new BMenu(B_TRANSLATE("App"));
-	BMenuItem* item = new BMenuItem(B_TRANSLATE("About" B_UTF8_ELLIPSIS),
-		new BMessage(B_ABOUT_REQUESTED));
+	BMenuItem* item = new BMenuItem(
+		B_TRANSLATE("About" B_UTF8_ELLIPSIS), new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	fAppMenu->AddItem(item);
-	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Help" B_UTF8_ELLIPSIS),
-		new BMessage(kMenuHelp)));
+	fAppMenu->AddItem(new BMenuItem(
+		B_TRANSLATE("Help" B_UTF8_ELLIPSIS), new BMessage(kMenuHelp)));
 	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Settings" B_UTF8_ELLIPSIS),
 		new BMessage(kMenuAppPref), ',', B_COMMAND_KEY));
 	//
-	// Google Calendar support is broken.  It should be replaced with a generic solution to
-	// be able to sync with various calendars.  Leaving this here for now to give future
-	// developer a place to start.
+	// Google Calendar support is broken.  It should be replaced with a generic
+	// solution to be able to sync with various calendars.  Leaving this here
+	// for now to give future developer a place to start.
 	//
-	//fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
-	//fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new BMessage(kMenuSyncGCAL)));
-	//fAppMenu->AddItem(fSyncMenu);
+	// fSyncMenu = new BMenu(B_TRANSLATE("Synchronize"));
+	// fSyncMenu->AddItem(new BMenuItem(B_TRANSLATE("Google Calendar"), new
+	// BMessage(kMenuSyncGCAL))); fAppMenu->AddItem(fSyncMenu);
 	fAppMenu->AddSeparatorItem();
-	fAppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit),
-		'Q', B_COMMAND_KEY));
+	fAppMenu->AddItem(new BMenuItem(
+		B_TRANSLATE("Quit"), new BMessage(kMenuAppQuit), 'Q', B_COMMAND_KEY));
 
 	fEventMenu = new BMenu(B_TRANSLATE("Event"));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("New" B_UTF8_ELLIPSIS, "EventListView"),
+	fEventMenu->AddItem(new BMenuItem(
+		B_TRANSLATE_CONTEXT("New" B_UTF8_ELLIPSIS, "EventListView"),
 		new BMessage(kAddEventMessage), 'N', B_COMMAND_KEY));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Edit" B_UTF8_ELLIPSIS, "EventListView"),
+	fEventMenu->AddItem(new BMenuItem(
+		B_TRANSLATE_CONTEXT("Edit" B_UTF8_ELLIPSIS, "EventListView"),
 		new BMessage(kEditEventMessage), 'E', B_COMMAND_KEY));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Delete", "EventListView"),
-		new BMessage(kDeleteEventMessage), 'T', B_COMMAND_KEY));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Cancel", "EventListView"),
-		new BMessage(kCancelEventMessage)));
-	fEventMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Hide", "EventListView"),
-		new BMessage(kHideEventMessage)));
+	fEventMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Delete", "EventListView"),
+			new BMessage(kDeleteEventMessage), 'T', B_COMMAND_KEY));
+	fEventMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Cancel", "EventListView"),
+			new BMessage(kCancelEventMessage)));
+	fEventMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Hide", "EventListView"),
+			new BMessage(kHideEventMessage)));
 	for (int i = 1; i < fEventMenu->CountItems(); i++)
 		fEventMenu->ItemAt(i)->SetEnabled(false);
 
@@ -276,9 +283,9 @@ MainWindow::_InitInterface()
 		new BMessage(kMenuCategoryEdit)));
 
 	BMessage* agendaMsg = new BMessage(kChangeListMode);
-	agendaMsg->AddUInt8("mode", (uint8)kAgendaView);
+	agendaMsg->AddUInt8("mode", (uint8) kAgendaView);
 	BMessage* hiddenMsg = new BMessage(kChangeListMode);
-	hiddenMsg->AddUInt8("mode", (uint8)kHiddenView);
+	hiddenMsg->AddUInt8("mode", (uint8) kHiddenView);
 
 	BMessage* dayMsg = new BMessage(kChangeListTab);
 	dayMsg->AddInt32("tab", kDayTab);
@@ -288,15 +295,20 @@ MainWindow::_InitInterface()
 	monthMsg->AddInt32("tab", kMonthTab);
 
 	fViewMenu = new BMenu(B_TRANSLATE("View"));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Day", "DayView"), dayMsg));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Week", "DayView"), weekMsg));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE_CONTEXT("Month", "DayView"), monthMsg));
+	fViewMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Day", "DayView"), dayMsg));
+	fViewMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Week", "DayView"), weekMsg));
+	fViewMenu->AddItem(
+		new BMenuItem(B_TRANSLATE_CONTEXT("Month", "DayView"), monthMsg));
 	fViewMenu->AddSeparatorItem();
 
 	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Agenda mode"), agendaMsg));
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Show hidden/deleted events"), hiddenMsg));
+	fViewMenu->AddItem(
+		new BMenuItem(B_TRANSLATE("Show hidden/deleted events"), hiddenMsg));
 	fViewMenu->AddSeparatorItem();
-	fViewMenu->AddItem(new BMenuItem(B_TRANSLATE("Go to today"), new BMessage(kSetCalendarToCurrentDate)));
+	fViewMenu->AddItem(new BMenuItem(
+		B_TRANSLATE("Go to today"), new BMessage(kSetCalendarToCurrentDate)));
 
 	fMenuBar->AddItem(fAppMenu);
 	fMenuBar->AddItem(fEventMenu);
@@ -311,15 +323,15 @@ MainWindow::_InitInterface()
 	BLayoutBuilder::Group<>(fMainView, B_VERTICAL, 0.0f)
 		.SetInsets(0, 0, -2, -2)
 		.Add(fEventsView)
-	.End();
+		.End();
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.Add(fMenuBar)
 		.AddGroup(B_HORIZONTAL, 0)
-			.Add(fSidePanelView, 1)
-			.Add(fMainView, 5)
+		.Add(fSidePanelView, 1)
+		.Add(fMainView, 5)
 		.End()
-	.End();
+		.End();
 }
 
 
@@ -355,8 +367,8 @@ MainWindow::_OpenHelp()
 	BPath path;
 	BEntry entry;
 
-	status_t error = pathFinder.FindPaths(B_FIND_PATH_DOCUMENTATION_DIRECTORY,
-		"packages/calendar", paths);
+	status_t error = pathFinder.FindPaths(
+		B_FIND_PATH_DOCUMENTATION_DIRECTORY, "packages/calendar", paths);
 
 	for (int i = 0; i < paths.CountStrings(); ++i) {
 		if (error == B_OK && path.SetTo(paths.StringAt(i)) == B_OK
@@ -380,10 +392,10 @@ MainWindow::_SetEventListPopUpEnabled(bool state)
 void
 MainWindow::_SyncWithPreferences()
 {
-	Preferences* preferences = ((App*)be_app)->GetPreferences();
+	Preferences* preferences = ((App*) be_app)->GetPreferences();
 
 	if (preferences != NULL) {
-		if(preferences->fHeaderVisible == true)
+		if (preferences->fHeaderVisible == true)
 			fSidePanelView->ShowWeekHeader(true);
 		else
 			fSidePanelView->ShowWeekHeader(false);

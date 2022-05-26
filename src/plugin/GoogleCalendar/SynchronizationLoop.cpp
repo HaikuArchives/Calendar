@@ -11,10 +11,10 @@
 int32
 SynchronizationLoop(void* data)
 {
-	BMessage* message = (BMessage*)data;
+	BMessage* message = (BMessage*) data;
 	BHandler* handler;
 
-	message->FindPointer("handler", (void**)(&handler));
+	message->FindPointer("handler", (void**) (&handler));
 
 	status_t status;
 	status = B_ERROR;

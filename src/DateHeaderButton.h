@@ -9,24 +9,25 @@
 #include <Control.h>
 
 
-class DateHeaderButton: public BControl {
+class DateHeaderButton : public BControl
+{
 public:
 					DateHeaderButton();
-	virtual	void	Draw(BRect updateRect);
+	virtual void	Draw(BRect updateRect);
 	virtual void	MessageReceived(BMessage* message);
 	virtual void	MouseDown(BPoint where);
 	virtual void	MouseUp(BPoint where);
 	virtual void	MouseMoved(BPoint where, uint32 code, const BMessage* drag);
 
 private:
-			void 	_UpdateDateHeader();
+	void			_UpdateDateHeader();
 
-		 BString	fDayText;
-		 BString	fDayOfWeekText;
-		 BString	fMonthYearText;
+	BString			fDayText;
+	BString			fDayOfWeekText;
+	BString			fMonthYearText;
 
-			bool	fMouseInView;
-			bool	fMouseDown;
+	bool			fMouseInView;
+	bool			fMouseDown;
 };
 
 #endif
