@@ -11,11 +11,11 @@
 #include <IconUtils.h>
 #include <Mime.h>
 #include <Resources.h>
-#include <TranslatorFormats.h>
 #include <TranslationUtils.h>
+#include <TranslatorFormats.h>
 
 // The "greenscreen" color used by recoloured icons
-const rgb_color SUBSTITUTION_COLOR = { 12, 135, 03 };
+const rgb_color SUBSTITUTION_COLOR = {12, 135, 03};
 
 
 BBitmap*
@@ -25,15 +25,19 @@ LoadVectorIcon(const char* name, int32 iconSize, int32 cropSize)
 	const void* data = LoadVectorIcon(name, &length);
 	BBitmap* temp = new BBitmap(BRect(0, 0, iconSize - 1, iconSize - 1),
 		B_BITMAP_NO_SERVER_LINK, B_RGBA32);
-	BBitmap* dest = new BBitmap(BRect(0, 0, cropSize - 1, cropSize - 1),
-		B_RGBA32);
+	BBitmap* dest
+		= new BBitmap(BRect(0, 0, cropSize - 1, cropSize - 1), B_RGBA32);
 	if (data != NULL
-		&& BIconUtils::GetVectorIcon((uint8*)data, length, temp)
-			== B_OK
-		&& dest->ImportBits(temp, BPoint(0, 0), BPoint(0, 0),
-			cropSize, cropSize) == B_OK)  {
-			delete temp;
-			return dest;
+		&& BIconUtils::GetVectorIcon((uint8*) data, length, temp) == B_OK
+		&& dest->ImportBits(
+#if B_HAIKU_VERSION	>= B_HAIKU_VERSION_1_PRE_BETA_4
+			   temp, BPoint(0, 0), BPoint(0, 0), BSize(cropSize, cropSize))
+#else
+			   temp, BPoint(0, 0), BPoint(0, 0), cropSize, cropSize)
+#endif
+			== B_OK) {
+		delete temp;
+		return dest;
 	}
 
 	delete temp;
@@ -46,7 +50,7 @@ void*
 LoadVectorIcon(const char* name, size_t* length)
 {
 	BResources* res = BApplication::AppResources();
-	return (void*)res->LoadResource(B_VECTOR_ICON_TYPE, name, length);
+	return (void*) res->LoadResource(B_VECTOR_ICON_TYPE, name, length);
 }
 
 
@@ -68,9 +72,8 @@ void
 RecolorIcon(uchar* icon, rgb_color oldColor, rgb_color newColor, size_t length)
 {
 	for (int i = 0; i < length; i++)
-		if (icon[i] == oldColor.red && icon[i+1] == oldColor.green
-			&& icon[i+2] == oldColor.blue)
-		{
+		if (icon[i] == oldColor.red && icon[i + 1] == oldColor.green
+			&& icon[i + 2] == oldColor.blue) {
 			icon[i] = newColor.red;
 			icon[i + 1] = newColor.green;
 			icon[i + 2] = newColor.blue;
