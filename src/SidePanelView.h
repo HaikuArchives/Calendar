@@ -41,6 +41,7 @@ private:
 
 	BStringView*	fYearLabel;
 	BStringView*	fMonthLabel;
+	BStringView*	fFilterSearchHeading;
 	CalendarView*	fCalendarView;
 	DateHeaderButton* fDateHeaderButton;
 	BButton*		fMonthUpButton;

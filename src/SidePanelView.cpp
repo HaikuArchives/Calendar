@@ -48,6 +48,8 @@ SidePanelView::SidePanelView()
 
 	fYearLabel = new BStringView("year", "");
 	fMonthLabel = new BStringView("month", "");
+	fFilterSearchHeading = new BStringView(BRect(10,10,11,11), "filterSearchHeading", "Filter & Search");
+	fFilterSearchHeading->ResizeToPreferred();
 
 	fMonthUpButton
 		= new BButton("MonthuUp", "►", new BMessage(kMonthUpMessage));
@@ -68,7 +70,7 @@ SidePanelView::SidePanelView()
 		BSize(font.StringWidth(B_TRANSLATE_COMMENT(
 				"September XXXX", "Choose the longest month name")),
 			height));
-
+			
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 
@@ -84,6 +86,8 @@ SidePanelView::SidePanelView()
 		.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
+		.AddStrut(10)
+		.Add(fFilterSearchHeading)
 		.AddGlue(10)
 		.End();
 
