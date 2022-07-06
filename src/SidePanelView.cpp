@@ -11,6 +11,9 @@
 #include <LayoutBuilder.h>
 #include <LocaleRoster.h>
 #include <StringView.h>
+#include <MenuField.h>
+#include <PopUpMenu.h>
+#include <TextControl.h>
 
 #include "CalendarView.h"
 #include "EventTabView.h"
@@ -73,6 +76,42 @@ SidePanelView::SidePanelView()
 			
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
+	
+	fProfileMenu = new BPopUpMenu("ProfileMenu");
+	fCategoryMenu = new BPopUpMenu("CategoryMenu");
+	
+	const char * profileMenuItems[] = {B_TRANSLATE("first"),
+		B_TRANSLATE("second"), B_TRANSLATE("third") , NULL};
+	const char * categoryMenuItems[] = {B_TRANSLATE("first cat"),
+		B_TRANSLATE("second cat"), B_TRANSLATE("third cat"), NULL};
+	
+	static const int tempMessage = 8990;
+	
+	for(int i=0 ; profileMenuItems[i] ; ++i)
+	{
+		fProfileMenu->AddItem(new BMenuItem(profileMenuItems[i],
+			new BMessage(tempMessage)));
+	}
+	fProfileMenu->ItemAt(0)->SetMarked(true);
+	
+	for(int i=0 ; categoryMenuItems[i] ; ++i)
+	{
+		fCategoryMenu->AddItem(new BMenuItem(categoryMenuItems[i],
+			new BMessage(tempMessage)));
+	}
+	fCategoryMenu->ItemAt(0)->SetMarked(true);
+	
+	fProfileMenuField = new BMenuField(
+		"ProfileMenu", B_TRANSLATE("Profile:"), fProfileMenu);
+	fCategoryMenuField = new BMenuField(
+		"CategoryMenu", B_TRANSLATE("Category:"), fCategoryMenu);
+		
+	fTextSearch = new BTextControl("SearchTerms", NULL, NULL, NULL);
+	fSearchLabel = new BStringView("SearchLabel", B_TRANSLATE("Search:"));
+	
+	fClearButton = new BButton(
+		B_TRANSLATE("Clear"), new BMessage(tempMessage));
+	fClearButton->SetEnabled(true);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
@@ -86,8 +125,17 @@ SidePanelView::SidePanelView()
 		.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
-		.AddStrut(10)
-		.Add(fFilterSearchHeading)
+		.AddStrut(20)
+		.AddGrid(B_USE_DEFAULT_SPACING, B_USE_SMALL_SPACING)
+		.SetInsets(
+			B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS, 0)
+		.Add(fFilterSearchHeading, 0, 0)
+		.AddMenuField(fProfileMenuField, 0, 1)
+		.AddMenuField(fCategoryMenuField, 0, 2)
+		.Add(fSearchLabel, 0, 3)
+		.Add(fTextSearch, 1, 3)
+		.Add(fClearButton, 1, 4)
+		.End()
 		.AddGlue(10)
 		.End();
 

@@ -7,12 +7,16 @@
 
 #include <DateTime.h>
 #include <View.h>
+#include <Window.h>
 
 #include "CalendarView.h"
 #include "DateHeaderButton.h"
 
 class BButton;
 class BStringView;
+class BPopUpMenu;
+class BMenuField;
+class BTextControl;
 
 enum {
 	kSelectionMessage,
@@ -46,6 +50,16 @@ private:
 	DateHeaderButton* fDateHeaderButton;
 	BButton*		fMonthUpButton;
 	BButton*		fMonthDownButton;
+	
+	BPopUpMenu*		fProfileMenu;
+	BPopUpMenu*		fCategoryMenu;
+	BMenuField*		fProfileMenuField;
+	BMenuField*		fCategoryMenuField;
+	
+	BTextControl*	fTextSearch;
+	BStringView*	fSearchLabel;
+	
+	BButton*		fClearButton;
 };
 
 #endif
