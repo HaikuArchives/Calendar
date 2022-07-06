@@ -7,7 +7,6 @@
 
 #include <DateTime.h>
 #include <View.h>
-#include <Window.h>
 
 #include "CalendarView.h"
 #include "DateHeaderButton.h"
