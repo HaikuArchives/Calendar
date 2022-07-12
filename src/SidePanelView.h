@@ -13,6 +13,7 @@
 
 class BButton;
 class BStringView;
+class BTextControl;
 
 enum {
 	kSelectionMessage,
@@ -22,6 +23,8 @@ enum {
 	kSetStartOfWeekMessage,
 	kSetCalendarToCurrentDate,
 	kSelectedDateChanged,
+	kFilterApplied,
+	kFilterCleared,
 };
 
 
@@ -45,6 +48,9 @@ private:
 	DateHeaderButton* fDateHeaderButton;
 	BButton*		fMonthUpButton;
 	BButton*		fMonthDownButton;
+	BButton*		fFilterClearButton;
+	BButton*		fFilterApplyButton;
+	BTextControl*	fTextFilter;
 };
 
 #endif

@@ -71,6 +71,13 @@ SidePanelView::SidePanelView()
 
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
+	
+	fTextFilter = new BTextControl("FilterString", NULL, NULL, NULL);;
+	
+	fFilterApplyButton =
+		new BButton("ApplyFilter", "Apply", new BMessage(kFilterApplied));
+	fFilterClearButton =
+		new BButton("ClearFilter", "Clear", new BMessage(kFilterCleared));
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
@@ -84,6 +91,13 @@ SidePanelView::SidePanelView()
 		.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
+		.AddStrut(80)
+		.AddGrid(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.Add(new BStringView("FilterLabel", B_TRANSLATE("Filter:")) ,0, 0)
+		.Add(fTextFilter, 1, 0)
+		.Add(fFilterApplyButton, 0, 1)
+		.Add(fFilterClearButton, 1, 1)
+		.End()
 		.AddGlue(10)
 		.End();
 
@@ -144,6 +158,9 @@ SidePanelView::MessageReceived(BMessage* message)
 		}
 		case kSetCalendarToCurrentDate:
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
+			break;
+		case kFilterCleared:
+			fTextFilter->SetText(NULL);
 			break;
 		default:
 			BView::MessageReceived(message);
