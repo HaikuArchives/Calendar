@@ -23,7 +23,6 @@ enum {
 	kSetStartOfWeekMessage,
 	kSetCalendarToCurrentDate,
 	kSelectedDateChanged,
-	kFilterApplied,
 	kFilterCleared,
 };
 
@@ -49,7 +48,6 @@ private:
 	BButton*		fMonthUpButton;
 	BButton*		fMonthDownButton;
 	BButton*		fFilterClearButton;
-	BButton*		fFilterApplyButton;
 	BTextControl*	fTextFilter;
 };
 

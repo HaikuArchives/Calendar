@@ -72,10 +72,9 @@ SidePanelView::SidePanelView()
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	
-	fTextFilter = new BTextControl("FilterString", NULL, NULL, NULL);;
-	
-	fFilterApplyButton =
-		new BButton("ApplyFilter", "Apply", new BMessage(kFilterApplied));
+	fTextFilter =
+		new BTextControl("FilterString", "Filter: ", NULL, new BMessage(kFilterCleared));
+
 	fFilterClearButton =
 		new BButton("ClearFilter", "Clear", new BMessage(kFilterCleared));
 
@@ -84,21 +83,21 @@ SidePanelView::SidePanelView()
 		.Add(fDateHeaderButton)
 		.AddStrut(30)
 		.AddGroup(B_HORIZONTAL)
-		.Add(fMonthLabel)
-		.AddGlue()
-		.Add(fMonthDownButton)
-		.Add(fMonthUpButton)
-		.End()
+			.Add(fMonthLabel)
+			.AddGlue()
+			.Add(fMonthDownButton)
+			.Add(fMonthUpButton)
+			.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
 		.AddStrut(80)
-		.AddGrid(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.Add(new BStringView("FilterLabel", B_TRANSLATE("Filter:")) ,0, 0)
-		.Add(fTextFilter, 1, 0)
-		.Add(fFilterApplyButton, 0, 1)
-		.Add(fFilterClearButton, 1, 1)
-		.End()
 		.AddGlue(10)
+		.Add(fTextFilter)
+		.AddStrut(10)
+		.AddGroup(B_HORIZONTAL)
+			.AddGlue()
+			.Add(fFilterClearButton)
+			.End()
 		.End();
 
 	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
@@ -160,7 +159,7 @@ SidePanelView::MessageReceived(BMessage* message)
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
 		case kFilterCleared:
-			fTextFilter->SetText(NULL);
+			fTextFilter->SetText("");
 			break;
 		default:
 			BView::MessageReceived(message);
