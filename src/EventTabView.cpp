@@ -17,6 +17,10 @@
 #include "QueryDBManager.h"
 #include "SidePanelView.h"
 
+#include <algorithm>
+#include <string>
+#include <sstream>
+
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
 
@@ -272,6 +276,26 @@ EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
 }
 
 
+bool searchForKeywords(const char* kText, const char* kKeywords)
+{
+	std::string s1 = kText;
+	std::string s2 = kKeywords;
+	
+	std::transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
+	std::transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
+	
+	std::istringstream iss(s2);
+	std::string word;
+	
+	while(iss >> word) {
+		if(s1.find(word) != std::string::npos)
+			return true;
+	}
+	
+	return false;
+}
+
+
 void
 EventTabView::_PopulateList()
 {
@@ -284,11 +308,25 @@ EventTabView::_PopulateList()
 		Event* event = fEventList->ItemAt(i);
 		if (event == NULL)
 			continue;
+			
+		const char* eventName = event->GetName();
+		const char* eventDescription = event->GetDescription();
+		const char* eventPlace = event->GetPlace();
+		const char* eventCategory = event->GetCategory()->GetName().String();
+		
+		std::string wholeEvent = 
+			std::string(eventName) +
+			std::string(eventDescription) +
+			std::string(eventPlace) +
+			std::string(eventCategory);
+			
+		char* toSearch = "desk BedRoom BiRthDaY";
 
 		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
 		if (hidden == false
-			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN)))
+			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
+			|| !searchForKeywords(wholeEvent.c_str(), toSearch))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);

@@ -274,7 +274,7 @@ QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 
 	return GetEventsInInterval(monthStart, monthEnd, ignoreHidden);
 }
-
+/*
 bool searchForKeywords(const char* kText, const char* kKeywords)
 {
 	std::string s1 = kText;
@@ -292,7 +292,7 @@ bool searchForKeywords(const char* kText, const char* kKeywords)
 	}
 	
 	return false;
-}
+}*/
 
 EventList*
 QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
@@ -323,14 +323,19 @@ QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 		const char* eventName = event->GetName();
 		const char* eventDescription = event->GetDescription();
 		const char* eventPlace = event->GetPlace();
+		const char* eventCategory = event->GetCategory()->GetName().String();
 		
 		std::string wholeEvent = 
-			std::string(eventName) + std::string(eventDescription) + std::string(eventPlace);
+			std::string(eventName) +
+			std::string(eventDescription) +
+			std::string(eventPlace) +
+			std::string(eventCategory);
 			
-		char* toSearch = "bedROOm dEsK";
+		char* toSearch = "biRTHdAy";
 		
 		if ((ignoreHidden == false || ignoreHidden == true && hidden == false) 
-				&& searchForKeywords(wholeEvent.c_str(), toSearch))
+				//&& searchForKeywords(wholeEvent.c_str(), toSearch))
+				)
 			events->AddItem(event);
 	}
 	return events;
