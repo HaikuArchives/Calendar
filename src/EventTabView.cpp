@@ -38,6 +38,7 @@ EventTabView::EventTabView(const BDate& date)
 	fEventList = NULL;
 	fDBManager = new QueryDBManager();
 	SetDate(date);
+	filterKeywords = NULL;
 }
 
 
@@ -258,6 +259,13 @@ EventTabView::ListAt(int32 index)
 	return list;
 }
 
+void
+EventTabView::SetFilterString(const char* keywords)
+{
+	filterKeywords = strdup(keywords);
+	_PopulateList();
+}
+
 
 void
 EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
@@ -276,10 +284,14 @@ EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
 }
 
 
-bool searchForKeywords(const char* kText, const char* kKeywords)
+bool
+EventTabView::_SearchForKeywords(const char* kText)
 {
+	if (filterKeywords == NULL)
+		return true;
+	
 	std::string s1 = kText;
-	std::string s2 = kKeywords;
+	std::string s2 = filterKeywords;
 	
 	std::transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
 	std::transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
@@ -319,14 +331,12 @@ EventTabView::_PopulateList()
 			std::string(eventDescription) +
 			std::string(eventPlace) +
 			std::string(eventCategory);
-			
-		char* toSearch = "desk BedRoom BiRthDaY";
 
 		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
 		if (hidden == false
 			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
-			|| !searchForKeywords(wholeEvent.c_str(), toSearch))
+			|| !_SearchForKeywords(wholeEvent.c_str()))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);

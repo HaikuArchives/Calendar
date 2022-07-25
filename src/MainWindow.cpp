@@ -203,6 +203,9 @@ MainWindow::MessageReceived(BMessage* message)
 				msgr.SendMessage(message);
 			}
 		}
+		case kFilterChanged:
+			fEventsView->SetFilterString(fSidePanelView->GetFilterQuery());
+			break;
 		default:
 			BWindow::MessageReceived(message);
 			break;

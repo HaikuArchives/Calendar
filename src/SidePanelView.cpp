@@ -71,12 +71,14 @@ SidePanelView::SidePanelView()
 
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
-	
+
 	fTextFilter =
-		new BTextControl("FilterString", "Filter: ", NULL, new BMessage(kFilterCleared));
+		new BTextControl("FilterString", "Filter: ", NULL, new BMessage(kFilterChanged));
+	//fTextFilter->SetModificationMessage(new BMessage(kMonthUpMessage));
 
 	fFilterClearButton =
 		new BButton("ClearFilter", "Clear", new BMessage(kFilterCleared));
+
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
@@ -161,6 +163,9 @@ SidePanelView::MessageReceived(BMessage* message)
 		case kFilterCleared:
 			fTextFilter->SetText("");
 			break;
+		case kFilterChanged:
+			fTextFilter->SetText("");
+			break;
 		default:
 			BView::MessageReceived(message);
 			break;
@@ -209,6 +214,16 @@ BDate
 SidePanelView::GetSelectedDate() const
 {
 	return fCalendarView->Date();
+}
+
+const char*
+SidePanelView::GetFilterQuery() const
+{
+	const char* c = fTextFilter->Text();
+	if (c && !c[0])						// Empty String
+		return NULL;
+	else
+		return fTextFilter->Text();
 }
 
 

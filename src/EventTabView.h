@@ -61,18 +61,22 @@ public:
 	void			LoadEvents();
 
 	EventListView*	ListAt(int32 index);
+	
+	void 			SetFilterString(const char* keywords);
 
 private:
 	void			_AddEventList(const char* name, const char* label, int32 tab);
 	void			_PopulateList();
 
 	static int		_CompareFunc(const Event* a, const Event* b);
+	bool			_SearchForKeywords(const char* kText);
 
 	EventList*		fEventList;
 	BDate			fDate;
 	uint8			fMode;
 	bool			fPopUpEnabled;
 	QueryDBManager*	fDBManager;
+	char*			filterKeywords;
 
 	static const uint32 kInvokationMessage = 1000;
 };

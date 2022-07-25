@@ -24,6 +24,7 @@ enum {
 	kSetCalendarToCurrentDate,
 	kSelectedDateChanged,
 	kFilterCleared,
+	kFilterChanged,
 };
 
 
@@ -34,6 +35,7 @@ public:
 
 	void			MessageReceived(BMessage* message);
 	BDate			GetSelectedDate() const;
+	const char*		GetFilterQuery() const;
 	void			SetStartOfWeek(int32);
 	void			ShowWeekHeader(bool);
 
