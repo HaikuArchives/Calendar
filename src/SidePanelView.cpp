@@ -74,11 +74,9 @@ SidePanelView::SidePanelView()
 
 	fTextFilter =
 		new BTextControl("FilterString", "Filter: ", NULL, new BMessage(kFilterChanged));
-	//fTextFilter->SetModificationMessage(new BMessage(kMonthUpMessage));
 
 	fFilterClearButton =
 		new BButton("ClearFilter", "Clear", new BMessage(kFilterCleared));
-
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
@@ -160,12 +158,6 @@ SidePanelView::MessageReceived(BMessage* message)
 		case kSetCalendarToCurrentDate:
 			_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
 			break;
-		case kFilterCleared:
-			fTextFilter->SetText("");
-			break;
-		case kFilterChanged:
-			fTextFilter->SetText("");
-			break;
 		default:
 			BView::MessageReceived(message);
 			break;
@@ -219,11 +211,13 @@ SidePanelView::GetSelectedDate() const
 const char*
 SidePanelView::GetFilterQuery() const
 {
-	const char* c = fTextFilter->Text();
-	if (c && !c[0])						// Empty String
-		return NULL;
-	else
 		return fTextFilter->Text();
+}
+
+void
+SidePanelView::EmptyFilterText()
+{
+	fTextFilter->SetText("");
 }
 
 

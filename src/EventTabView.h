@@ -7,6 +7,7 @@
 #define EVENT_TAB_VIEW_H
 
 #include <DateTime.h>
+#include <string>
 #include <TabView.h>
 
 #include "Event.h"
@@ -69,14 +70,14 @@ private:
 	void			_PopulateList();
 
 	static int		_CompareFunc(const Event* a, const Event* b);
-	bool			_SearchForKeywords(const char* kText);
+	bool			_SearchForKeywords(Event* event);
 
 	EventList*		fEventList;
 	BDate			fDate;
 	uint8			fMode;
 	bool			fPopUpEnabled;
 	QueryDBManager*	fDBManager;
-	char*			filterKeywords;
+	std::string		fFilterKeywords;
 
 	static const uint32 kInvokationMessage = 1000;
 };

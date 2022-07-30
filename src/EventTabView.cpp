@@ -18,8 +18,6 @@
 #include "SidePanelView.h"
 
 #include <algorithm>
-#include <string>
-#include <sstream>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
@@ -38,7 +36,7 @@ EventTabView::EventTabView(const BDate& date)
 	fEventList = NULL;
 	fDBManager = new QueryDBManager();
 	SetDate(date);
-	filterKeywords = NULL;
+	fFilterKeywords = "";
 }
 
 
@@ -262,7 +260,7 @@ EventTabView::ListAt(int32 index)
 void
 EventTabView::SetFilterString(const char* keywords)
 {
-	filterKeywords = strdup(keywords);
+	fFilterKeywords = (keywords == NULL) ? "" : std::string(keywords);
 	_PopulateList();
 }
 
@@ -285,24 +283,32 @@ EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
 
 
 bool
-EventTabView::_SearchForKeywords(const char* kText)
+EventTabView::_SearchForKeywords(Event* event)
 {
-	if (filterKeywords == NULL)
+	if (fFilterKeywords.empty())
 		return true;
-	
-	std::string s1 = kText;
-	std::string s2 = filterKeywords;
-	
-	std::transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
-	std::transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
-	
-	std::istringstream iss(s2);
-	std::string word;
-	
-	while(iss >> word) {
-		if(s1.find(word) != std::string::npos)
+
+	std::string wholeEvent = 
+		std::string(event->GetName()) +
+		std::string(event->GetDescription()) +
+		std::string(event->GetPlace()) +
+		std::string(event->GetCategory()->GetName().String());
+
+	std::transform(wholeEvent.begin(), wholeEvent.end(), wholeEvent.begin(), ::toupper);
+	std::transform(fFilterKeywords.begin(), fFilterKeywords.end(), fFilterKeywords.begin(), ::toupper);
+
+	std::size_t start=0, end=0;
+	while((end = fFilterKeywords.find(' ', start)) != std::string::npos)
+	{
+		if (wholeEvent.find(fFilterKeywords.substr(start, end - start))
+			!= std::string::npos && end != start)
 			return true;
+		start = end + 1;
 	}
+	
+	if(wholeEvent.find(fFilterKeywords.substr(start)) != std::string::npos
+		&& end != start)
+		return true;
 	
 	return false;
 }
@@ -320,23 +326,12 @@ EventTabView::_PopulateList()
 		Event* event = fEventList->ItemAt(i);
 		if (event == NULL)
 			continue;
-			
-		const char* eventName = event->GetName();
-		const char* eventDescription = event->GetDescription();
-		const char* eventPlace = event->GetPlace();
-		const char* eventCategory = event->GetCategory()->GetName().String();
-		
-		std::string wholeEvent = 
-			std::string(eventName) +
-			std::string(eventDescription) +
-			std::string(eventPlace) +
-			std::string(eventCategory);
 
 		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
 		if (hidden == false
 			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
-			|| !_SearchForKeywords(wholeEvent.c_str()))
+			|| !_SearchForKeywords(event))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);

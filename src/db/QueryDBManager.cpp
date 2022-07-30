@@ -17,10 +17,6 @@
 #include <fs_index.h>
 #include <fs_info.h>
 
-#include <algorithm>
-#include <string>
-#include <sstream>
-
 #include "App.h"
 #include "Preferences.h"
 #include "ResourceLoader.h"
@@ -274,25 +270,7 @@ QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 
 	return GetEventsInInterval(monthStart, monthEnd, ignoreHidden);
 }
-/*
-bool searchForKeywords(const char* kText, const char* kKeywords)
-{
-	std::string s1 = kText;
-	std::string s2 = kKeywords;
-	
-	std::transform(s1.begin(), s1.end(), s1.begin(), ::toupper);
-	std::transform(s2.begin(), s2.end(), s2.begin(), ::toupper);
-	
-	std::istringstream iss(s2);
-	std::string word;
-	
-	while(iss >> word) {
-		if(s1.find(word) != std::string::npos)
-			return true;
-	}
-	
-	return false;
-}*/
+
 
 EventList*
 QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
@@ -319,23 +297,7 @@ QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 		event = _FileToEvent(&ref);
 		uint16 status = event->GetStatus();
 		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
-		
-		const char* eventName = event->GetName();
-		const char* eventDescription = event->GetDescription();
-		const char* eventPlace = event->GetPlace();
-		const char* eventCategory = event->GetCategory()->GetName().String();
-		
-		std::string wholeEvent = 
-			std::string(eventName) +
-			std::string(eventDescription) +
-			std::string(eventPlace) +
-			std::string(eventCategory);
-			
-		char* toSearch = "biRTHdAy";
-		
-		if ((ignoreHidden == false || ignoreHidden == true && hidden == false) 
-				//&& searchForKeywords(wholeEvent.c_str(), toSearch))
-				)
+		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
 			events->AddItem(event);
 	}
 	return events;

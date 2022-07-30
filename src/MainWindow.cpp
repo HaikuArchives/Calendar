@@ -206,6 +206,10 @@ MainWindow::MessageReceived(BMessage* message)
 		case kFilterChanged:
 			fEventsView->SetFilterString(fSidePanelView->GetFilterQuery());
 			break;
+		case kFilterCleared:
+			fSidePanelView->EmptyFilterText();
+			fEventsView->SetFilterString(NULL);
+			break;
 		default:
 			BWindow::MessageReceived(message);
 			break;
