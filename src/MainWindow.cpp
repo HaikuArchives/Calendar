@@ -1,5 +1,6 @@
 /*
  * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
+ * Copyright 2022, Harshit Sharma, harshits908@gmail.com
  * All rights reserved. Distributed under the terms of the MIT License.
  */
 
