@@ -73,10 +73,10 @@ SidePanelView::SidePanelView()
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 
 	fTextFilter =
-		new BTextControl("FilterString", "Filter: ", NULL, new BMessage(kFilterChanged));
+		new BTextControl("FilterString", B_TRANSLATE("Filter:"), NULL, new BMessage(kFilterChanged));
 
 	fFilterClearButton =
-		new BButton("ClearFilter", "Clear", new BMessage(kFilterCleared));
+		new BButton("ClearFilter", B_TRANSLATE("Clear"), new BMessage(kFilterCleared));
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
@@ -215,7 +215,7 @@ SidePanelView::GetFilterQuery() const
 }
 
 void
-SidePanelView::EmptyFilterText()
+SidePanelView::ClearFilterText()
 {
 	fTextFilter->SetText("");
 }

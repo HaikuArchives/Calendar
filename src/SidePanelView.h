@@ -38,7 +38,7 @@ public:
 	const char*		GetFilterQuery() const;
 	void			SetStartOfWeek(int32);
 	void			ShowWeekHeader(bool);
-	void			EmptyFilterText();
+	void			ClearFilterText();
 
 private:
 	void			_UpdateDate(const BDate&);
