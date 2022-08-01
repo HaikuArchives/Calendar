@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
+ * Copyright 2022, Harshit Sharma, harshits908@gmail.com
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 #ifndef SIDE_PANEL_VIEW_H
@@ -13,6 +14,7 @@
 
 class BButton;
 class BStringView;
+class BTextControl;
 
 enum {
 	kSelectionMessage,
@@ -22,6 +24,8 @@ enum {
 	kSetStartOfWeekMessage,
 	kSetCalendarToCurrentDate,
 	kSelectedDateChanged,
+	kFilterCleared,
+	kFilterChanged,
 };
 
 
@@ -32,8 +36,10 @@ public:
 
 	void			MessageReceived(BMessage* message);
 	BDate			GetSelectedDate() const;
+	const char*		GetFilterQuery() const;
 	void			SetStartOfWeek(int32);
 	void			ShowWeekHeader(bool);
+	void			ClearFilterText();
 
 private:
 	void			_UpdateDate(const BDate&);
@@ -45,6 +51,8 @@ private:
 	DateHeaderButton* fDateHeaderButton;
 	BButton*		fMonthUpButton;
 	BButton*		fMonthDownButton;
+	BButton*		fFilterClearButton;
+	BTextControl*	fTextFilter;
 };
 
 #endif

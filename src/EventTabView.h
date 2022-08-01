@@ -1,12 +1,14 @@
 /*
  * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
  * Copyright 2021, Jaidyn Levesque, jadedctrl@teknik.io
+ * Copyright 2022, Harshit Sharma, harshits908@gmail.com
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 #ifndef EVENT_TAB_VIEW_H
 #define EVENT_TAB_VIEW_H
 
 #include <DateTime.h>
+#include <string>
 #include <TabView.h>
 
 #include "Event.h"
@@ -61,18 +63,22 @@ public:
 	void			LoadEvents();
 
 	EventListView*	ListAt(int32 index);
+	
+	void 			SetFilterString(const char* keywords);
 
 private:
 	void			_AddEventList(const char* name, const char* label, int32 tab);
 	void			_PopulateList();
 
 	static int		_CompareFunc(const Event* a, const Event* b);
+	bool			_SearchForKeywords(Event* event);
 
 	EventList*		fEventList;
 	BDate			fDate;
 	uint8			fMode;
 	bool			fPopUpEnabled;
 	QueryDBManager*	fDBManager;
+	std::string		fFilterKeywords;
 
 	static const uint32 kInvokationMessage = 1000;
 };

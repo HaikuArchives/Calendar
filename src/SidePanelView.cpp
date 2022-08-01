@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
+ * Copyright 2022, Harshit Sharma, harshits908@gmail.com
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
@@ -72,19 +73,32 @@ SidePanelView::SidePanelView()
 	fMonthUpButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 	fMonthDownButton->SetExplicitMinSize(BSize(height + 5, height + 5));
 
+	fTextFilter =
+		new BTextControl("FilterString", B_TRANSLATE("Filter:"), NULL, new BMessage(kFilterChanged));
+
+	fFilterClearButton =
+		new BButton("ClearFilter", B_TRANSLATE("Clear"), new BMessage(kFilterCleared));
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0.0f)
 		.SetInsets(B_USE_WINDOW_INSETS)
 		.Add(fDateHeaderButton)
 		.AddStrut(30)
 		.AddGroup(B_HORIZONTAL)
-		.Add(fMonthLabel)
-		.AddGlue()
-		.Add(fMonthDownButton)
-		.Add(fMonthUpButton)
-		.End()
+			.Add(fMonthLabel)
+			.AddGlue()
+			.Add(fMonthDownButton)
+			.Add(fMonthUpButton)
+			.End()
 		.AddStrut(5)
 		.Add(fCalendarView)
+		.AddStrut(80)
 		.AddGlue(10)
+		.Add(fTextFilter)
+		.AddStrut(10)
+		.AddGroup(B_HORIZONTAL)
+			.AddGlue()
+			.Add(fFilterClearButton)
+			.End()
 		.End();
 
 	_UpdateDate(BDate::CurrentDate(B_LOCAL_TIME));
@@ -193,6 +207,18 @@ BDate
 SidePanelView::GetSelectedDate() const
 {
 	return fCalendarView->Date();
+}
+
+const char*
+SidePanelView::GetFilterQuery() const
+{
+		return fTextFilter->Text();
+}
+
+void
+SidePanelView::ClearFilterText()
+{
+	fTextFilter->SetText("");
 }
 
 

@@ -1,6 +1,7 @@
 /*
  * Copyight 2017 Akshay Agarwal, agarwal.akshay.akshay8@gmail.com
  * Copyright 2021, Jaidyn Levesque, jadedctrl@teknik.io
+ * Copyright 2022, Harshit Sharma, harshits908@gmail.com
  * All rights reserved. Distributed under the terms of the MIT license.
  */
 
@@ -16,6 +17,8 @@
 #include "EventListView.h"
 #include "QueryDBManager.h"
 #include "SidePanelView.h"
+
+#include <algorithm>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "DayView"
@@ -34,6 +37,7 @@ EventTabView::EventTabView(const BDate& date)
 	fEventList = NULL;
 	fDBManager = new QueryDBManager();
 	SetDate(date);
+	fFilterKeywords = "";
 }
 
 
@@ -254,6 +258,13 @@ EventTabView::ListAt(int32 index)
 	return list;
 }
 
+void
+EventTabView::SetFilterString(const char* keywords)
+{
+	fFilterKeywords = (keywords == NULL) ? "" : std::string(keywords);
+	_PopulateList();
+}
+
 
 void
 EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
@@ -269,6 +280,38 @@ EventTabView::_AddEventList(const char* name, const char* label, int32 tab)
 
 	AddTab(scrollView);
 	TabAt(tab)->SetLabel(label);
+}
+
+
+bool
+EventTabView::_SearchForKeywords(Event* event)
+{
+	if (fFilterKeywords.empty())
+		return true;
+
+	std::string wholeEvent = 
+		std::string(event->GetName()) +
+		std::string(event->GetDescription()) +
+		std::string(event->GetPlace()) +
+		std::string(event->GetCategory()->GetName().String());
+
+	std::transform(wholeEvent.begin(), wholeEvent.end(), wholeEvent.begin(), ::toupper);
+	std::transform(fFilterKeywords.begin(), fFilterKeywords.end(), fFilterKeywords.begin(), ::toupper);
+
+	std::size_t start=0, end=0;
+	while((end = fFilterKeywords.find(' ', start)) != std::string::npos)
+	{
+		if (wholeEvent.find(fFilterKeywords.substr(start, end - start))
+			!= std::string::npos && end != start)
+			return true;
+		start = end + 1;
+	}
+	
+	if(wholeEvent.find(fFilterKeywords.substr(start)) != std::string::npos
+		&& end != start)
+		return true;
+	
+	return false;
 }
 
 
@@ -288,7 +331,8 @@ EventTabView::_PopulateList()
 		bool hidden = (fMode & kHiddenView);
 		uint16 eventStatus = event->GetStatus();
 		if (hidden == false
-			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN)))
+			&& ((eventStatus & EVENT_DELETED) || (eventStatus & EVENT_HIDDEN))
+			|| !_SearchForKeywords(event))
 			continue;
 
 		EventListItem* item = new EventListItem(event, fMode);
