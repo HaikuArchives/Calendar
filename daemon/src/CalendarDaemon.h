@@ -7,6 +7,7 @@
 #define CALENDAR_DAEMON_H
 
 #include <Application.h>
+#include <Volume.h>
 
 #include "Event.h"
 
@@ -20,6 +21,7 @@ enum
 
 class BMessage;
 class BString;
+class BVolume;
 
 
 /*!
@@ -84,6 +86,7 @@ private:
 
 	BString				fEventDir;
 	ReminderEventList*	fEventList;
+	BVolume				fQueryVolume;
 
 };
 

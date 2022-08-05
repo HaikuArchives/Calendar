@@ -8,8 +8,10 @@
 #include <DateTime.h>
 #include <Directory.h>
 #include <FindDirectory.h>
-#include <Notification.h>
+#include <Alert.h>
 #include <Path.h>
+#include <Query.h>
+#include <VolumeRoster.h>
 #include <iostream>
 #include <csignal>
 #include <time.h>
@@ -153,13 +155,16 @@ CalendarDaemon::CalendarDaemon()
 	
 	fEventList = new ReminderEventList(20, true);
 	
+	BVolumeRoster volRoster;
+	volRoster.GetBootVolume(&fQueryVolume);
+	
 	BPath homeDir;
 	find_directory(B_USER_DIRECTORY, &homeDir);
 	
 	fEventDir = homeDir.Path();
 	fEventDir << "/" << EVENT_DIRECTORY;
 	
-	BDirectory directory(fEventDir.String());
+	/*BDirectory directory(fEventDir.String());
 	if(directory.InitCheck() == B_ENTRY_NOT_FOUND)
 	{
 		std::cerr << "Failed to access the Events Directory" << std::endl;
@@ -175,7 +180,25 @@ CalendarDaemon::CalendarDaemon()
 	notification.SetTitle("Found the Directory ;)");
 	notification.SetContent(fEventDir.String());
 	
-	notification.Send();
+	notification.Send();*/
+	
+	BQuery query;
+	query.SetVolume(&fQueryVolume);
+	query.PushAttr(START_ATTR);
+	query.PushUInt32(time(NULL));
+	query.PushOp(B_GE);
+	
+	query.Fetch();
+	entry_ref ref;
+	
+	while(query.GetNextRef(&ref) == B_OK)
+		AddEventToList(&ref);
+		
+	BAlert* alert = new BAlert("Hello World!", "sample string",
+	"Cancel", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING,
+	B_WARNING_ALERT);
+	alert->SetShortcut(0, B_ESCAPE);
+	alert->Go();
 	
 	std::cout << "Notification Sent!" << std::endl;
 }
