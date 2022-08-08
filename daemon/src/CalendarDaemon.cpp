@@ -5,16 +5,18 @@
 
 #include "CalendarDaemon.h"
 
-#include <DateTime.h>
-#include <Directory.h>
-#include <FindDirectory.h>
-#include <Alert.h>
-#include <Path.h>
-#include <Query.h>
-#include <VolumeRoster.h>
 #include <iostream>
 #include <csignal>
 #include <time.h>
+
+#include <Alert.h>
+#include <DateTime.h>
+#include <Directory.h>
+#include <FindDirectory.h>
+#include <NodeMonitor.h>
+#include <Notification.h>
+#include <Path.h>
+#include <VolumeRoster.h>
 
 #define EVENT_DIRECTORY		"config/settings/Calendar/events"
 #define START_ATTR			"Event:Start"
@@ -39,9 +41,10 @@ void signalHandler(int signum)
 int main()
 {
 	signal(SIGINT, signalHandler);
-	
+
 	CalendarDaemon app;
-	
+	app.Run();
+
 	return(0);
 }
 
@@ -149,23 +152,28 @@ ReminderEvent::SetCatName(const char* catName)
 
 
 CalendarDaemon::CalendarDaemon()
-	:	BApplication(kApplicationSignature)
+	:	BApplication(kApplicationSignature),
+		fQuitting(false),
+		fEventList()
 {
 	std::cout << "Creating Daemon" << std::endl;
-	
-	fEventList = new ReminderEventList(20, true);
-	
+
+	fEventLock = create_sem(1, "EventLock");
+	fNotify = create_sem(0, "Notify");
+
+	//fEventList = new ReminderEventList(20, true);
+
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
-	
+
 	BPath homeDir;
 	find_directory(B_USER_DIRECTORY, &homeDir);
-	
+
 	fEventDir = homeDir.Path();
 	fEventDir << "/" << EVENT_DIRECTORY;
-	
-	/*BDirectory directory(fEventDir.String());
-	if(directory.InitCheck() == B_ENTRY_NOT_FOUND)
+
+	BDirectory directory(fEventDir.String());
+	/*if(directory.InitCheck() == B_ENTRY_NOT_FOUND)
 	{
 		std::cerr << "Failed to access the Events Directory" << std::endl;
 	}
@@ -174,40 +182,48 @@ CalendarDaemon::CalendarDaemon()
 		entry_ref ref;
 		while(directory.GetNextRef(&ref) == B_OK)
 			AddEventToList(&ref);
-	}
-	
-	BNotification notification(B_INFORMATION_NOTIFICATION);
-	notification.SetTitle("Found the Directory ;)");
-	notification.SetContent(fEventDir.String());
-	
-	notification.Send();*/
-	
+	}*/
+
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 	query.PushAttr(START_ATTR);
 	query.PushUInt32(time(NULL));
 	query.PushOp(B_GE);
-	
+
+	if(query.SetTarget(be_app_messenger) != B_OK)
+		std::cout << "Query Target not set" << std::endl;
+
 	query.Fetch();
 	entry_ref ref;
-	
+
 	while(query.GetNextRef(&ref) == B_OK)
 		AddEventToList(&ref);
-		
-	BAlert* alert = new BAlert("Hello World!", "sample string",
-	"Cancel", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING,
-	B_WARNING_ALERT);
-	alert->SetShortcut(0, B_ESCAPE);
-	alert->Go();
-	
-	std::cout << "Notification Sent!" << std::endl;
+
+	BNotification notification(B_INFORMATION_NOTIFICATION);
+	notification.SetTitle("Calendar Daemon is Up & Running!");
+	notification.SetContent("Secretly Monitoring your Events!");
+
+	notification.Send();
+
+	node_ref nodeRef;
+	directory.GetNodeRef(&nodeRef);
+	watch_node(&nodeRef, B_WATCH_DIRECTORY | B_WATCH_ATTR, be_app_messenger);
+
+	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
+	resume_thread(fEventLoop);
 }
 
 
 CalendarDaemon::~CalendarDaemon()
 {
 	std::cout << "Stopping Daemon, Clearing Memory, Good Bye! ;)" << std::endl;
-	delete(fEventList);
+	fEventList.MakeEmpty();
+	stop_watching(be_app_messenger);
+	fQuitting = true;
+	Notify();
+	
+	int32 res;
+	wait_for_thread(fEventLoop, &res);
 }
 
 
@@ -216,6 +232,15 @@ CalendarDaemon::MessageReceived(BMessage *message)
 {
 	switch(message->what)
 	{
+		case B_NODE_MONITOR:
+		{
+			std::cout << "Events Changed - Node Monitor\nRefreshing List" << std::endl;
+			RefreshEventList();
+			break;
+		}
+		case B_QUERY_UPDATE:
+			std::cout << "Events Changed - Live Query" << std::endl;
+			break;
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;
@@ -230,11 +255,100 @@ void
 CalendarDaemon::AddEventToList(entry_ref* ref)
 {
 	ReminderEvent* event = _FileToReminderEvent(ref);
+	fEventList.AddItem(event);
+}
+
+
+int32
+CalendarDaemon::EventLoop(void* data)
+{
+	CalendarDaemon *app = (CalendarDaemon*)data;
 	
-	std::cout << "\nEvent Name: " << event->GetName() << std::endl;
-	std::cout << "\nEvent Place: " << event->GetPlace() << std::endl;
-	
-	fEventList->AddItem(event);
+	while(!app->fQuitting)
+	{
+		app->LockEvents();
+
+		std::cout << "Thread Running" << std::endl;
+		app->fEventList.SortItems(_CompareFunction);
+		
+		while(app->fEventList.CountItems() > 0)
+		{
+			ReminderEvent* event = (ReminderEvent*)app->fEventList.ItemAt(0);
+			if(event->GetStartDateTime() > real_time_clock())
+			{
+				std::cout << "Not yet" << std::endl;
+				break;
+			}
+			
+			BString buff = event->GetName();
+			buff << "\n\n";
+			buff << event->GetPlace();
+			BAlert* alert = new BAlert("Hello World!", buff.String(),
+							"Okay", NULL, NULL, B_WIDTH_AS_USUAL,
+							B_OFFSET_SPACING, B_WARNING_ALERT);
+			alert->SetShortcut(0, B_ESCAPE);
+			alert->Go();
+			app->fEventList.RemoveItemAt((int32)0);
+		}
+
+		bigtime_t timeout = -1;
+		if(app->fEventList.CountItems() > 0)
+		{
+			ReminderEvent* event = (ReminderEvent*)app->fEventList.ItemAt(0);
+			timeout = (event->GetStartDateTime() - real_time_clock()) * 1000000;
+		}
+		app->UnlockEvents();
+
+		if(timeout >= 0)
+			acquire_sem_etc(app->fNotify, 1, B_RELATIVE_TIMEOUT, timeout);
+		else
+			acquire_sem(app->fNotify);
+	}
+
+	std::cout << "Thread Stopped!\n";
+	return 0;
+}
+
+
+void
+CalendarDaemon::RefreshEventList()
+{
+	LockEvents();
+
+	BQuery query;
+	query.Clear();
+	query.SetVolume(&fQueryVolume);
+	query.PushAttr(START_ATTR);
+	query.PushUInt32(time(NULL));
+	query.PushOp(B_GE);
+	query.Fetch();
+	entry_ref ref;
+	fEventList.MakeEmpty();
+
+	while(query.GetNextRef(&ref) == B_OK)
+		AddEventToList(&ref);
+	fEventList.SortItems(_CompareFunction);
+
+	std::cout << "Unlocking after refreshing\n";
+	UnlockEvents();
+
+	if(fEventLoop)
+		Notify();
+	std::cout << fEventList.CountItems() << std::endl;
+}
+
+
+void
+CalendarDaemon::ShowEvents()
+{
+	ReminderEvent* event;
+	for(int32 i=0 ; i<fEventList.CountItems() ; ++i)
+	{
+		event = fEventList.ItemAt(i);
+		std::cout << "Event Name: " << event->GetName() << "\n";
+		std::cout << "Event Name: " << event->GetDescription() << "\n\n";
+	}
+	delete(event);
 }
 
 
@@ -271,12 +385,12 @@ CalendarDaemon::_FileToReminderEvent(entry_ref* ref)
 
 
 int
-CalendarDaemon::_CompareFunction(ReminderEvent* a, ReminderEvent* b)
+CalendarDaemon::_CompareFunction(const ReminderEvent* a, const ReminderEvent* b)
 {
 	if(difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0)
-		return(1);
-	else if(difftime(a->GetStartDateTime(), b->GetStartDateTime()) > 0)
 		return(-1);
+	else if(difftime(a->GetStartDateTime(), b->GetStartDateTime()) > 0)
+		return(1);
 	else
 		return(0);
 }
