@@ -23,6 +23,7 @@
 #define DESCRIPTION_ATTR 	"Event:Description"
 #define PLACE_ATTR			"Event:Place"
 #define NAME_ATTR			"Event:Name"
+#define STATUS_ATTR			"Event:Status"
 #define CATNAME_ATTR		"Event:Category"
 
 const char* kApplicationSignature = "application/x-vnd.CalendarDaemon";
@@ -166,13 +167,19 @@ CalendarDaemon::CalendarDaemon()
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
 
-	BPath homeDir;
-	find_directory(B_USER_DIRECTORY, &homeDir);
+	BPath homePath;
+	find_directory(B_USER_DIRECTORY, &homePath);
+	fEventDir = new BDirectory(homePath.Path());
 
-	fEventDir = homeDir.Path();
-	fEventDir << "/" << EVENT_DIRECTORY;
+	//fEventDir = homeDir.Path();
+	//fEventDir << "/" << EVENT_DIRECTORY;
 
-	BDirectory directory(fEventDir.String());
+	//BDirectory directory(fEventDir.String());
+	
+	BPath trashPath;
+	find_directory(B_TRASH_DIRECTORY, &trashPath);
+	fTrashDir = new BDirectory(trashPath.Path());
+
 	/*if(directory.InitCheck() == B_ENTRY_NOT_FOUND)
 	{
 		std::cerr << "Failed to access the Events Directory" << std::endl;
@@ -184,21 +191,6 @@ CalendarDaemon::CalendarDaemon()
 			AddEventToList(&ref);
 	}*/
 
-	BQuery query;
-	query.SetVolume(&fQueryVolume);
-	query.PushAttr(START_ATTR);
-	query.PushUInt32(time(NULL));
-	query.PushOp(B_GE);
-
-	if(query.SetTarget(be_app_messenger) != B_OK)
-		std::cout << "Query Target not set" << std::endl;
-
-	query.Fetch();
-	entry_ref ref;
-
-	while(query.GetNextRef(&ref) == B_OK)
-		AddEventToList(&ref);
-
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 	notification.SetTitle("Calendar Daemon is Up & Running!");
 	notification.SetContent("Secretly Monitoring your Events!");
@@ -206,11 +198,35 @@ CalendarDaemon::CalendarDaemon()
 	notification.Send();
 
 	node_ref nodeRef;
-	directory.GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_WATCH_DIRECTORY | B_WATCH_ATTR, be_app_messenger);
+	fEventDir->GetNodeRef(&nodeRef);
+	watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);
 
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
+}
+
+
+void
+CalendarDaemon::ReadyToRun()
+{
+	LockEvents();
+
+	fQuery.SetVolume(&fQueryVolume);
+	fQuery.PushAttr(START_ATTR);
+	fQuery.PushUInt32(time(NULL));
+	fQuery.PushOp(B_GE);
+
+	if(fQuery.SetTarget(this) != B_OK)
+		std::cout << "Query Target not set" << std::endl;
+
+	fQuery.Fetch();
+	entry_ref ref;
+
+	while(fQuery.GetNextRef(&ref) == B_OK)
+		AddEventToList(&ref);
+	ShowEvents();
+
+	UnlockEvents();
 }
 
 
@@ -234,12 +250,13 @@ CalendarDaemon::MessageReceived(BMessage *message)
 	{
 		case B_NODE_MONITOR:
 		{
-			std::cout << "Events Changed - Node Monitor\nRefreshing List" << std::endl;
-			RefreshEventList();
+			//std::cout << "Events Changed - Node Monitor\nRefreshing List" << std::endl;
+			//RefreshEventList();
 			break;
 		}
 		case B_QUERY_UPDATE:
 			std::cout << "Events Changed - Live Query" << std::endl;
+			RefreshEventList();
 			break;
 		case B_QUIT_REQUESTED:
 			QuitRequested();
@@ -255,7 +272,11 @@ void
 CalendarDaemon::AddEventToList(entry_ref* ref)
 {
 	ReminderEvent* event = _FileToReminderEvent(ref);
-	fEventList.AddItem(event);
+
+	BEntry evEntry(ref);
+	bool inTrash = fTrashDir->Contains(&evEntry);
+	if(!inTrash)
+		fEventList.AddItem(event);
 }
 
 
@@ -315,26 +336,29 @@ CalendarDaemon::RefreshEventList()
 {
 	LockEvents();
 
-	BQuery query;
-	query.Clear();
-	query.SetVolume(&fQueryVolume);
-	query.PushAttr(START_ATTR);
-	query.PushUInt32(time(NULL));
-	query.PushOp(B_GE);
-	query.Fetch();
+	fQuery.Clear();
+	fQuery.SetVolume(&fQueryVolume);
+	fQuery.PushAttr(START_ATTR);
+	fQuery.PushUInt32(time(NULL));
+	fQuery.PushOp(B_GE);
+
+	if(fQuery.SetTarget(this) != B_OK)
+		std::cout << "Query Target not set" << std::endl;
+
+	fQuery.Fetch();
 	entry_ref ref;
 	fEventList.MakeEmpty();
 
-	while(query.GetNextRef(&ref) == B_OK)
+	while(fQuery.GetNextRef(&ref) == B_OK)
 		AddEventToList(&ref);
 	fEventList.SortItems(_CompareFunction);
 
 	std::cout << "Unlocking after refreshing\n";
+	ShowEvents();
 	UnlockEvents();
 
 	if(fEventLoop)
 		Notify();
-	std::cout << fEventList.CountItems() << std::endl;
 }
 
 
@@ -342,11 +366,12 @@ void
 CalendarDaemon::ShowEvents()
 {
 	ReminderEvent* event;
+	std::cout << std::endl;
 	for(int32 i=0 ; i<fEventList.CountItems() ; ++i)
 	{
 		event = fEventList.ItemAt(i);
 		std::cout << "Event Name: " << event->GetName() << "\n";
-		std::cout << "Event Name: " << event->GetDescription() << "\n\n";
+		std::cout << "Event Place: " << event->GetPlace() << "\n\n";
 	}
 	delete(event);
 }

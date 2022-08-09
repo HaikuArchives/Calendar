@@ -26,6 +26,7 @@ class BMessage;
 class BString;
 class BVolume;
 class BQuery;
+class BDirectory;
 
 
 /*!
@@ -78,6 +79,7 @@ public:
 
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
+	void			ReadyToRun();
 	
 
 	void			AddEventToList(entry_ref* ref);
@@ -95,13 +97,15 @@ private:
 	ReminderEvent*		_FileToReminderEvent(entry_ref* ref);
 	static int			_CompareFunction(const ReminderEvent* a, const ReminderEvent* b);
 
-	BString				fEventDir;
+	BDirectory*			fEventDir;
+	BDirectory*			fTrashDir;
 	ReminderEventList	fEventList;
 	BVolume				fQueryVolume;
 	sem_id				fEventLock;
 	sem_id				fNotify;
 	thread_id			fEventLoop;
 	bool				fQuitting;
+	BQuery				fQuery;
 };
 
 int main();
