@@ -23,7 +23,6 @@
 #define DESCRIPTION_ATTR 	"Event:Description"
 #define PLACE_ATTR			"Event:Place"
 #define NAME_ATTR			"Event:Name"
-#define STATUS_ATTR			"Event:Status"
 #define CATNAME_ATTR		"Event:Category"
 
 const char* kApplicationSignature = "application/x-vnd.CalendarDaemon";
@@ -248,16 +247,25 @@ CalendarDaemon::MessageReceived(BMessage *message)
 {
 	switch(message->what)
 	{
-		case B_NODE_MONITOR:
-		{
-			//std::cout << "Events Changed - Node Monitor\nRefreshing List" << std::endl;
-			//RefreshEventList();
-			break;
-		}
 		case B_QUERY_UPDATE:
-			std::cout << "Events Changed - Live Query" << std::endl;
+		{
+			std::cout << "\nEvents Changed - Live Query" << std::endl;
 			RefreshEventList();
 			break;
+		}
+		case B_NODE_MONITOR:
+		{
+			std::cout << "\nAttribute Changed - Node Monitor" << std::endl;
+			int32 opCode;
+			message->FindInt32("opcode", &opCode);
+
+			if(opCode == B_ATTR_CHANGED)
+			{
+				RefreshEventList();
+				snooze(2000);
+			}
+			break;
+		}
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;
@@ -276,7 +284,14 @@ CalendarDaemon::AddEventToList(entry_ref* ref)
 	BEntry evEntry(ref);
 	bool inTrash = fTrashDir->Contains(&evEntry);
 	if(!inTrash)
+	{
 		fEventList.AddItem(event);
+
+		BNode node(ref);
+		node_ref nodeRef;
+		node.GetNodeRef(&nodeRef);
+		watch_node(&nodeRef, B_WATCH_ATTR, be_app_messenger);
+	}
 }
 
 
@@ -334,6 +349,7 @@ CalendarDaemon::EventLoop(void* data)
 void
 CalendarDaemon::RefreshEventList()
 {
+	stop_watching(be_app_messenger);
 	LockEvents();
 
 	fQuery.Clear();
