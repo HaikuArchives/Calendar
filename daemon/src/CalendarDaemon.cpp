@@ -381,6 +381,12 @@ CalendarDaemon::RefreshEventList()
 void
 CalendarDaemon::ShowEvents()
 {
+	if(fEventList.IsEmpty())
+	{
+		std::cout << "The List is empty!" << std::endl;
+		return;
+	}
+
 	ReminderEvent* event;
 	std::cout << std::endl;
 	for(int32 i=0 ; i<fEventList.CountItems() ; ++i)
