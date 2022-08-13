@@ -6,11 +6,12 @@
 #ifndef CALENDAR_DAEMON_H
 #define CALENDAR_DAEMON_H
 
+#include <iostream>
+
 #include <Application.h>
 #include <OS.h>
 #include <Query.h>
 #include <Volume.h>
-#include <iostream>
 
 #include "Event.h"
 
