@@ -18,6 +18,8 @@
 #include <Path.h>
 #include <VolumeRoster.h>
 
+#include "QueryDBManager.h"
+
 #define EVENT_DIRECTORY		"config/settings/Calendar/events"
 #define START_ATTR			"Event:Start"
 #define DESCRIPTION_ATTR 	"Event:Description"

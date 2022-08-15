@@ -18,6 +18,7 @@
 #include "App.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
+#include "Preferences.h"
 #include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT

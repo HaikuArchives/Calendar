@@ -17,8 +17,8 @@
 #include <fs_index.h>
 #include <fs_info.h>
 
-#include "App.h"
-#include "Preferences.h"
+//#include "App.h"
+//#include "Preferences.h"
 #include "ResourceLoader.h"
 #include "SQLiteManager.h"
 
@@ -456,7 +456,7 @@ QueryDBManager::GetAllCategories()
 
 	BFile catFile;
 	Category* category;
-	BString defaultCat = ((App*) be_app)->GetPreferences()->fDefaultCategory;
+	BString defaultCat = "Default";
 
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)

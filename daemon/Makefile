@@ -35,7 +35,10 @@ SRCS = \
 	src/CalendarDaemon.cpp \
 	../main/src/model/Event.cpp \
 	../main/src/model/Category.cpp \
-	../main/src/utils/ColorConverter.cpp
+	../main/src/utils/ColorConverter.cpp \
+	../main/src/utils/ResourceLoader.cpp \
+	../main/src/db/QueryDBManager.cpp \
+	../main/src/db/SQLiteManager.cpp
 
 
 #	Specify the resource definition files to use. Full or relative paths can be
@@ -66,7 +69,7 @@ RSRCS =
 #	- 	if your library does not follow the standard library naming scheme,
 #		you need to specify the path to the library and it's name.
 #		(e.g. for mylib.a, specify "mylib.a" or "path/mylib.a")
-LIBS = be $(STDCPPLIBS)
+LIBS = be tracker shared localestub sqlite3 bnetapi network netservices $(STDCPPLIBS)
 
 #	Specify additional paths to directories following the standard libXXX.so
 #	or libXXX.a naming scheme. You can specify full paths or paths relative
@@ -91,7 +94,7 @@ LOCAL_INCLUDE_PATHS =
 
 #	Specify the level of optimization that you want. Specify either NONE (O0),
 #	SOME (O1), FULL (O3), or leave blank (for the default optimization level).
-OPTIMIZE :=
+OPTIMIZE := FULL
 
 # 	Specify the codes for languages you are going to support in this
 # 	application. The default "en" one must be provided too. "make catkeys"
