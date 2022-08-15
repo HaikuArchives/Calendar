@@ -13,7 +13,7 @@
 #include <Query.h>
 #include <Volume.h>
 
-#include "Event.h"
+#include "QueryDBManager.h"
 
 enum
 {
@@ -34,7 +34,7 @@ class BDirectory;
 	ReminderEvent Class Declaration
 */
 
-class ReminderEvent
+/*class ReminderEvent
 {
 public:
 	ReminderEvent(const char* name, const char* place,
@@ -65,7 +65,7 @@ private:
 	time_t		fStart;
 };
 
-typedef BObjectList<ReminderEvent> ReminderEventList;
+typedef BObjectList<ReminderEvent> ReminderEventList;*/
 
 
 /*!
@@ -95,12 +95,14 @@ public:
 
 private:
 
-	ReminderEvent*		_FileToReminderEvent(entry_ref* ref);
-	static int			_CompareFunction(const ReminderEvent* a, const ReminderEvent* b);
+	Event*				_FileToEvent(entry_ref* ref);
+	static int			_CompareFunction(const Event* a, const Event* b);
+	
+	QueryDBManager*		fDBManager;
 
 	BDirectory*			fEventDir;
 	BDirectory*			fTrashDir;
-	ReminderEventList	fEventList;
+	EventList			fEventList;
 	BVolume				fQueryVolume;
 	sem_id				fEventLock;
 	sem_id				fNotify;

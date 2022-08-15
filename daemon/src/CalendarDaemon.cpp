@@ -18,8 +18,6 @@
 #include <Path.h>
 #include <VolumeRoster.h>
 
-#include "QueryDBManager.h"
-
 #define EVENT_DIRECTORY		"config/settings/Calendar/events"
 #define START_ATTR			"Event:Start"
 #define DESCRIPTION_ATTR 	"Event:Description"
@@ -56,7 +54,7 @@ int main()
 */
 
 
-ReminderEvent::ReminderEvent(const char* name, const char* place,
+/*ReminderEvent::ReminderEvent(const char* name, const char* place,
 	const char* description, const char* catName, time_t start)
 {
 	fName = BString(name);
@@ -144,7 +142,7 @@ void
 ReminderEvent::SetCatName(const char* catName)
 {
 	fCatName = BString(catName);
-}
+}*/
 
 
 
@@ -174,6 +172,8 @@ CalendarDaemon::CalendarDaemon()
 	BPath trashPath;
 	find_directory(B_TRASH_DIRECTORY, &trashPath);
 	fTrashDir = new BDirectory(trashPath.Path());
+
+	fDBManager = new QueryDBManager();
 
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 	notification.SetTitle("Calendar Daemon is Up & Running!");
@@ -262,7 +262,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 void
 CalendarDaemon::AddEventToList(entry_ref* ref)
 {
-	ReminderEvent* event = _FileToReminderEvent(ref);
+	Event* event = _FileToEvent(ref);
 
 	BEntry evEntry(ref);
 	bool inTrash = fTrashDir->Contains(&evEntry);
@@ -289,7 +289,7 @@ CalendarDaemon::EventLoop(void* data)
 		app->fEventList.SortItems(_CompareFunction);
 
 		while (app->fEventList.CountItems() > 0) {
-			ReminderEvent* event = (ReminderEvent*)app->fEventList.ItemAt(0);
+			Event* event = (Event*)app->fEventList.ItemAt(0);
 
 			if (event->GetStartDateTime() > real_time_clock()) {
 				std::cout << "Not yet" << std::endl;
@@ -309,7 +309,7 @@ CalendarDaemon::EventLoop(void* data)
 
 		bigtime_t timeout = -1;
 		if (app->fEventList.CountItems() > 0) {
-			ReminderEvent* event = (ReminderEvent*)app->fEventList.ItemAt(0);
+			Event* event = (Event*)app->fEventList.ItemAt(0);
 			timeout = (event->GetStartDateTime() - real_time_clock()) * 1000000;
 		}
 		app->UnlockEvents();
@@ -365,7 +365,7 @@ CalendarDaemon::ShowEvents()
 		return;
 	}
 
-	ReminderEvent* event;
+	Event* event;
 	std::cout << std::endl;
 	for (int32 i=0 ; i<fEventList.CountItems() ; ++i) {
 		event = fEventList.ItemAt(i);
@@ -383,8 +383,8 @@ CalendarDaemon::QuitRequested()
 }
 
 
-ReminderEvent*
-CalendarDaemon::_FileToReminderEvent(entry_ref* ref)
+Event*
+CalendarDaemon::_FileToEvent(entry_ref* ref)
 {
 	BNode node(ref);
 	BEntry entry(ref);
@@ -393,23 +393,32 @@ CalendarDaemon::_FileToReminderEvent(entry_ref* ref)
 
 	BString name = BString();
 	BString catName = BString();
+	BString idStr = BString();
 	BString desc = BString();
 	BString place = BString();
+	BString statusStr = BString();
 	node.ReadAttrString(NAME_ATTR, &name);
 	node.ReadAttrString(CATNAME_ATTR, &catName);
+	node.ReadAttrString("Calendar:ID", &idStr);
 	node.ReadAttrString(DESCRIPTION_ATTR, &desc);
 	node.ReadAttrString(PLACE_ATTR, &place);
+	node.ReadAttrString("Event:Status", &statusStr);
 
 	time_t start = time(NULL);
+	time_t end = time(NULL);
+	time_t updated = time(NULL);
 	node.ReadAttr(START_ATTR, B_TIME_TYPE, 0, &start, sizeof(time_t));
+	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
+	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
 
-	return new ReminderEvent(name.String(), place.String(), desc.String(),
-		catName.String(), start);
+	return new Event(name.String(), place.String(), desc.String(), false,
+		start, end, fDBManager->EnsureCategory(catName.String()), updated, 0,
+		idStr.String());
 }
 
 
 int
-CalendarDaemon::_CompareFunction(const ReminderEvent* a, const ReminderEvent* b)
+CalendarDaemon::_CompareFunction(const Event* a, const Event* b)
 {
 	if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0)
 		return -1;
