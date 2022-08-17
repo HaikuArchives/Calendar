@@ -81,6 +81,7 @@ public:
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
 	void			ReadyToRun();
+	void			Pulse();
 	
 
 	void			AddEventToList(entry_ref* ref);

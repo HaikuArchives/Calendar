@@ -186,6 +186,15 @@ CalendarDaemon::CalendarDaemon()
 
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
+
+	SetPulseRate(bigtime_t(1000));
+}
+
+
+void
+CalendarDaemon::Pulse()
+{
+	std::cout << "\nPulse!!\n";
 }
 
 
@@ -249,6 +258,9 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			}
 			break;
 		}
+		case B_PULSE:
+			Pulse();
+			break;
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;
