@@ -82,7 +82,7 @@ public:
 	bool			QuitRequested();
 	void			ReadyToRun();
 	void			Pulse();
-	
+	void			SetFlags(uint32 mask);
 
 	void			AddEventToList(entry_ref* ref);
 	void			ShowEvent(entry_ref* ref);

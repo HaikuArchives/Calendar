@@ -168,7 +168,7 @@ CalendarDaemon::CalendarDaemon()
 	BPath homePath;
 	find_directory(B_USER_DIRECTORY, &homePath);
 	fEventDir = new BDirectory(homePath.Path());
-	
+
 	BPath trashPath;
 	find_directory(B_TRASH_DIRECTORY, &trashPath);
 	fTrashDir = new BDirectory(trashPath.Path());
@@ -187,7 +187,8 @@ CalendarDaemon::CalendarDaemon()
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
 
-	SetPulseRate(bigtime_t(1000));
+	SetPulseRate(bigtime_t(1000000));
+	//SetFlags(B_PULSE_NEEDED);
 }
 
 

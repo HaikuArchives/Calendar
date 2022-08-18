@@ -44,6 +44,8 @@ Event::Event(Event& event)
 	fEnd = event.GetEndDateTime();
 	fUpdated = event.GetUpdated();
 	fStatus = event.GetStatus();
+	fReminded = event.IsReminded();
+	fReminderTime = event.GetReminderTime();
 }
 
 
@@ -178,4 +180,28 @@ bool
 Event::Equals(Event& e) const
 {
 	return (fId == e.GetId());
+}
+
+bool
+Event::IsReminded() const
+{
+	return fReminded;
+}
+
+void
+Event::SetReminded(bool reminded)
+{
+	fReminded = reminded;
+}
+
+time_t
+Event::GetReminderTime() const
+{
+	return fReminderTime;
+}
+
+void
+Event::SetReminderTime(time_t reminderTime)
+{
+	fReminderTime = reminderTime;
 }

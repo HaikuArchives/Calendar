@@ -83,6 +83,10 @@ EventWindow::MessageReceived(BMessage* message)
 			OnCheckBoxToggle();
 			break;
 
+		case kReminderPressed:
+			OnReminderCheckBoxToggle();
+			break;
+
 		case kCancelPressed:
 			PostMessage(B_QUIT_REQUESTED);
 			break;
@@ -384,6 +388,19 @@ EventWindow::OnCheckBoxToggle()
 	}
 }
 
+void
+EventWindow::OnReminderCheckBoxToggle()
+{
+	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
+		fTextReminderTime->SetText(
+			GetLocaleTimeString(BDateTime(fEndDate, BTime(0, 5, 0)).Time_t()));
+		fTextReminderTime->SetEnabled(true);
+	} else {
+		fTextReminderTime->SetText("");
+		fTextReminderTime->SetEnabled(false);
+	}
+}
+
 
 void
 EventWindow::_InitInterface()
@@ -397,6 +414,9 @@ EventWindow::_InitInterface()
 	fTextEndDate = new BTextControl("EndDate", NULL, NULL, NULL);
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
+	fTextReminderTime = new BTextControl("ReminderTime",
+		B_TRANSLATE("Remind Before:"), NULL, NULL);
+	fTextReminderTime->SetEnabled(false);
 
 	const char* tooltip
 		= B_TRANSLATE("Enter the time in HH:mm (24 hour) format.");
@@ -411,6 +431,8 @@ EventWindow::_InitInterface()
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 	fCancelledCheckBox = new BCheckBox(B_TRANSLATE("Cancelled"), NULL);
 	fHiddenCheckBox = new BCheckBox(B_TRANSLATE("Hidden"), NULL);
+	fReminderCheckBox = new BCheckBox(B_TRANSLATE("Add a Reminder"),
+		new BMessage(kReminderPressed));
 
 	fEveryMonth = new BRadioButton(
 		"EveryMonth", B_TRANSLATE("Monthly"), new BMessage(kOptEveryMonth));
@@ -537,6 +559,8 @@ EventWindow::_InitInterface()
 		.End()
 		.Add(fDescriptionLabel)
 		.Add(fTextDescription)
+		.Add(fReminderCheckBox)
+		.Add(fTextReminderTime)
 		.AddGrid()
 		.Add(fCategoryLabel, 0, 0)
 		.Add(fCategoryMenuField, 1, 0)
