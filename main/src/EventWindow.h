@@ -88,8 +88,10 @@ private:
 	BMenu*			fCategoryMenu;
 	BMenu*			fStartDateEdit;
 	BMenu*			fEndDateEdit;
+	BMenu*			fReminderMenu;
 
 	BMenuField*		fCategoryMenuField;
+	BMenuField*		fReminderMenuField;
 
 	BStringView*	fNameLabel;
 	BStringView*	fPlaceLabel;

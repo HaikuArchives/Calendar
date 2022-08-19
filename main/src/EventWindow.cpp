@@ -392,12 +392,13 @@ void
 EventWindow::OnReminderCheckBoxToggle()
 {
 	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
-		fTextReminderTime->SetText(
-			GetLocaleTimeString(BDateTime(fEndDate, BTime(0, 5, 0)).Time_t()));
+		fTextReminderTime->SetText("0");
 		fTextReminderTime->SetEnabled(true);
+		fReminderMenuField->SetEnabled(true);
 	} else {
 		fTextReminderTime->SetText("");
 		fTextReminderTime->SetEnabled(false);
+		fReminderMenuField->SetEnabled(false);
 	}
 }
 
@@ -415,7 +416,7 @@ EventWindow::_InitInterface()
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 	fTextReminderTime = new BTextControl("ReminderTime",
-		B_TRANSLATE("Remind Before:"), NULL, NULL);
+		B_TRANSLATE("Notify before Event"), NULL, NULL);
 	fTextReminderTime->SetEnabled(false);
 
 	const char* tooltip
@@ -431,7 +432,7 @@ EventWindow::_InitInterface()
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 	fCancelledCheckBox = new BCheckBox(B_TRANSLATE("Cancelled"), NULL);
 	fHiddenCheckBox = new BCheckBox(B_TRANSLATE("Hidden"), NULL);
-	fReminderCheckBox = new BCheckBox(B_TRANSLATE("Add a Reminder"),
+	fReminderCheckBox = new BCheckBox(NULL,
 		new BMessage(kReminderPressed));
 
 	fEveryMonth = new BRadioButton(
@@ -487,11 +488,23 @@ EventWindow::_InitInterface()
 	fCategoryMenu->SetLabelFromMarked(true);
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
+	fReminderMenu = new BMenu("ReminderMenu");
+	fReminderMenu->AddItem(new BMenuItem("Hours", NULL));
+	fReminderMenu->AddItem(new BMenuItem("Minutes", NULL));
+	fReminderMenu->AddItem(new BMenuItem("Seconds", NULL));
+	fReminderMenu->SetRadioMode(true);
+	fReminderMenu->SetLabelFromMarked(true);
+	fReminderMenu->ItemAt(1)->SetMarked(true);
+
 	fStartDateEdit = new BMenu(B_TRANSLATE("Start date"));
 	fEndDateEdit = new BMenu(B_TRANSLATE("End date"));
 
 	fCategoryMenuField
 		= new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
+
+	fReminderMenuField
+		= new BMenuField("ReminderMenuField", NULL, fReminderMenu);
+	fReminderMenuField->SetEnabled(false);
 
 	BBox* fStatusBox = new BBox("StatusBox");
 	BLayoutBuilder::Group<>(fStatusBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -559,8 +572,11 @@ EventWindow::_InitInterface()
 		.End()
 		.Add(fDescriptionLabel)
 		.Add(fTextDescription)
+		.AddGroup(B_HORIZONTAL)
 		.Add(fReminderCheckBox)
 		.Add(fTextReminderTime)
+		.Add(fReminderMenuField)
+		.End()
 		.AddGrid()
 		.Add(fCategoryLabel, 0, 0)
 		.Add(fCategoryMenuField, 1, 0)
