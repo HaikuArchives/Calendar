@@ -207,7 +207,7 @@ VEventToEvent(BStringList* vevent, QueryDBManager* DBManager)
 
 	delete properties;
 	return new Event(name.String(), place.String(), desc.String(), allDay,
-		start.Time_t(), end.Time_t(), category, updated.Time_t(), status,
+		start.Time_t(), end.Time_t(), category, true, start.Time_t(), updated.Time_t(), status,
 		uid.String());
 }
 

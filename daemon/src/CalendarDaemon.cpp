@@ -205,7 +205,7 @@ CalendarDaemon::ReadyToRun()
 	LockEvents();
 
 	fQuery.SetVolume(&fQueryVolume);
-	fQuery.PushAttr(START_ATTR);
+	fQuery.PushAttr("Event:Reminder");
 	fQuery.PushUInt32(time(NULL));
 	fQuery.PushOp(B_GE);
 
@@ -304,7 +304,7 @@ CalendarDaemon::EventLoop(void* data)
 		while (app->fEventList.CountItems() > 0) {
 			Event* event = (Event*)app->fEventList.ItemAt(0);
 
-			if (event->GetStartDateTime() > real_time_clock()) {
+			if (event->GetReminderTime() > real_time_clock()) {
 				std::cout << "Not yet" << std::endl;
 				break;
 			}
@@ -323,7 +323,7 @@ CalendarDaemon::EventLoop(void* data)
 		bigtime_t timeout = -1;
 		if (app->fEventList.CountItems() > 0) {
 			Event* event = (Event*)app->fEventList.ItemAt(0);
-			timeout = (event->GetStartDateTime() - real_time_clock()) * 1000000;
+			timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 		}
 		app->UnlockEvents();
 
@@ -420,22 +420,24 @@ CalendarDaemon::_FileToEvent(entry_ref* ref)
 	time_t start = time(NULL);
 	time_t end = time(NULL);
 	time_t updated = time(NULL);
+	time_t reminder = time(NULL);
 	node.ReadAttr(START_ATTR, B_TIME_TYPE, 0, &start, sizeof(time_t));
 	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
+	node.ReadAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
 
 	return new Event(name.String(), place.String(), desc.String(), false,
-		start, end, fDBManager->EnsureCategory(catName.String()), updated, 0,
-		idStr.String());
+		start, end, fDBManager->EnsureCategory(catName.String()), reminder!=-1,
+		reminder, updated, 0, idStr.String());
 }
 
 
 int
 CalendarDaemon::_CompareFunction(const Event* a, const Event* b)
 {
-	if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) < 0)
+	if (difftime(a->GetReminderTime(), b->GetReminderTime()) < 0)
 		return -1;
-	else if (difftime(a->GetStartDateTime(), b->GetStartDateTime()) > 0)
+	else if (difftime(a->GetReminderTime(), b->GetReminderTime()) > 0)
 		return 1;
 	else
 		return 0;

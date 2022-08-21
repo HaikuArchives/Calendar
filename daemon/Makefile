@@ -37,8 +37,7 @@ SRCS = \
 	../main/src/model/Category.cpp \
 	../main/src/utils/ColorConverter.cpp \
 	../main/src/utils/ResourceLoader.cpp \
-	../main/src/db/QueryDBManager.cpp \
-	../main/src/db/SQLiteManager.cpp
+	../main/src/db/QueryDBManager.cpp
 
 
 #	Specify the resource definition files to use. Full or relative paths can be

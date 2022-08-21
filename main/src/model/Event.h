@@ -25,7 +25,8 @@ class Event
 public:
 				Event(const char* name, const char* place, const char* description,
 					bool allday, time_t start, time_t end, Category* category,
-					time_t updated = time(NULL), uint16 status = 0, const char* id = NULL);
+					bool reminded, time_t reminderTime, time_t updated = time(NULL),
+					uint16 status = 0, const char* id = NULL);
 				Event(Event& event);
 
 	time_t		GetStartDateTime() const;

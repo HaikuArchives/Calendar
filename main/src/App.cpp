@@ -17,7 +17,7 @@
 #include <locale.h>
 
 #include "CategoryWindow.h"
-#include "EventSyncWindow.h"
+//#include "EventSyncWindow.h"
 #include "EventWindow.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
@@ -149,7 +149,7 @@ App::MessageReceived(BMessage* message)
 			fCategoryWindow = NULL;
 			break;
 
-		case kMenuSyncGCAL:
+		/*case kMenuSyncGCAL:
 		{
 			if (fEventSyncWindow == NULL) {
 				fEventSyncWindow = new EventSyncWindow();
@@ -162,7 +162,7 @@ App::MessageReceived(BMessage* message)
 
 		case kEventSyncWindowQuitting:
 			fEventSyncWindow = NULL;
-			break;
+			break;*/
 
 		case kPreferenceWindowQuitting:
 			fPreferenceWindow = NULL;

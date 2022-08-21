@@ -6,6 +6,7 @@
 #include "EventWindow.h"
 
 #include <time.h>
+#include <string>
 
 #include <Alert.h>
 #include <Application.h>
@@ -257,6 +258,7 @@ EventWindow::OnSaveClick()
 
 	time_t start;
 	time_t end;
+	time_t reminderTime;
 	BTime startTime;
 	BTime endTime;
 
@@ -305,10 +307,26 @@ EventWindow::OnSaveClick()
 	Category* c = fCategoryList->ItemAt(index);
 	category = new Category(*c);
 
+	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
+		time_t deltaTime = std::stoi(fTextReminderTime->Text());
+		BMenuItem* mI = fReminderMenu->FindMarked();
+		int32 ind = fReminderMenu->IndexOf(mI);
+
+		if (ind == 0)			// hours
+			deltaTime *= 3600;
+		else if (ind == 1)		// minutes
+			deltaTime *= 60;
+
+		reminderTime = start - deltaTime;
+	} else {
+		reminderTime = NULL;
+	}
+
 
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		start, end, category, time(NULL), status);
+		start, end, category, fReminderCheckBox->Value() == B_CONTROL_ON,
+		reminderTime, time(NULL), status);
 
 	if ((fNew == true) && (fDBManager->AddEvent(&newEvent)))
 		CloseWindow();
@@ -416,7 +434,7 @@ EventWindow::_InitInterface()
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
 	fTextReminderTime = new BTextControl("ReminderTime",
-		B_TRANSLATE("Notify before Event"), NULL, NULL);
+		B_TRANSLATE("Notify before Event:"), NULL, NULL);
 	fTextReminderTime->SetEnabled(false);
 
 	const char* tooltip
@@ -489,9 +507,9 @@ EventWindow::_InitInterface()
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
 	fReminderMenu = new BMenu("ReminderMenu");
-	fReminderMenu->AddItem(new BMenuItem("Hours", NULL));
-	fReminderMenu->AddItem(new BMenuItem("Minutes", NULL));
-	fReminderMenu->AddItem(new BMenuItem("Seconds", NULL));
+	fReminderMenu->AddItem(new BMenuItem("hours", NULL));
+	fReminderMenu->AddItem(new BMenuItem("minutes", NULL));
+	fReminderMenu->AddItem(new BMenuItem("seconds", NULL));
 	fReminderMenu->SetRadioMode(true);
 	fReminderMenu->SetLabelFromMarked(true);
 	fReminderMenu->ItemAt(1)->SetMarked(true);
@@ -650,6 +668,27 @@ EventWindow::_PopulateWithEvent(Event* event)
 		fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 		fTextStartTime->SetText(GetLocaleTimeString(event->GetStartDateTime()));
 		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
+	}
+
+	if (event->IsReminded()) {
+		fReminderCheckBox->SetValue(B_CONTROL_ON);
+		fTextReminderTime->SetEnabled(true);
+		fReminderMenuField->SetEnabled(true);
+		time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
+		int32 ind = 2;
+
+		if (deltaTime%3600 == 0)		// hours
+			ind = 0;
+		else if (deltaTime%60 == 0)		// minutes
+			ind = 1;
+
+		fTextReminderTime->SetText(GetLocaleTimeString(event->GetReminderTime()));
+
+		fReminderMenu->ItemAt(ind)->SetMarked(true);
+	} else {
+		fReminderCheckBox->SetValue(B_CONTROL_OFF);
+		fTextReminderTime->SetEnabled(false);
+		fReminderMenuField->SetEnabled(false);
 	}
 
 	uint16 status = 0;
