@@ -31,46 +31,9 @@ class BDirectory;
 
 
 /*!
-	ReminderEvent Class Declaration
-*/
-
-/*class ReminderEvent
-{
-public:
-	ReminderEvent(const char* name, const char* place,
-		const char* description, const char* catName, time_t start);
-	ReminderEvent(ReminderEvent& event);
-
-	time_t		GetStartDateTime() const;
-	void		SetStartDateTime(time_t start);
-
-	const char*	GetName() const;
-	void		SetName(const char* name);
-
-	const char*	GetPlace() const;
-	void		SetPlace(const char* place);
-
-	const char*	GetDescription() const;
-	void		SetDescription(const char* description);
-
-	const char*	GetCatName() const;
-	void		SetCatName(const char* catName);
-
-private:
-	BString		fName;
-	BString		fPlace;
-	BString		fDescription;
-	BString		fCatName;
-
-	time_t		fStart;
-};
-
-typedef BObjectList<ReminderEvent> ReminderEventList;*/
-
-
-/*!
 	CalendarDaemon Class Declaration
 */
+
 
 class CalendarDaemon : public BApplication
 {

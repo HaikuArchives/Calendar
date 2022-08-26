@@ -17,7 +17,6 @@
 #include <locale.h>
 
 #include "CategoryWindow.h"
-//#include "EventSyncWindow.h"
 #include "EventWindow.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"

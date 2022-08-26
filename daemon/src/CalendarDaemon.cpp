@@ -50,103 +50,6 @@ int main()
 
 
 /*! 
-	ReminderEvent Class Definitions
-*/
-
-
-/*ReminderEvent::ReminderEvent(const char* name, const char* place,
-	const char* description, const char* catName, time_t start)
-{
-	fName = BString(name);
-	fPlace = BString(place);
-	fDescription = BString(description);
-	fCatName = BString(catName);
-	fStart = start;
-}
-
-
-ReminderEvent::ReminderEvent(ReminderEvent &event)
-{
-	fName = event.GetName();
-	fPlace = event.GetPlace();
-	fDescription = event.GetDescription();
-	fCatName = event.GetCatName();
-	fStart = event.GetStartDateTime();
-}
-
-
-time_t
-ReminderEvent::GetStartDateTime() const
-{
-	return fStart;
-}
-
-
-void
-ReminderEvent::SetStartDateTime(time_t start)
-{
-	fStart = start;
-}
-
-
-const char*
-ReminderEvent::GetName() const
-{
-	return fName.String();
-}
-
-
-void
-ReminderEvent::SetName(const char* name)
-{
-	fName = BString(name);
-}
-
-
-const char*
-ReminderEvent::GetPlace() const
-{
-	return fPlace.String();
-}
-
-
-void
-ReminderEvent::SetPlace(const char* place)
-{
-	fPlace = BString(place);
-}
-
-
-const char*
-ReminderEvent::GetDescription() const
-{
-	return fDescription.String();
-}
-
-
-void
-ReminderEvent::SetDescription(const char* description)
-{
-	fDescription = BString(description);
-}
-
-
-const char*
-ReminderEvent::GetCatName() const
-{
-	return fCatName.String();
-}
-
-
-void
-ReminderEvent::SetCatName(const char* catName)
-{
-	fCatName = BString(catName);
-}*/
-
-
-
-/*! 
 	CalendarDaemon Class Definitions
 */
 
@@ -230,7 +133,7 @@ CalendarDaemon::~CalendarDaemon()
 	stop_watching(be_app_messenger);
 	fQuitting = true;
 	Notify();
-	
+
 	int32 res;
 	wait_for_thread(fEventLoop, &res);
 }

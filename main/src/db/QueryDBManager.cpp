@@ -17,16 +17,14 @@
 #include <fs_index.h>
 #include <fs_info.h>
 
-//#include "App.h"
-//#include "Preferences.h"
 #include "ResourceLoader.h"
-//#include "SQLiteManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "QueryDBManager"
 
 const char* kEventDir = "events";
 const char* kCategoryDir = "categories";
+const char* kDirectoryName = "Calendar";
 
 
 QueryDBManager::QueryDBManager()
@@ -1151,7 +1149,7 @@ QueryDBManager::_SettingsPath(const char* leaf)
 {
 	BPath path;
 	find_directory(B_USER_SETTINGS_DIRECTORY, &path);
-	path.Append("Calendar");
+	path.Append(kDirectoryName);
 	path.Append(leaf);
 	return path;
 }
