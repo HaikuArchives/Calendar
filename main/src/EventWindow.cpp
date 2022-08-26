@@ -319,7 +319,7 @@ EventWindow::OnSaveClick()
 
 		reminderTime = start - deltaTime;
 	} else {
-		reminderTime = NULL;
+		reminderTime = -1;
 	}
 
 
@@ -677,12 +677,16 @@ EventWindow::_PopulateWithEvent(Event* event)
 		time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
 		int32 ind = 2;
 
-		if (deltaTime%3600 == 0)		// hours
+		if (deltaTime%3600 == 0) {		// hours
 			ind = 0;
-		else if (deltaTime%60 == 0)		// minutes
+			deltaTime /= 3600;
+		}
+		else if (deltaTime%60 == 0) {	// minutes
 			ind = 1;
+			deltaTime /= 60;
+		}
 
-		fTextReminderTime->SetText(GetLocaleTimeString(event->GetReminderTime()));
+		fTextReminderTime->SetText(std::to_string(deltaTime).c_str());
 
 		fReminderMenu->ItemAt(ind)->SetMarked(true);
 	} else {

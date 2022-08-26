@@ -613,11 +613,9 @@ QueryDBManager::_FileToEvent(entry_ref* ref)
 	time_t start = time(NULL);
 	time_t end = time(NULL);
 	time_t updated = time(NULL);
-	time_t reminder = time(NULL);
 	node.ReadAttr("Event:Start", B_TIME_TYPE, 0, &start, sizeof(time_t));
 	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
-	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
 
 	bool allDay = false;
 	time_t dayStart = BDateTime(BDate(start), BTime(0, 0, 0)).Time_t();
@@ -626,8 +624,10 @@ QueryDBManager::_FileToEvent(entry_ref* ref)
 		&& end <= dayEnd + 59)
 		allDay = true;
 
+	time_t reminder = time(NULL);
 	bool reminded = true;
-	if (reminder == -1)
+	if (node.ReadAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t))
+		== B_ENTRY_NOT_FOUND)
 		reminded = false;
 
 	uint16 status = 0;
@@ -746,7 +746,8 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 	file->WriteAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 
 	time_t reminder = event->GetReminderTime();
-	file->WriteAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
+	if (reminder != -1)
+		file->WriteAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
 
 	const char* icon_type = "EVENT_ICON";
 	if (statusInt & EVENT_HIDDEN)
