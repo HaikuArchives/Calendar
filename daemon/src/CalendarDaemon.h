@@ -44,7 +44,7 @@ public:
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
 	void			ReadyToRun();
-	void			Pulse();
+	//void			Pulse();
 	void			SetFlags(uint32 mask);
 
 	void			AddEventToList(entry_ref* ref);

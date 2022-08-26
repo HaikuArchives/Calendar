@@ -24,6 +24,7 @@
 #define PLACE_ATTR			"Event:Place"
 #define NAME_ATTR			"Event:Name"
 #define CATNAME_ATTR		"Event:Category"
+#define REMINDER_ATTR		"Event:Reminder"
 
 const char* kApplicationSignature = "application/x-vnd.CalendarDaemon";
 
@@ -83,23 +84,23 @@ CalendarDaemon::CalendarDaemon()
 	notification.SetContent("Secretly Monitoring your Events!");
 	notification.Send();
 
-	node_ref nodeRef;
+	/*node_ref nodeRef;
 	fEventDir->GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);
+	watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);*/
 
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
 
-	SetPulseRate(bigtime_t(1000000));
+	//SetPulseRate(bigtime_t(1000000));
 	//SetFlags(B_PULSE_NEEDED);
 }
 
 
-void
+/*void
 CalendarDaemon::Pulse()
 {
 	std::cout << "\nPulse!!\n";
-}
+}*/
 
 
 void
@@ -108,7 +109,8 @@ CalendarDaemon::ReadyToRun()
 	LockEvents();
 
 	fQuery.SetVolume(&fQueryVolume);
-	fQuery.PushAttr("Event:Reminder");
+	fQuery.PushAttr(REMINDER_ATTR);
+	//fQuery.PushAttr(START_ATTR);
 	fQuery.PushUInt32(time(NULL));
 	fQuery.PushOp(B_GE);
 
@@ -120,6 +122,7 @@ CalendarDaemon::ReadyToRun()
 
 	while (fQuery.GetNextRef(&ref) == B_OK)
 		AddEventToList(&ref);
+	fEventList.SortItems(_CompareFunction);
 	ShowEvents();
 
 	UnlockEvents();
@@ -158,13 +161,12 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			if(opCode == B_ATTR_CHANGED)
 			{
 				RefreshEventList();
-				snooze(2000);
 			}
 			break;
 		}
-		case B_PULSE:
+		/*case B_PULSE:
 			Pulse();
-			break;
+			break;*/
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;
@@ -249,7 +251,7 @@ CalendarDaemon::RefreshEventList()
 
 	fQuery.Clear();
 	fQuery.SetVolume(&fQueryVolume);
-	fQuery.PushAttr(START_ATTR);
+	fQuery.PushAttr(REMINDER_ATTR);
 	fQuery.PushUInt32(time(NULL));
 	fQuery.PushOp(B_GE);
 
@@ -260,7 +262,7 @@ CalendarDaemon::RefreshEventList()
 	entry_ref ref;
 	fEventList.MakeEmpty();
 
-	while(fQuery.GetNextRef(&ref) == B_OK)
+	while (fQuery.GetNextRef(&ref) == B_OK)
 		AddEventToList(&ref);
 	fEventList.SortItems(_CompareFunction);
 
@@ -327,10 +329,10 @@ CalendarDaemon::_FileToEvent(entry_ref* ref)
 	node.ReadAttr(START_ATTR, B_TIME_TYPE, 0, &start, sizeof(time_t));
 	node.ReadAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
 	node.ReadAttr("Event:Updated", B_TIME_TYPE, 0, &updated, sizeof(time_t));
-	node.ReadAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
+	node.ReadAttr(REMINDER_ATTR, B_TIME_TYPE, 0, &reminder, sizeof(time_t));
 
 	return new Event(name.String(), place.String(), desc.String(), false,
-		start, end, fDBManager->EnsureCategory(catName.String()), reminder!=-1,
+		start, end, fDBManager->EnsureCategory(catName.String()), true,
 		reminder, updated, 0, idStr.String());
 }
 
