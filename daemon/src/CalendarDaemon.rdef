@@ -1,8 +1,8 @@
 resource app_signature "application/x-vnd.CalendarDaemon";
 
 resource app_version {
-	short_info = "Calendar Deamon",
-	long_info = "Watches on Events and fires a Notification on the scheduled time"
+	short_info = "Calendar daemon",
+	long_info = "Notifies about upcoming events scheduled with Calendar"
 };
 
 resource app_flags B_SINGLE_LAUNCH | B_BACKGROUND_APP;

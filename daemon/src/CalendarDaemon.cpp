@@ -7,18 +7,20 @@
 
 #include <csignal>
 #include <iostream>
+#include <string>
 #include <time.h>
 
 #include <Alert.h>
+#include <Catalog.h>
 #include <DateTime.h>
 #include <Directory.h>
 #include <FindDirectory.h>
 #include <NodeMonitor.h>
 #include <Notification.h>
 #include <Path.h>
+#include <StringFormat.h>
 #include <VolumeRoster.h>
 
-#define EVENT_DIRECTORY		"config/settings/Calendar/events"
 #define START_ATTR			"Event:Start"
 #define DESCRIPTION_ATTR 	"Event:Description"
 #define PLACE_ATTR			"Event:Place"
@@ -69,20 +71,11 @@ CalendarDaemon::CalendarDaemon()
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
 
-	BPath homePath;
-	find_directory(B_USER_DIRECTORY, &homePath);
-	fEventDir = new BDirectory(homePath.Path());
-
 	BPath trashPath;
 	find_directory(B_TRASH_DIRECTORY, &trashPath);
 	fTrashDir = new BDirectory(trashPath.Path());
 
 	fDBManager = new QueryDBManager();
-
-	BNotification notification(B_INFORMATION_NOTIFICATION);
-	notification.SetTitle("Calendar Daemon is Up & Running!");
-	notification.SetContent("Secretly Monitoring your Events!");
-	notification.Send();
 
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
@@ -143,8 +136,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			int32 opCode;
 			message->FindInt32("opcode", &opCode);
 
-			if(opCode == B_ATTR_CHANGED)
-			{
+			if (opCode == B_ATTR_CHANGED) {
 				RefreshEventList();
 			}
 			break;
@@ -198,22 +190,27 @@ CalendarDaemon::EventLoop(void* data)
 
 			time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
 
-			BString buff = "Remider!\n\n";
-			buff << "Event Name:\t" << event->GetName();
-			buff << "\n";
-			buff << "Event Place:\t" << event->GetPlace();
-			buff << "\n\n";
+			BString buff(B_TRANSLATE("Calendar notification!\n\n"
+				"Event Name:\t%eventName%\n"
+				"Event Place:\t%eventPlace%\n\n"
+				"The event starts in %deltaTime% %hms%!"));
+
+			buff.ReplaceAll("%eventName%", event->GetName());
+			buff.ReplaceAll("%eventPlace%", event->GetPlace());
+ 
 			if (deltaTime%3600 == 0) {
 				deltaTime /= 3600;
-				buff << "Is starting in " << deltaTime << " hours!";
+				buff.ReplaceAll("%hms%", "hours");
 			} else if (deltaTime%60 == 0) {
 				deltaTime /= 60;
-				buff << "Is starting in " << deltaTime << " minutes!";
-			} else {
-				buff << "Is starting in " << deltaTime << " seconds!";
-			}
+				buff.ReplaceAll("%hms%", "minutes");
+			} else
+				buff.ReplaceAll("%hms%", "seconds");
+
+			buff.ReplaceAll("%deltaTime%", std::to_string(deltaTime).c_str());
+
 			BAlert* alert = new BAlert("Reminder!", buff.String(),
-							"Okay", NULL, NULL, B_WIDTH_AS_USUAL,
+							"OK", NULL, NULL, B_WIDTH_AS_USUAL,
 							B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
 			alert->Go();

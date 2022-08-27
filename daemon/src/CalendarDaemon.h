@@ -64,7 +64,6 @@ private:
 	
 	QueryDBManager*		fDBManager;
 
-	BDirectory*			fEventDir;
 	BDirectory*			fTrashDir;
 	EventList			fEventList;
 	BVolume				fQueryVolume;
