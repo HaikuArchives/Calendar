@@ -84,23 +84,9 @@ CalendarDaemon::CalendarDaemon()
 	notification.SetContent("Secretly Monitoring your Events!");
 	notification.Send();
 
-	/*node_ref nodeRef;
-	fEventDir->GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);*/
-
 	fEventLoop = spawn_thread(EventLoop, "EventLoop", B_NORMAL_PRIORITY, this);
 	resume_thread(fEventLoop);
-
-	//SetPulseRate(bigtime_t(1000000));
-	//SetFlags(B_PULSE_NEEDED);
 }
-
-
-/*void
-CalendarDaemon::Pulse()
-{
-	std::cout << "\nPulse!!\n";
-}*/
 
 
 void
@@ -110,7 +96,6 @@ CalendarDaemon::ReadyToRun()
 
 	fQuery.SetVolume(&fQueryVolume);
 	fQuery.PushAttr(REMINDER_ATTR);
-	//fQuery.PushAttr(START_ATTR);
 	fQuery.PushUInt32(time(NULL));
 	fQuery.PushOp(B_GE);
 
@@ -164,9 +149,6 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			}
 			break;
 		}
-		/*case B_PULSE:
-			Pulse();
-			break;*/
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;

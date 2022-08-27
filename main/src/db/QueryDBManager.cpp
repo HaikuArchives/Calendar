@@ -995,6 +995,7 @@ QueryDBManager::_EventMimetype()
 	_AddAttribute(info, "Event:Description", "Description", B_STRING_TYPE, true, 200);
 	_AddAttribute(info, "Event:Place", "Place", B_STRING_TYPE, true, 200);
 	_AddAttribute(info, "Event:Updated", "Updated", B_TIME_TYPE, true, 150);
+	_AddAttribute(info, "Event:Reminder", "Reminder", B_TIME_TYPE, true, 150);
 	_AddAttribute(info, "Event:Status", "Status", B_STRING_TYPE, true, 50);
 	_AddAttribute(info, "Calendar:ID", "ID", B_STRING_TYPE, true, 100);
 
@@ -1025,6 +1026,7 @@ QueryDBManager::_AddIndices()
 		fs_create_index(device, "Event:Start", B_INT32_TYPE, 0);
 		fs_create_index(device, "Event:End", B_INT32_TYPE, 0);
 		fs_create_index(device, "Event:Updated", B_INT32_TYPE, 0);
+		fs_create_index(device, "Event:Reminder", B_INT32_TYPE, 0);
 		fs_create_index(device, "Event:Status", B_STRING_TYPE, 0);
 		fs_create_index(device, "Calendar:ID", B_STRING_TYPE, 0);
 		fs_create_index(device, "Category:Name", B_STRING_TYPE, 0);
