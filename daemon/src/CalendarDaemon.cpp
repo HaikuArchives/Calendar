@@ -196,10 +196,23 @@ CalendarDaemon::EventLoop(void* data)
 				break;
 			}
 
-			BString buff = event->GetName();
+			time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
+
+			BString buff = "Remider!\n\n";
+			buff << "Event Name:\t" << event->GetName();
+			buff << "\n";
+			buff << "Event Place:\t" << event->GetPlace();
 			buff << "\n\n";
-			buff << event->GetPlace();
-			BAlert* alert = new BAlert("Hello World!", buff.String(),
+			if (deltaTime%3600 == 0) {
+				deltaTime /= 3600;
+				buff << "Is starting in " << deltaTime << " hours!";
+			} else if (deltaTime%60 == 0) {
+				deltaTime /= 60;
+				buff << "Is starting in " << deltaTime << " minutes!";
+			} else {
+				buff << "Is starting in " << deltaTime << " seconds!";
+			}
+			BAlert* alert = new BAlert("Reminder!", buff.String(),
 							"Okay", NULL, NULL, B_WIDTH_AS_USUAL,
 							B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);
