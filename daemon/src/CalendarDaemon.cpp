@@ -31,7 +31,7 @@
 const char* kApplicationSignature = "application/x-vnd.CalendarDaemon";
 
 #undef B_TRANSLATION_CONTEXT
-#define B_TRANSLATION_CONTEXT "Application"
+#define B_TRANSLATION_CONTEXT "Daemon"
 
 
 void signalHandler(int signum)
@@ -136,9 +136,8 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			int32 opCode;
 			message->FindInt32("opcode", &opCode);
 
-			if (opCode == B_ATTR_CHANGED) {
+			if (opCode == B_ATTR_CHANGED)
 				RefreshEventList();
-			}
 			break;
 		}
 		case B_QUIT_REQUESTED:
@@ -190,26 +189,33 @@ CalendarDaemon::EventLoop(void* data)
 
 			time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
 
-			BString buff(B_TRANSLATE("Calendar notification!\n\n"
-				"Event Name:\t%eventName%\n"
-				"Event Place:\t%eventPlace%\n\n"
-				"The event starts in %deltaTime% %hms%!"));
+			BString alertText(B_TRANSLATE("Calendar notification!\n\n"
+				"Event:\t%eventName%\n"
+				"Place:\t%eventPlace%\n\n"
+				"The event starts in "));
 
-			buff.ReplaceAll("%eventName%", event->GetName());
-			buff.ReplaceAll("%eventPlace%", event->GetPlace());
+			alertText.ReplaceAll("%eventName%", event->GetName());
+			alertText.ReplaceAll("%eventPlace%", event->GetPlace());
  
 			if (deltaTime%3600 == 0) {
 				deltaTime /= 3600;
-				buff.ReplaceAll("%hms%", "hours");
+				static BStringFormat format(B_TRANSLATE("{0, plural,"
+				"=1{1 hour!}"
+				"other{# hours!}}"));
+				format.Format(alertText, deltaTime);
 			} else if (deltaTime%60 == 0) {
 				deltaTime /= 60;
-				buff.ReplaceAll("%hms%", "minutes");
-			} else
-				buff.ReplaceAll("%hms%", "seconds");
-
-			buff.ReplaceAll("%deltaTime%", std::to_string(deltaTime).c_str());
-
-			BAlert* alert = new BAlert("Reminder!", buff.String(),
+				static BStringFormat format(B_TRANSLATE("{0, plural,"
+				"=1{1 minute!}"
+				"other{# minutes!}}"));
+				format.Format(alertText, deltaTime);
+			} else {
+				static BStringFormat format(B_TRANSLATE("{0, plural,"
+				"=1{1 second!}"
+				"other{# seconds!}}"));
+				format.Format(alertText, deltaTime);
+			}
+			BAlert* alert = new BAlert("Reminder!", alertText.String(),
 							"OK", NULL, NULL, B_WIDTH_AS_USUAL,
 							B_OFFSET_SPACING, B_WARNING_ALERT);
 			alert->SetShortcut(0, B_ESCAPE);

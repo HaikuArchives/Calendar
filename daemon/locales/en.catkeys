@@ -1,0 +1,22 @@
+1	English	application/x-vnd.CalendarDaemon	3971020027
+Couldn't restore the deleted event― you might want to look in the Trash to find this event and manually restore it.	QueryDBManager		Couldn't restore the deleted event― you might want to look in the Trash to find this event and manually restore it.
+Couldn't open event file because permission was denied. It usually means that you don't have read permissions to the event file or its parent directory, usually within the settings directory.Find out the file's location and try changing its permissions.	QueryDBManager		Couldn't open event file because permission was denied. It usually means that you don't have read permissions to the event file or its parent directory, usually within the settings directory.Find out the file's location and try changing its permissions.
+Event file	QueryDBManager		Event file
+{0, plural,=1{1 hour!}other{# hours!}}	Daemon		{0, plural,=1{1 hour!}other{# hours!}}
+OK	QueryDBManager		OK
+Birthday	QueryDBManager		Birthday
+Couldn't restore the deleted event― it seems that it couldn't be found or doesn't exist. You might want to look in the Trash to find this event and manually restore it.	QueryDBManager		Couldn't restore the deleted event― it seems that it couldn't be found or doesn't exist. You might want to look in the Trash to find this event and manually restore it.
+{0, plural,=1{1 second!}other{# seconds!}}	Daemon		{0, plural,=1{1 second!}other{# seconds!}}
+Couldn't open event file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Sorry.	QueryDBManager		Couldn't open event file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Sorry.
+{0, plural,=1{1 minute!}other{# minutes!}}	Daemon		{0, plural,=1{1 minute!}other{# minutes!}}
+Couldn't open category file because permission was denied. It usually means that you don't have read permissions to the event file or its parent directory, usually within the settings directory.Find out the file's location and try changing its permissions.	QueryDBManager		Couldn't open category file because permission was denied. It usually means that you don't have read permissions to the event file or its parent directory, usually within the settings directory.Find out the file's location and try changing its permissions.
+Restoring event	QueryDBManager		Restoring event
+Couldn't move the event to Trash― you might want to use a Tracker query to find this event and manually delete it.	QueryDBManager		Couldn't move the event to Trash― you might want to use a Tracker query to find this event and manually delete it.
+Category file	QueryDBManager		Category file
+Couldn't open category file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Sorry.	QueryDBManager		Couldn't open category file because the path is not specified. It usually means that the programmer made a mistake. There is nothing you can do about it. Sorry.
+Couldn't move the event to trash― it seems that the event couldn't be found or doesn't exist. You might want to use a Tracker query to find this event and manually delete it.	QueryDBManager		Couldn't move the event to trash― it seems that the event couldn't be found or doesn't exist. You might want to use a Tracker query to find this event and manually delete it.
+Default	QueryDBManager		Default
+There is not enough memory available on your system to save the  category file. If you want to have event updates saved, try closing a fewapplications and try again.	QueryDBManager		There is not enough memory available on your system to save the  category file. If you want to have event updates saved, try closing a fewapplications and try again.
+Calendar notification!\n\nEvent:\t%eventName%\nPlace:\t%eventPlace%\n\nThe event starts in 	Daemon		Calendar notification!\n\nEvent:\t%eventName%\nPlace:\t%eventPlace%\n\nThe event starts in 
+There is not enough memory available on your system to save the event file. If you want to have event updates saved, try closing a few applications and try again.	QueryDBManager		There is not enough memory available on your system to save the event file. If you want to have event updates saved, try closing a few applications and try again.
+Moving to Trash	QueryDBManager		Moving to Trash
