@@ -24,7 +24,6 @@
 #include "CategoryEditWindow.h"
 #include "Event.h"
 #include "EventListView.h"
-#include "EventSyncWindow.h"
 #include "EventTabView.h"
 #include "EventWindow.h"
 #include "MainView.h"
@@ -131,9 +130,11 @@ MainWindow::MessageReceived(BMessage* message)
 			fEventsView->MessageReceived(message);
 			break;
 		case kSelectedDateChanged:
-		case kSynchronizationComplete:
 			_UpdateEventsView();
 			break;
+		/*case kSynchronizationComplete:
+			_UpdateEventsView();
+			break;*/
 		case kSelectionMessage:
 			fSidePanelView->MessageReceived(message);
 			break;

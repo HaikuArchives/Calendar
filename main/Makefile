@@ -52,11 +52,7 @@ SRCS = \
 	 src/utils/ResourceLoader.cpp  \
 	 src/model/Category.cpp  \
 	 src/model/Event.cpp \
-	 src/db/QueryDBManager.cpp  \
-	 src/db/SQLiteManager.cpp  \
-	 src/plugin/GoogleCalendar/EventSync.cpp \
-	 src/plugin/GoogleCalendar/EventSyncWindow.cpp \
-	 src/plugin/GoogleCalendar/SynchronizationLoop.cpp 
+	 src/db/QueryDBManager.cpp
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.

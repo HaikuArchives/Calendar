@@ -17,16 +17,14 @@
 #include <fs_index.h>
 #include <fs_info.h>
 
-#include "App.h"
-#include "Preferences.h"
 #include "ResourceLoader.h"
-#include "SQLiteManager.h"
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "QueryDBManager"
 
 const char* kEventDir = "events";
 const char* kCategoryDir = "categories";
+const char* kDirectoryName = "Calendar";
 
 
 QueryDBManager::QueryDBManager()
@@ -71,9 +69,9 @@ QueryDBManager::_Initialize()
 	}
 
 	// Migrate from SQL, if necessary
-	BPath sqlPath = _SettingsPath(kDatabaseName);
+	/*BPath sqlPath = _SettingsPath(kDatabaseName);
 	if (BEntry(sqlPath.Path()).Exists())
-		_ImportFromSQL(sqlPath);
+		_ImportFromSQL(sqlPath);*/
 
 	// Migrate pre-"Cancel/Delete"-dichtonomy events
 	BPath cancelPath = _SettingsPath("cancelled");
@@ -456,7 +454,7 @@ QueryDBManager::GetAllCategories()
 
 	BFile catFile;
 	Category* category;
-	BString defaultCat = ((App*) be_app)->GetPreferences()->fDefaultCategory;
+	BString defaultCat = "Default";
 
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
@@ -1039,7 +1037,7 @@ QueryDBManager::_AddAttribute(BMessage& msg, const char* name,
 }
 
 
-void
+/*void
 QueryDBManager::_ImportFromSQL(BPath dbPath)
 {
 	SQLiteManager* sql = new SQLiteManager();
@@ -1054,7 +1052,7 @@ QueryDBManager::_ImportFromSQL(BPath dbPath)
 
 	delete (sql);
 	BEntry(dbPath.Path()).Rename("events.sql.bak");
-}
+}*/
 
 
 // "Cancelled" was previously synonymous with "Deleted"― so on first run after
