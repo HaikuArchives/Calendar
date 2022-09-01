@@ -450,9 +450,7 @@ EventWindow::_InitInterface()
 	fStartCalButton->SetExplicitMinSize(BSize(height * 2, height));
 	fEndCalButton->SetExplicitMinSize(BSize(height * 2, height));
 
-	fDBManager = new QueryDBManager();
-
-	fDBManager->SetDefaultCategory(((App*) be_app)->GetPreferences()->fDefaultCategory);
+	fDBManager = new QueryDBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	fCategoryList = fDBManager->GetAllCategories();
 
 	fCategoryMenu = new BMenu("CategoryMenu");

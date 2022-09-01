@@ -27,8 +27,9 @@ const char* kCategoryDir = "categories";
 const char* kDirectoryName = "Calendar";
 
 
-QueryDBManager::QueryDBManager()
+QueryDBManager::QueryDBManager(BString defaultCategory)
 {
+	fDefaultCategory = defaultCategory;
 	_Initialize();
 }
 
@@ -461,7 +462,7 @@ QueryDBManager::GetAllCategories()
 		catFile = BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(&catFile);
 
-		if (category->GetName() == fDefaultCat)
+		if (category->GetName() == fDefaultCategory)
 			categories->AddItem(category, 0);
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);
@@ -497,9 +498,9 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 
 
 void
-QueryDBManager::SetDefaultCategory(BString cat)
+QueryDBManager::SetDefaultCategory(BString category)
 {
-	fDefaultCat = cat;
+	fDefaultCategory = category;
 }
 
 

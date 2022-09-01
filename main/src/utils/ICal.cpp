@@ -34,7 +34,7 @@
 int32
 ImportICalEvents(void* icalFilePtr)
 {
-	QueryDBManager* DBManager = new QueryDBManager;
+	QueryDBManager* DBManager = new QueryDBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	BFile* icalFile = (BFile*) icalFilePtr;
 	if (icalFile->InitCheck() != B_OK) {
 		return 0;

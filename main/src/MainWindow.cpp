@@ -165,7 +165,7 @@ MainWindow::MessageReceived(BMessage* message)
 			BFile file;
 			BNodeInfo info;
 			char type[B_FILE_NAME_LENGTH];
-			QueryDBManager DBManager;
+			QueryDBManager DBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 			while (message->HasRef("refs", i)) {
 				message->FindRef("refs", i++, &ref);

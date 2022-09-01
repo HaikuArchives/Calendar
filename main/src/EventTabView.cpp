@@ -36,7 +36,7 @@ EventTabView::EventTabView(const BDate& date)
 	fMode = ((App*) be_app)->GetPreferences()->fViewMode;
 	fPopUpEnabled = true;
 	fEventList = NULL;
-	fDBManager = new QueryDBManager();
+	fDBManager = new QueryDBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	SetDate(date);
 	fFilterKeywords = "";
 }
