@@ -454,7 +454,6 @@ QueryDBManager::GetAllCategories()
 
 	BFile catFile;
 	Category* category;
-	BString defaultCat = "Default";
 
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
@@ -462,7 +461,7 @@ QueryDBManager::GetAllCategories()
 		catFile = BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(&catFile);
 
-		if (category->GetName() == defaultCat)
+		if (category->GetName() == fDefaultCat)
 			categories->AddItem(category, 0);
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);
@@ -494,6 +493,13 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	if (_CategoryStatusSwitch(entry.Remove()) == B_OK)
 		return true;
 	return false;
+}
+
+
+void
+QueryDBManager::SetDefaultCategory(BString cat)
+{
+	fDefaultCat = cat;
 }
 
 

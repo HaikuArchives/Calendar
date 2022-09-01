@@ -136,6 +136,7 @@ CategoryWindow::LoadCategories()
 	int32 selection = fCategoryListView->CurrentSelection();
 
 	delete fCategoryList;
+	fDBManager->SetDefaultCategory(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	fCategoryList = fDBManager->GetAllCategories();
 
 	Category* category;

@@ -60,6 +60,8 @@ public:
 	bool		RemoveCategory(Category* category);
 	bool		RemoveCategory(entry_ref categoryRef);
 
+	void		SetDefaultCategory(BString cat);
+
 private:
 	void		_Initialize();
 
@@ -103,6 +105,7 @@ private:
 	BDirectory*	fCategoryDir;
 	BDirectory*	fTrashDir;
 	BVolume		fQueryVolume;
+	BString		fDefaultCat;
 };
 
 #endif // _QDB_MANAGER_H_

@@ -452,6 +452,7 @@ EventWindow::_InitInterface()
 
 	fDBManager = new QueryDBManager();
 
+	fDBManager->SetDefaultCategory(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	fCategoryList = fDBManager->GetAllCategories();
 
 	fCategoryMenu = new BMenu("CategoryMenu");
@@ -633,6 +634,7 @@ EventWindow::_UpdateCategoryMenu()
 	Category* c = fCategoryList->ItemAt(index);
 	selectedCategory = new Category(*c);
 
+	fDBManager->SetDefaultCategory(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	delete fCategoryList;
 	fCategoryList = fDBManager->GetAllCategories();
 
