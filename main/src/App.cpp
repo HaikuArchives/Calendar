@@ -163,6 +163,12 @@ App::MessageReceived(BMessage* message)
 			fEventSyncWindow = NULL;
 			break;*/
 
+		/* NOTE:
+		** Current Google Calendar Synchronization is non-working, hence are
+		** these above cases. But removing them is not a wise choice, as they
+		** can serve as a starting point in implementing the same functionality.
+		*/
+
 		case kPreferenceWindowQuitting:
 			fPreferenceWindow = NULL;
 			break;

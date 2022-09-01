@@ -135,6 +135,11 @@ MainWindow::MessageReceived(BMessage* message)
 		/*case kSynchronizationComplete:
 			_UpdateEventsView();
 			break;*/
+		/* NOTE:
+		** Current Google Calendar Synchronization is non-working, hence is
+		** the above case. But removing this is not a wise choice, as it can
+		** serve as a starting point in implementing the same functionality.
+		*/
 		case kSelectionMessage:
 			fSidePanelView->MessageReceived(message);
 			break;
