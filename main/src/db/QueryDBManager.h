@@ -56,7 +56,7 @@ public:
 	Category*	GetCategory(const char* name);
 	Category*	GetCategory(entry_ref ref);
 	Category*	EnsureCategory(const char* name);
-	CategoryList* GetAllCategories(BString defaultCategory);
+	CategoryList* GetAllCategories(BString defaultCategory = "");
 	bool		RemoveCategory(Category* category);
 	bool		RemoveCategory(entry_ref categoryRef);
 

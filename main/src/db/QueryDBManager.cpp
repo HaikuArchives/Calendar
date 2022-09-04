@@ -439,7 +439,7 @@ QueryDBManager::EnsureCategory(const char* name)
 
 
 CategoryList*
-QueryDBManager::GetAllCategories(BString defaultCategory)
+QueryDBManager::GetAllCategories(BString defaultCategory = "")
 {
 	CategoryList* categories = new CategoryList(20, true);
 	BQuery query;
