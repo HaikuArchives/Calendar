@@ -13,9 +13,7 @@
 #include <CalendarView.h>
 #include <DateFormat.h>
 
-#include "App.h"
 #include "ColorConverter.h"
-#include "Preferences.h"
 #include "QueryDBManager.h"
 
 
@@ -122,7 +120,7 @@ CalendarView::SetMarkHidden(bool show)
 void
 CalendarView::_Init()
 {
-	fDBManager = new QueryDBManager(((App*)be_app)->GetPreferences()->fDefaultCategory);
+	fDBManager = new QueryDBManager();
 	fMarkHidden = false;
 }
 

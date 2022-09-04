@@ -11,7 +11,6 @@
 
 #include "App.h"
 #include "Event.h"
-#include "Preferences.h"
 #include "QueryDBManager.h"
 #include "ResourceLoader.h"
 
@@ -22,7 +21,7 @@
 int32
 NotificationLoop(void* data)
 {
-	QueryDBManager dbManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
+	QueryDBManager dbManager;
 	BString notificationContent;
 	BString startTime;
 	EventList* events;

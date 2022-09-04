@@ -88,7 +88,7 @@ CategoryWindow::MessageReceived(BMessage* message)
 			BFile file;
 			BNodeInfo info;
 			char type[B_FILE_NAME_LENGTH];
-			QueryDBManager DBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
+			QueryDBManager DBManager();
 
 			while (message->HasRef("refs", i)) {
 				message->FindRef("refs", i++, &ref);
@@ -136,7 +136,7 @@ CategoryWindow::LoadCategories()
 	int32 selection = fCategoryListView->CurrentSelection();
 
 	delete fCategoryList;
-	fCategoryList = fDBManager->GetAllCategories();
+	fCategoryList = fDBManager->GetAllCategories("");
 
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {
@@ -175,7 +175,7 @@ CategoryWindow::_InitInterface()
 		"CategoryScroll", fCategoryListView, B_WILL_DRAW, false, true);
 	fCategoryScroll->SetExplicitMinSize(BSize(260, 220));
 
-	fDBManager = new QueryDBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
+	fDBManager = new QueryDBManager();
 	fCategoryList = NULL;
 	LoadCategories();
 

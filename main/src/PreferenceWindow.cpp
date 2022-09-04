@@ -42,7 +42,7 @@ PreferenceWindow::PreferenceWindow(BRect frame, Preferences* preferences)
 	fTempPreferences = new Preferences();
 	*fTempPreferences = *fCurrentPreferences;
 
-	fDBManager = new QueryDBManager(((App*) be_app)->GetPreferences()->fDefaultCategory);
+	fDBManager = new QueryDBManager();
 
 	_InitInterface();
 
@@ -138,7 +138,7 @@ PreferenceWindow::_InitInterface()
 	fDayOfWeekMenuField = new BMenuField(
 		"DayOfWeekMenu", B_TRANSLATE("First day of the week:"), fDayOfWeekMenu);
 
-	CategoryList* categories = fDBManager->GetAllCategories();
+	CategoryList* categories = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 	for (int i = 0; i < categories->CountItems(); i++) {
 		Category* category = categories->ItemAt(i);
 		fDefaultCatMenu->AddItem(new BColorMenuItem(category->GetName(),

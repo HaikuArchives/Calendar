@@ -27,9 +27,8 @@ const char* kCategoryDir = "categories";
 const char* kDirectoryName = "Calendar";
 
 
-QueryDBManager::QueryDBManager(BString defaultCategory)
+QueryDBManager::QueryDBManager()
 {
-	fDefaultCategory = defaultCategory;
 	_Initialize();
 }
 
@@ -60,7 +59,7 @@ QueryDBManager::_Initialize()
 	_AddIndices();
 
 	// Create default categories if need be
-	if (GetAllCategories()->CountItems() == 0) {
+	if (GetAllCategories("")->CountItems() == 0) {
 		Category* defaultCategory
 			= new Category(B_TRANSLATE("Default"), BString("1E90FF"));
 		Category* birthdayCategory
@@ -373,7 +372,7 @@ QueryDBManager::AddCategory(Category* category)
 		return false;
 
 	BString color = category->GetHexColor();
-	CategoryList* categories = GetAllCategories();
+	CategoryList* categories = GetAllCategories("");
 	for (int i = 0; i < categories->CountItems(); i++)
 		if (color == ((Category*) categories->ItemAt(i))->GetHexColor())
 			return false;
@@ -440,7 +439,7 @@ QueryDBManager::EnsureCategory(const char* name)
 
 
 CategoryList*
-QueryDBManager::GetAllCategories()
+QueryDBManager::GetAllCategories(BString defaultCategory)
 {
 	CategoryList* categories = new CategoryList(20, true);
 	BQuery query;
@@ -462,7 +461,7 @@ QueryDBManager::GetAllCategories()
 		catFile = BFile(&ref, B_READ_ONLY);
 		category = _FileToCategory(&catFile);
 
-		if (category->GetName() == fDefaultCategory)
+		if (category->GetName() == defaultCategory)
 			categories->AddItem(category, 0);
 		else if (!category->GetName().IsEmpty())
 			categories->AddItem(category);
@@ -494,13 +493,6 @@ QueryDBManager::RemoveCategory(entry_ref categoryRef)
 	if (_CategoryStatusSwitch(entry.Remove()) == B_OK)
 		return true;
 	return false;
-}
-
-
-void
-QueryDBManager::SetDefaultCategory(BString category)
-{
-	fDefaultCategory = category;
 }
 
 

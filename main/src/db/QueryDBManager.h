@@ -27,7 +27,7 @@ extern const char* kDatabaseName;
 class QueryDBManager
 {
 public:
-				QueryDBManager(BString defaultCategory);
+				QueryDBManager();
 				~QueryDBManager();
 
 	bool		AddEvent(Event* event);
@@ -56,11 +56,9 @@ public:
 	Category*	GetCategory(const char* name);
 	Category*	GetCategory(entry_ref ref);
 	Category*	EnsureCategory(const char* name);
-	CategoryList* GetAllCategories();
+	CategoryList* GetAllCategories(BString defaultCategory);
 	bool		RemoveCategory(Category* category);
 	bool		RemoveCategory(entry_ref categoryRef);
-
-	void		SetDefaultCategory(BString category);
 
 private:
 	void		_Initialize();
@@ -105,7 +103,6 @@ private:
 	BDirectory*	fCategoryDir;
 	BDirectory*	fTrashDir;
 	BVolume		fQueryVolume;
-	BString		fDefaultCategory;
 };
 
 #endif // _QDB_MANAGER_H_
