@@ -18,6 +18,7 @@
 #include "App.h"
 #include "CategoryEditWindow.h"
 #include "CategoryListItem.h"
+#include "Preferences.h"
 #include "QueryDBManager.h"
 
 #undef B_TRANSLATION_CONTEXT
@@ -87,7 +88,7 @@ CategoryWindow::MessageReceived(BMessage* message)
 			BFile file;
 			BNodeInfo info;
 			char type[B_FILE_NAME_LENGTH];
-			QueryDBManager DBManager;
+			QueryDBManager DBManager();
 
 			while (message->HasRef("refs", i)) {
 				message->FindRef("refs", i++, &ref);
@@ -135,7 +136,7 @@ CategoryWindow::LoadCategories()
 	int32 selection = fCategoryListView->CurrentSelection();
 
 	delete fCategoryList;
-	fCategoryList = fDBManager->GetAllCategories();
+	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 	Category* category;
 	for (int32 i = 0; i < fCategoryList->CountItems(); i++) {

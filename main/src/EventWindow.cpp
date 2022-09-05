@@ -451,8 +451,7 @@ EventWindow::_InitInterface()
 	fEndCalButton->SetExplicitMinSize(BSize(height * 2, height));
 
 	fDBManager = new QueryDBManager();
-
-	fCategoryList = fDBManager->GetAllCategories();
+	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 	fCategoryMenu = new BMenu("CategoryMenu");
 	Category* category;
@@ -634,7 +633,7 @@ EventWindow::_UpdateCategoryMenu()
 	selectedCategory = new Category(*c);
 
 	delete fCategoryList;
-	fCategoryList = fDBManager->GetAllCategories();
+	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 	Category* category;
 	bool marked = false;

@@ -24,7 +24,6 @@
 #include "CategoryEditWindow.h"
 #include "Event.h"
 #include "EventListView.h"
-#include "EventSyncWindow.h"
 #include "EventTabView.h"
 #include "EventWindow.h"
 #include "MainView.h"
@@ -131,9 +130,16 @@ MainWindow::MessageReceived(BMessage* message)
 			fEventsView->MessageReceived(message);
 			break;
 		case kSelectedDateChanged:
-		case kSynchronizationComplete:
 			_UpdateEventsView();
 			break;
+		/*case kSynchronizationComplete:
+			_UpdateEventsView();
+			break;*/
+		/* NOTE:
+		** Current Google Calendar Synchronization is non-working, hence is
+		** the above case. But removing this is not a wise choice, as it can
+		** serve as a starting point in implementing the same functionality.
+		*/
 		case kSelectionMessage:
 			fSidePanelView->MessageReceived(message);
 			break;

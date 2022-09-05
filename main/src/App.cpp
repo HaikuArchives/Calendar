@@ -17,7 +17,6 @@
 #include <locale.h>
 
 #include "CategoryWindow.h"
-#include "EventSyncWindow.h"
 #include "EventWindow.h"
 #include "MainWindow.h"
 #include "PreferenceWindow.h"
@@ -149,7 +148,7 @@ App::MessageReceived(BMessage* message)
 			fCategoryWindow = NULL;
 			break;
 
-		case kMenuSyncGCAL:
+		/*case kMenuSyncGCAL:
 		{
 			if (fEventSyncWindow == NULL) {
 				fEventSyncWindow = new EventSyncWindow();
@@ -162,7 +161,13 @@ App::MessageReceived(BMessage* message)
 
 		case kEventSyncWindowQuitting:
 			fEventSyncWindow = NULL;
-			break;
+			break;*/
+
+		/* NOTE:
+		** Current Google Calendar Synchronization is non-working, hence are
+		** these above cases. But removing them is not a wise choice, as they
+		** can serve as a starting point in implementing the same functionality.
+		*/
 
 		case kPreferenceWindowQuitting:
 			fPreferenceWindow = NULL;

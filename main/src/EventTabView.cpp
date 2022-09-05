@@ -15,6 +15,7 @@
 #include "App.h"
 #include "EventListItem.h"
 #include "EventListView.h"
+#include "Preferences.h"
 #include "QueryDBManager.h"
 #include "SidePanelView.h"
 
