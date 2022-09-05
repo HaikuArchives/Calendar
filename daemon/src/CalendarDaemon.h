@@ -6,16 +6,9 @@
 #ifndef CALENDAR_DAEMON_H
 #define CALENDAR_DAEMON_H
 
-#include <iostream>
-
 #include <Application.h>
 #include <OS.h>
 #include <Volume.h>
-
-class BMessage;
-class BString;
-class BVolume;
-class BDirectory;
 
 
 /*!
