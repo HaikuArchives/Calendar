@@ -309,12 +309,12 @@ EventWindow::OnSaveClick()
 
 	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
 		time_t deltaTime = std::stoi(fTextReminderTime->Text());
-		BMenuItem* mI = fReminderMenu->FindMarked();
-		int32 ind = fReminderMenu->IndexOf(mI);
+		BMenuItem* menuItem = fReminderMenu->FindMarked();
+		int32 index = fReminderMenu->IndexOf(menuItem);
 
-		if (ind == 0)			// hours
+		if (index == 0)			// hours
 			deltaTime *= 3600;
-		else if (ind == 1)		// minutes
+		else if (index == 1)		// minutes
 			deltaTime *= 60;
 
 		reminderTime = start - deltaTime;
@@ -675,20 +675,20 @@ EventWindow::_PopulateWithEvent(Event* event)
 		fTextReminderTime->SetEnabled(true);
 		fReminderMenuField->SetEnabled(true);
 		time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
-		int32 ind = 2;
+		int32 index = 2;
 
-		if (deltaTime%3600 == 0) {		// hours
-			ind = 0;
+		if (deltaTime % 3600 == 0) {		// hours
+			index = 0;
 			deltaTime /= 3600;
 		}
-		else if (deltaTime%60 == 0) {	// minutes
-			ind = 1;
+		else if (deltaTime % 60 == 0) {	// minutes
+			index = 1;
 			deltaTime /= 60;
 		}
 
 		fTextReminderTime->SetText(std::to_string(deltaTime).c_str());
 
-		fReminderMenu->ItemAt(ind)->SetMarked(true);
+		fReminderMenu->ItemAt(index)->SetMarked(true);
 	} else {
 		fReminderCheckBox->SetValue(B_CONTROL_OFF);
 		fTextReminderTime->SetEnabled(false);
@@ -717,7 +717,7 @@ EventWindow::_UpdateCategoryMenu()
 	selectedCategory = new Category(*c);
 
 	delete fCategoryList;
-	fCategoryList = fDBManager->GetAllCategories();
+	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 	Category* category;
 	bool marked = false;
