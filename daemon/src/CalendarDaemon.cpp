@@ -44,10 +44,6 @@ CalendarDaemon::CalendarDaemon()
 	BVolumeRoster volRoster;
 	volRoster.GetBootVolume(&fQueryVolume);
 
-	BPath trashPath;
-	find_directory(B_TRASH_DIRECTORY, &trashPath);
-	fTrashDir = new BDirectory(trashPath.Path());
-
 	BPath homeDir;
 	find_directory(B_USER_DIRECTORY, &homeDir);
 	fEventDir = homeDir.Path();

@@ -27,7 +27,6 @@ public:
 
 private:
 
-	BDirectory*			fTrashDir;
 	BString				fEventDir;
 	BVolume				fQueryVolume;
 };
