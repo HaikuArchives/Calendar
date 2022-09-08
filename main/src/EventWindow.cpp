@@ -6,6 +6,7 @@
 #include "EventWindow.h"
 
 #include <time.h>
+#include <string>
 
 #include <Alert.h>
 #include <Application.h>
@@ -81,6 +82,10 @@ EventWindow::MessageReceived(BMessage* message)
 
 		case kAllDayPressed:
 			OnCheckBoxToggle();
+			break;
+
+		case kReminderPressed:
+			OnReminderCheckBoxToggle();
 			break;
 
 		case kCancelPressed:
@@ -253,6 +258,7 @@ EventWindow::OnSaveClick()
 
 	time_t start;
 	time_t end;
+	time_t reminderTime;
 	BTime startTime;
 	BTime endTime;
 
@@ -301,10 +307,26 @@ EventWindow::OnSaveClick()
 	Category* c = fCategoryList->ItemAt(index);
 	category = new Category(*c);
 
+	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
+		time_t deltaTime = std::stoi(fTextReminderTime->Text());
+		BMenuItem* mI = fReminderMenu->FindMarked();
+		int32 ind = fReminderMenu->IndexOf(mI);
+
+		if (ind == 0)			// hours
+			deltaTime *= 3600;
+		else if (ind == 1)		// minutes
+			deltaTime *= 60;
+
+		reminderTime = start - deltaTime;
+	} else {
+		reminderTime = -1;
+	}
+
 
 	Event newEvent(fTextName->Text(), fTextPlace->Text(),
 		fTextDescription->Text(), fAllDayCheckBox->Value() == B_CONTROL_ON,
-		start, end, category, time(NULL), status);
+		start, end, category, fReminderCheckBox->Value() == B_CONTROL_ON,
+		reminderTime, time(NULL), status);
 
 	if ((fNew == true) && (fDBManager->AddEvent(&newEvent)))
 		CloseWindow();
@@ -384,6 +406,20 @@ EventWindow::OnCheckBoxToggle()
 	}
 }
 
+void
+EventWindow::OnReminderCheckBoxToggle()
+{
+	if (fReminderCheckBox->Value() == B_CONTROL_ON) {
+		fTextReminderTime->SetText("0");
+		fTextReminderTime->SetEnabled(true);
+		fReminderMenuField->SetEnabled(true);
+	} else {
+		fTextReminderTime->SetText("");
+		fTextReminderTime->SetEnabled(false);
+		fReminderMenuField->SetEnabled(false);
+	}
+}
+
 
 void
 EventWindow::_InitInterface()
@@ -397,6 +433,9 @@ EventWindow::_InitInterface()
 	fTextEndDate = new BTextControl("EndDate", NULL, NULL, NULL);
 	fTextStartTime = new BTextControl("StartTime", NULL, NULL, NULL);
 	fTextEndTime = new BTextControl("EndTime", NULL, NULL, NULL);
+	fTextReminderTime = new BTextControl("ReminderTime",
+		B_TRANSLATE("Notify before Event:"), NULL, NULL);
+	fTextReminderTime->SetEnabled(false);
 
 	const char* tooltip
 		= B_TRANSLATE("Enter the time in HH:mm (24 hour) format.");
@@ -411,6 +450,8 @@ EventWindow::_InitInterface()
 	fAllDayCheckBox->SetValue(B_CONTROL_OFF);
 	fCancelledCheckBox = new BCheckBox(B_TRANSLATE("Cancelled"), NULL);
 	fHiddenCheckBox = new BCheckBox(B_TRANSLATE("Hidden"), NULL);
+	fReminderCheckBox = new BCheckBox(NULL,
+		new BMessage(kReminderPressed));
 
 	fEveryMonth = new BRadioButton(
 		"EveryMonth", B_TRANSLATE("Monthly"), new BMessage(kOptEveryMonth));
@@ -451,6 +492,7 @@ EventWindow::_InitInterface()
 	fEndCalButton->SetExplicitMinSize(BSize(height * 2, height));
 
 	fDBManager = new QueryDBManager();
+
 	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
 
 	fCategoryMenu = new BMenu("CategoryMenu");
@@ -464,11 +506,23 @@ EventWindow::_InitInterface()
 	fCategoryMenu->SetLabelFromMarked(true);
 	fCategoryMenu->ItemAt(0)->SetMarked(true);
 
+	fReminderMenu = new BMenu("ReminderMenu");
+	fReminderMenu->AddItem(new BMenuItem("hours", NULL));
+	fReminderMenu->AddItem(new BMenuItem("minutes", NULL));
+	fReminderMenu->AddItem(new BMenuItem("seconds", NULL));
+	fReminderMenu->SetRadioMode(true);
+	fReminderMenu->SetLabelFromMarked(true);
+	fReminderMenu->ItemAt(1)->SetMarked(true);
+
 	fStartDateEdit = new BMenu(B_TRANSLATE("Start date"));
 	fEndDateEdit = new BMenu(B_TRANSLATE("End date"));
 
 	fCategoryMenuField
 		= new BMenuField("CategoryMenuField", NULL, fCategoryMenu);
+
+	fReminderMenuField
+		= new BMenuField("ReminderMenuField", NULL, fReminderMenu);
+	fReminderMenuField->SetEnabled(false);
 
 	BBox* fStatusBox = new BBox("StatusBox");
 	BLayoutBuilder::Group<>(fStatusBox, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
@@ -536,6 +590,11 @@ EventWindow::_InitInterface()
 		.End()
 		.Add(fDescriptionLabel)
 		.Add(fTextDescription)
+		.AddGroup(B_HORIZONTAL)
+		.Add(fReminderCheckBox)
+		.Add(fTextReminderTime)
+		.Add(fReminderMenuField)
+		.End()
 		.AddGrid()
 		.Add(fCategoryLabel, 0, 0)
 		.Add(fCategoryMenuField, 1, 0)
@@ -611,6 +670,31 @@ EventWindow::_PopulateWithEvent(Event* event)
 		fTextEndTime->SetText(GetLocaleTimeString(event->GetEndDateTime()));
 	}
 
+	if (event->IsReminded()) {
+		fReminderCheckBox->SetValue(B_CONTROL_ON);
+		fTextReminderTime->SetEnabled(true);
+		fReminderMenuField->SetEnabled(true);
+		time_t deltaTime = event->GetStartDateTime() - event->GetReminderTime();
+		int32 ind = 2;
+
+		if (deltaTime%3600 == 0) {		// hours
+			ind = 0;
+			deltaTime /= 3600;
+		}
+		else if (deltaTime%60 == 0) {	// minutes
+			ind = 1;
+			deltaTime /= 60;
+		}
+
+		fTextReminderTime->SetText(std::to_string(deltaTime).c_str());
+
+		fReminderMenu->ItemAt(ind)->SetMarked(true);
+	} else {
+		fReminderCheckBox->SetValue(B_CONTROL_OFF);
+		fTextReminderTime->SetEnabled(false);
+		fReminderMenuField->SetEnabled(false);
+	}
+
 	uint16 status = 0;
 	if (event != NULL)
 		status = event->GetStatus();
@@ -633,7 +717,7 @@ EventWindow::_UpdateCategoryMenu()
 	selectedCategory = new Category(*c);
 
 	delete fCategoryList;
-	fCategoryList = fDBManager->GetAllCategories(((App*) be_app)->GetPreferences()->fDefaultCategory);
+	fCategoryList = fDBManager->GetAllCategories();
 
 	Category* category;
 	bool marked = false;

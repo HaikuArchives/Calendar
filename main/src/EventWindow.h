@@ -50,6 +50,7 @@ public:
 	void			SetEndDate(BDate& date);
 
 	void			OnCheckBoxToggle();
+	void			OnReminderCheckBoxToggle();
 	void			OnSaveClick();
 	void			OnDeleteClick();
 	void			CloseWindow();
@@ -71,6 +72,7 @@ private:
 	static const uint32 kAllDayPressed = 1003;
 	static const uint32 kOptEveryMonth = 1004;
 	static const uint32 kOptEveryYear = 1005;
+	static const uint32 kReminderPressed = 1006;
 
 	BTextControl*	fTextName;
 	BTextControl*	fTextPlace;
@@ -78,6 +80,7 @@ private:
 	BTextControl*	fTextEndDate;
 	BTextControl*	fTextStartTime;
 	BTextControl*	fTextEndTime;
+	BTextControl*	fTextReminderTime;
 
 	BTextView*		fTextDescription;
 	BView*			fMainView;
@@ -85,8 +88,10 @@ private:
 	BMenu*			fCategoryMenu;
 	BMenu*			fStartDateEdit;
 	BMenu*			fEndDateEdit;
+	BMenu*			fReminderMenu;
 
 	BMenuField*		fCategoryMenuField;
+	BMenuField*		fReminderMenuField;
 
 	BStringView*	fNameLabel;
 	BStringView*	fPlaceLabel;
@@ -108,6 +113,7 @@ private:
 	BCheckBox*		fAllDayCheckBox;
 	BCheckBox*		fCancelledCheckBox;
 	BCheckBox*		fHiddenCheckBox;
+	BCheckBox*		fReminderCheckBox;
 
 	BBox*			fStartDateBox;
 	BBox*			fEndDateBox;

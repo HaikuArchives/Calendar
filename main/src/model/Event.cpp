@@ -11,8 +11,8 @@
 
 Event::Event(const char* name, const char* place, const char* description,
 	bool allday, time_t start, time_t end, Category* category,
-	time_t updated /*=time(NULL)*/, uint16 status /*= 0 */,
-	const char* id /*= NULL*/)
+	bool reminded, time_t reminderTime, time_t updated /*=time(NULL)*/,
+	uint16 status /*= 0 */, const char* id /*= NULL*/)
 {
 	fName = name;
 	fPlace = place;
@@ -24,6 +24,9 @@ Event::Event(const char* name, const char* place, const char* description,
 	fStatus = status;
 
 	fCategory = new Category(*category);
+
+	fReminded = reminded;
+	fReminderTime = reminderTime;
 
 	if (id == NULL)
 		fId = BUuid().SetToRandom().ToString();
@@ -44,6 +47,8 @@ Event::Event(Event& event)
 	fEnd = event.GetEndDateTime();
 	fUpdated = event.GetUpdated();
 	fStatus = event.GetStatus();
+	fReminded = event.IsReminded();
+	fReminderTime = event.GetReminderTime();
 }
 
 
@@ -178,4 +183,28 @@ bool
 Event::Equals(Event& e) const
 {
 	return (fId == e.GetId());
+}
+
+bool
+Event::IsReminded() const
+{
+	return fReminded;
+}
+
+void
+Event::SetReminded(bool reminded)
+{
+	fReminded = reminded;
+}
+
+time_t
+Event::GetReminderTime() const
+{
+	return fReminderTime;
+}
+
+void
+Event::SetReminderTime(time_t reminderTime)
+{
+	fReminderTime = reminderTime;
 }
