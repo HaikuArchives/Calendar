@@ -437,6 +437,12 @@ EventWindow::_InitInterface()
 		B_TRANSLATE("Notify before Event:"), NULL, NULL);
 	fTextReminderTime->SetEnabled(false);
 
+	// only allow numbers in Reminder Time
+	for (uint32 i = 0; i < '0' ; i++)
+		fTextReminderTime->TextView()->DisallowChar(i);
+	for (uint32 i = '9' + 1; i < 255 ; i++)
+		fTextReminderTime->TextView()->DisallowChar(i);
+
 	const char* tooltip
 		= B_TRANSLATE("Enter the time in HH:mm (24 hour) format.");
 	fTextStartTime->SetToolTip(tooltip);
