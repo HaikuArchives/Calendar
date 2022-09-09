@@ -136,7 +136,7 @@ QueryDBManager::UpdateNotifiedEvent(const char* id)
 	if (_EventStatusSwitch(evFile.InitCheck()) != B_OK)
 		return NULL;
 
-	Event* event = _FileToEvent(&ref);
+	Event* event = FileToEvent(&ref);
 	event->SetStatus(event->GetStatus() | EVENT_NOTIFIED);
 	return _EventToFile(event, &evFile);
 }
@@ -194,7 +194,7 @@ QueryDBManager::RestoreEvent(entry_ref ref)
 	entry.GetName(oldLeaf);
 	BString leaf = _UniqueFilename(parentDir, BString(oldLeaf));
 
-	Event* event = _FileToEvent(&ref);
+	Event* event = FileToEvent(&ref);
 	if (event != NULL) {
 		BString eventName = _UniqueEventName(
 			event->GetName(), event->GetStartDateTime(), event->GetId());
@@ -217,7 +217,7 @@ QueryDBManager::GetEvent(const char* id)
 {
 	entry_ref ref;
 	_GetFileOfId(id, NULL, &ref);
-	return _FileToEvent(&ref);
+	return FileToEvent(&ref);
 }
 
 
@@ -232,7 +232,7 @@ QueryDBManager::GetEvent(const char* name, time_t startTime)
 Event*
 QueryDBManager::GetEvent(entry_ref ref)
 {
-	return _FileToEvent(&ref);
+	return FileToEvent(&ref);
 }
 
 
@@ -292,7 +292,7 @@ QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 	Event* event;
 
 	while (query.GetNextRef(&ref) == B_OK) {
-		event = _FileToEvent(&ref);
+		event = FileToEvent(&ref);
 		uint16 status = event->GetStatus();
 		bool hidden = (status & EVENT_DELETED) || (status & EVENT_HIDDEN);
 		if (ignoreHidden == false || ignoreHidden == true && hidden == false)
@@ -322,7 +322,7 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		event = _FileToEvent(&ref);
+		event = FileToEvent(&ref);
 		events->AddItem(event);
 	}
 	return events;
@@ -338,14 +338,9 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 
 	time_t time = dateTime.Time_t();
 
-	query.PushAttr("Event:Start");
+	query.PushAttr("Event:Reminder");
 	query.PushUInt32(time);
-	query.PushOp(B_LE);
-
-	query.PushAttr("Event:Status");
-	query.PushString("Unnotified");
-	query.PushOp(B_CONTAINS);
-	query.PushOp(B_AND);
+	query.PushOp(B_GE);
 
 	query.Fetch();
 	entry_ref ref;
@@ -356,7 +351,7 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 	while (query.GetNextRef(&ref) == B_OK) {
 		if (fTrashDir->Contains(BPath(&ref).Path()) == true)
 			continue;
-		event = _FileToEvent(&ref);
+		event = FileToEvent(&ref);
 		events->AddItem(event);
 	}
 	return events;
@@ -589,7 +584,7 @@ QueryDBManager::_FileToCategory(BFile* file)
 
 
 Event*
-QueryDBManager::_FileToEvent(entry_ref* ref)
+QueryDBManager::FileToEvent(entry_ref* ref)
 {
 	BNode node(ref);
 	BEntry entry(ref);

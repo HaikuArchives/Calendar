@@ -10,6 +10,7 @@
 #include <OS.h>
 #include <Volume.h>
 
+#include "QueryDBManager.h"
 
 /*!
 	CalendarDaemon Class Declaration
@@ -25,10 +26,21 @@ public:
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
 
+	void			WatchEvent(entry_ref* ref);
+	void			UnwatchEvent(entry_ref* ref);
+	void			ShowEvents();
+	void			AddEventToList(entry_ref* ref);
+	void			RemoveEventFromList(entry_ref* ref);
+
 private:
+
+	static int _CompareFunction(const Event* a, const Event* b);
 
 	BString				fEventDir;
 	BVolume				fQueryVolume;
+	EventList*			fEventList;
+	QueryDBManager*		fDBManager;
+	
 };
 
 #endif

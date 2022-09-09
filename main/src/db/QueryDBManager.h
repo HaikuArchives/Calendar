@@ -60,6 +60,8 @@ public:
 	bool		RemoveCategory(Category* category);
 	bool		RemoveCategory(entry_ref categoryRef);
 
+	Event*		FileToEvent(entry_ref* ref);
+
 private:
 	void		_Initialize();
 
@@ -69,7 +71,6 @@ private:
 	status_t	_GetFileOfId(const char* id, BFile* file, entry_ref* ref = NULL);
 
 	Category*	_FileToCategory(BFile* file);
-	Event*		_FileToEvent(entry_ref* ref);
 	bool		_CategoryToFile(Category* category, BFile* file);
 	bool		_EventToFile(Event* event, BFile* file);
 
