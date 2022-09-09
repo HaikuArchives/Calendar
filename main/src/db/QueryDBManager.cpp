@@ -743,10 +743,15 @@ QueryDBManager::_EventToFile(Event* event, BFile* file)
 
 	time_t end = event->GetEndDateTime();
 	file->WriteAttr("Event:End", B_TIME_TYPE, 0, &end, sizeof(time_t));
-	
+
 	time_t reminder = event->GetReminderTime();
+
 	if (reminder != -1)
 		file->WriteAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t));
+	if (reminder == -1 &&
+		file->ReadAttr("Event:Reminder", B_TIME_TYPE, 0, &reminder, sizeof(time_t))
+		!= B_ENTRY_NOT_FOUND)
+		file->RemoveAttr("Event:Reminder");
 
 	const char* icon_type = "EVENT_ICON";
 	if (statusInt & EVENT_HIDDEN)
