@@ -25,7 +25,8 @@ class Event
 public:
 				Event(const char* name, const char* place, const char* description,
 					bool allday, time_t start, time_t end, Category* category,
-					time_t updated = time(NULL), uint16 status = 0, const char* id = NULL);
+					bool reminded, time_t reminderTime, time_t updated = time(NULL),
+					uint16 status = 0, const char* id = NULL);
 				Event(Event& event);
 
 	time_t		GetStartDateTime() const;
@@ -54,6 +55,12 @@ public:
 	time_t		GetUpdated() const;
 	void		SetUpdated(time_t updated);
 
+	time_t		GetReminderTime() const;
+	void		SetReminderTime(time_t reminderTime);
+
+	bool		IsReminded() const;
+	void		SetReminded(bool reminded);
+
 	bool		Equals(Event& e) const;
 
 private:
@@ -65,8 +72,10 @@ private:
 	time_t		fStart;
 	time_t		fEnd;
 	time_t		fUpdated;
+	time_t		fReminderTime;
 
 	bool		fAllDay;
+	bool		fReminded;
 	int16		fStatus;
 
 	Category*	fCategory;
