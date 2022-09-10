@@ -37,8 +37,7 @@ int main()
 
 CalendarDaemon::CalendarDaemon()
 	:
-	BApplication(kApplicationSignature),
-	fEventList()
+	BApplication(kApplicationSignature)
 {
 	std::cout << "Creating Daemon..." << std::endl;
 
@@ -67,9 +66,7 @@ CalendarDaemon::CalendarDaemon()
 	} else
 		std::cout << "Events Directory not found!!" << std::endl;
 
-	fDBManager = new QueryDBManager();
-
-	fEventList = fDBManager->GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
+	fEventList = fDBManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 	fEventList->SortItems(_CompareFunction);
 	ShowEvents();
 }
@@ -95,25 +92,13 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			message->FindInt64("node", &node);
 
 			switch (opCode) {
-				case B_ENTRY_CREATED: {
-					std::cout << "New Event Created!" << std::endl;
-					entry_ref ref;
-					const char* name;
-
-					message->FindInt32("device", &ref.device);
-					message->FindInt64("directory", &ref.directory);
-					message->FindString("name", &name);
-					ref.set_name(name);
-
-					AddEventToList(&ref);
+				case B_ENTRY_CREATED:
+				case B_ENTRY_REMOVED:
+				case B_ENTRY_MOVED: {
+					std::cout << "Refreshing Events List!\n";
+					RefreshEventList();
+					ShowEvents();
 				} break;
-				//case B_ENTRY_REMOVED:
-				case B_ENTRY_MOVED:
-					std::cout << "An Event Removed!" << std::endl;
-					break;
-				case B_ATTR_CHANGED:
-					std::cout << "Attribute Changed!" << std::endl;
-					break;
 			}
 			break;
 		}
@@ -135,43 +120,11 @@ CalendarDaemon::QuitRequested()
 
 
 void
-CalendarDaemon::WatchEvent(entry_ref* ref)
+CalendarDaemon::RefreshEventList()
 {
-	BNode node(ref);
-	node_ref nodeRef;
-	node.GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_WATCH_ATTR, be_app_messenger);
-}
-
-
-void
-CalendarDaemon::UnwatchEvent(entry_ref* ref)
-{
-	BNode node(ref);
-	node_ref nodeRef;
-	node.GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_STOP_WATCHING, be_app_messenger);
-}
-
-
-void
-CalendarDaemon::AddEventToList(entry_ref* ref)
-{
-	Event* event = fDBManager->FileToEvent(ref);
-	fEventList->AddItem(event);
+	delete(fEventList);
+	fEventList = fDBManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 	fEventList->SortItems(_CompareFunction);
-	WatchEvent(ref);
-	ShowEvents();
-}
-
-
-void
-CalendarDaemon::RemoveEventFromList(entry_ref* ref)
-{
-	BNode node(ref);
-	node_ref nodeRef;
-	node.GetNodeRef(&nodeRef);
-	watch_node(&nodeRef, B_STOP_WATCHING, be_app_messenger);
 }
 
 
@@ -186,7 +139,6 @@ CalendarDaemon::ShowEvents()
 	Event* event;
 	std::cout << std::endl;
 	for (int32 i=0 ; i<fEventList->CountItems() ; ++i) {
-		std::cout << "hue\n";
 		event = fEventList->ItemAt(i);
 		std::cout << "Event Name: " << event->GetName() << "\n";
 		std::cout << "Event Place: " << event->GetPlace() << "\n\n";

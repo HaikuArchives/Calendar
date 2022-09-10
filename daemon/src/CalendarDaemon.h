@@ -29,8 +29,7 @@ public:
 	void			WatchEvent(entry_ref* ref);
 	void			UnwatchEvent(entry_ref* ref);
 	void			ShowEvents();
-	void			AddEventToList(entry_ref* ref);
-	void			RemoveEventFromList(entry_ref* ref);
+	void			RefreshEventList();
 
 private:
 
@@ -39,7 +38,7 @@ private:
 	BString				fEventDir;
 	BVolume				fQueryVolume;
 	EventList*			fEventList;
-	QueryDBManager*		fDBManager;
+	QueryDBManager		fDBManager;
 	
 };
 
