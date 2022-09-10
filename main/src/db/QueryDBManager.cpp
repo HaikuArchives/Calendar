@@ -338,14 +338,9 @@ QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 
 	time_t time = dateTime.Time_t();
 
-	query.PushAttr("Event:Start");
+	query.PushAttr("Event:Reminder");
 	query.PushUInt32(time);
-	query.PushOp(B_LE);
-
-	query.PushAttr("Event:Status");
-	query.PushString("Unnotified");
-	query.PushOp(B_CONTAINS);
-	query.PushOp(B_AND);
+	query.PushOp(B_GE);
 
 	query.Fetch();
 	entry_ref ref;
