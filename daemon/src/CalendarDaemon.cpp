@@ -72,7 +72,12 @@ CalendarDaemon::CalendarDaemon()
 	fEventList = fDBManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 	fEventList->SortItems(_CompareFunction);
 	ShowEvents();
+}
 
+
+void
+CalendarDaemon::ReadyToRun()
+{
 	if (fEventList->CountItems() > 0) {
 		Event* event = fEventList->ItemAt(0);
 		bigtime_t timeout;		
@@ -83,7 +88,9 @@ CalendarDaemon::CalendarDaemon()
 		notifyMessage->AddString("place", event->GetPlace());
 		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-		BMessageRunner fMessageRunner(this, notifyMessage, 2, -1);
+		fMessageRunner = new BMessageRunner(be_app_messenger, notifyMessage, timeout, -1);
+		if (fMessageRunner->InitCheck() != B_OK)
+			std::cout << "MessageRunner Not Initialized!\n";
 		std::cout << "\nEvent " << event->GetName() << " going off in " << timeout/100000 << " seconds\n";
 	}
 }
@@ -128,8 +135,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			message->FindString("place", &place);
 			message->FindInt64("deltaTime", &deltaTime);
 
-			// SendAlert(name, place, deltaTime);
-			SendAlert("fuck", "yes", 69);
+			SendAlert(name, place, deltaTime);
 
 			fEventList->RemoveItemAt((int32)0);
 			
@@ -139,11 +145,11 @@ CalendarDaemon::MessageReceived(BMessage *message)
 				timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 
 				BMessage* notifyMessage = new BMessage(kEventNotify);
-				notifyMessage->AddString("name", event->GetName());
-				notifyMessage->AddString("place", event->GetPlace());
-				notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+				notifyMessage->ReplaceString("name", event->GetName());
+				notifyMessage->ReplaceString("place", event->GetPlace());
+				notifyMessage->ReplaceInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-				BMessageRunner fMessageRunner(this, notifyMessage, timeout, -1);
+				fMessageRunner->SetInterval(timeout);
 				std::cout << "\nEvent " << event->GetName() << " going off in " << timeout << " seconds\n";
 			}
 		} break;

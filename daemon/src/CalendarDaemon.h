@@ -31,6 +31,7 @@ public:
 
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
+	void			ReadyToRun();
 
 	void			WatchEvent(entry_ref* ref);
 	void			UnwatchEvent(entry_ref* ref);
@@ -46,7 +47,7 @@ private:
 	BVolume				fQueryVolume;
 	EventList*			fEventList;
 	QueryDBManager		fDBManager;
-	//BMessageRunner		fMessageRunner;
+	BMessageRunner*		fMessageRunner;
 };
 
 #endif
