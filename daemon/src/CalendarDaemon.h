@@ -7,10 +7,16 @@
 #define CALENDAR_DAEMON_H
 
 #include <Application.h>
+#include <MessageRunner.h>
 #include <OS.h>
 #include <Volume.h>
 
 #include "QueryDBManager.h"
+
+enum
+{
+	kEventNotify,
+};
 
 /*!
 	CalendarDaemon Class Declaration
@@ -30,6 +36,7 @@ public:
 	void			UnwatchEvent(entry_ref* ref);
 	void			ShowEvents();
 	void			RefreshEventList();
+	void			SendAlert(const char* name, const char* place, time_t deltaTime);
 
 private:
 
@@ -39,7 +46,7 @@ private:
 	BVolume				fQueryVolume;
 	EventList*			fEventList;
 	QueryDBManager		fDBManager;
-	
+	//BMessageRunner		fMessageRunner;
 };
 
 #endif

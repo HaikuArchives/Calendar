@@ -7,10 +7,13 @@
 
 #include <iostream>
 
+#include <Alert.h>
+#include <Catalog.h>
 #include <Directory.h>
 #include <FindDirectory.h>
 #include <NodeMonitor.h>
 #include <Path.h>
+#include <StringFormat.h>
 #include <VolumeRoster.h>
 
 #define EVENT_DIRECTORY "config/settings/Calendar/events"
@@ -69,6 +72,20 @@ CalendarDaemon::CalendarDaemon()
 	fEventList = fDBManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 	fEventList->SortItems(_CompareFunction);
 	ShowEvents();
+
+	if (fEventList->CountItems() > 0) {
+		Event* event = fEventList->ItemAt(0);
+		bigtime_t timeout;		
+		timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
+		
+		BMessage* notifyMessage = new BMessage(kEventNotify);
+		notifyMessage->AddString("name", event->GetName());
+		notifyMessage->AddString("place", event->GetPlace());
+		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+
+		BMessageRunner fMessageRunner(this, notifyMessage, 2, -1);
+		std::cout << "\nEvent " << event->GetName() << " going off in " << timeout/100000 << " seconds\n";
+	}
 }
 
 
@@ -76,6 +93,7 @@ CalendarDaemon::~CalendarDaemon()
 {
 	std::cout << "Stopping Daemon, Good Bye! ;)" << std::endl;
 	stop_watching(be_app_messenger);
+	delete(fEventList);
 }
 
 
@@ -102,6 +120,33 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			}
 			break;
 		}
+		case kEventNotify: {
+			const char* name;
+			const char* place;
+			time_t deltaTime;
+			message->FindString("name", &name);
+			message->FindString("place", &place);
+			message->FindInt64("deltaTime", &deltaTime);
+
+			// SendAlert(name, place, deltaTime);
+			SendAlert("fuck", "yes", 69);
+
+			fEventList->RemoveItemAt((int32)0);
+			
+			if (fEventList->CountItems() > 0) {
+				Event* event = fEventList->ItemAt(0);
+				bigtime_t timeout;		
+				timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
+
+				BMessage* notifyMessage = new BMessage(kEventNotify);
+				notifyMessage->AddString("name", event->GetName());
+				notifyMessage->AddString("place", event->GetPlace());
+				notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+
+				BMessageRunner fMessageRunner(this, notifyMessage, timeout, -1);
+				std::cout << "\nEvent " << event->GetName() << " going off in " << timeout << " seconds\n";
+			}
+		} break;
 		case B_QUIT_REQUESTED:
 			QuitRequested();
 			break;
@@ -109,6 +154,43 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			BApplication::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+CalendarDaemon::SendAlert(const char* name, const char* place, time_t deltaTime)
+{
+	BString alertText(B_TRANSLATE("Calendar notification!\n\n"
+		"Event:\t%eventName%\n"
+		"Place:\t%eventPlace%\n\n"
+		"The event starts in "));
+
+	alertText.ReplaceAll("%eventName%", name);
+	alertText.ReplaceAll("%eventPlace%", place);
+ 
+	if (deltaTime%3600 == 0) {
+		deltaTime /= 3600;
+		static BStringFormat format(B_TRANSLATE("{0, plural,"
+		"=1{1 hour!}"
+		"other{# hours!}}"));
+		format.Format(alertText, deltaTime);
+	} else if (deltaTime%60 == 0) {
+		deltaTime /= 60;
+		static BStringFormat format(B_TRANSLATE("{0, plural,"
+		"=1{1 minute!}"
+		"other{# minutes!}}"));
+		format.Format(alertText, deltaTime);
+	} else {
+		static BStringFormat format(B_TRANSLATE("{0, plural,"
+		"=1{1 second!}"
+		"other{# seconds!}}"));
+		format.Format(alertText, deltaTime);
+	}
+	BAlert* alert = new BAlert("Reminder!", alertText.String(),
+					"OK", NULL, NULL, B_WIDTH_AS_USUAL,
+					B_OFFSET_SPACING, B_WARNING_ALERT);
+	alert->SetShortcut(0, B_ESCAPE);
+	alert->Go();
 }
 
 
