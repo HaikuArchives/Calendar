@@ -134,6 +134,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 
 			fEventList->RemoveItemAt((int32)0);
 			ShowEvents();
+			delete(fMessageRunner);
 			
 			if (fEventList->CountItems() > 0) {
 				Event* event = fEventList->ItemAt(0);
@@ -145,7 +146,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 				notifyMessage.AddString("place", event->GetPlace());
 				notifyMessage.AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-				fMessageRunner->StartSending(be_app_messenger, &notifyMessage, timeout, 1);
+				fMessageRunner = new BMessageRunner(be_app_messenger, &notifyMessage, timeout, 1);
 
 				std::cout << "Reminder is set for: " << event->GetName() << std::endl;
 				std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
@@ -223,7 +224,7 @@ CalendarDaemon::RefreshEventList()
 		notifyMessage.AddString("place", event->GetPlace());
 		notifyMessage.AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-		fMessageRunner->StartSending(be_app_messenger, &notifyMessage, timeout, 1);
+		fMessageRunner = new BMessageRunner(be_app_messenger, &notifyMessage, timeout, 1);
 
 		std::cout << "Reminder is set for: " << event->GetName() << std::endl;
 		std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
