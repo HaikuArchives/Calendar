@@ -13,11 +13,6 @@
 
 #include "QueryDBManager.h"
 
-enum
-{
-	kEventNotify,
-};
-
 /*!
 	CalendarDaemon Class Declaration
 */

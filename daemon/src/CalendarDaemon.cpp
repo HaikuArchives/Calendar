@@ -23,6 +23,7 @@ const char* kApplicationSignature = "application/x-vnd.CalendarDaemon";
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "Daemon"
 
+static const uint32 kEventNotify = 'EvNo';
 
 int main()
 {
@@ -58,14 +59,6 @@ CalendarDaemon::CalendarDaemon()
 		node_ref nodeRef;
 		directory.GetNodeRef(&nodeRef);
 		watch_node(&nodeRef, B_WATCH_DIRECTORY, be_app_messenger);
-
-		entry_ref ref;
-		while (directory.GetNextRef(&ref) == B_OK) {
-			BNode node(&ref);
-			node_ref nodeRef;
-			node.GetNodeRef(&nodeRef);
-			watch_node(&nodeRef, B_WATCH_ATTR, be_app_messenger);
-		}
 	} else
 		std::cout << "Events Directory not found!!" << std::endl;
 
@@ -88,10 +81,9 @@ CalendarDaemon::ReadyToRun()
 		notifyMessage->AddString("place", event->GetPlace());
 		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-		fMessageRunner = new BMessageRunner(be_app_messenger, notifyMessage, timeout, -1);
+		fMessageRunner = new BMessageRunner(be_app_messenger, notifyMessage, timeout, 1);
 		if (fMessageRunner->InitCheck() != B_OK)
 			std::cout << "MessageRunner Not Initialized!\n";
-		std::cout << "\nEvent " << event->GetName() << " going off in " << timeout/100000 << " seconds\n";
 	}
 }
 
@@ -101,6 +93,7 @@ CalendarDaemon::~CalendarDaemon()
 	std::cout << "Stopping Daemon, Good Bye! ;)" << std::endl;
 	stop_watching(be_app_messenger);
 	delete(fEventList);
+	delete(fMessageRunner);
 }
 
 
@@ -138,6 +131,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			SendAlert(name, place, deltaTime);
 
 			fEventList->RemoveItemAt((int32)0);
+			ShowEvents();
 			
 			if (fEventList->CountItems() > 0) {
 				Event* event = fEventList->ItemAt(0);
@@ -145,12 +139,11 @@ CalendarDaemon::MessageReceived(BMessage *message)
 				timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 
 				BMessage* notifyMessage = new BMessage(kEventNotify);
-				notifyMessage->ReplaceString("name", event->GetName());
-				notifyMessage->ReplaceString("place", event->GetPlace());
-				notifyMessage->ReplaceInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+				notifyMessage->AddString("name", event->GetName());
+				notifyMessage->AddString("place", event->GetPlace());
+				notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-				fMessageRunner->SetInterval(timeout);
-				std::cout << "\nEvent " << event->GetName() << " going off in " << timeout << " seconds\n";
+				fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
 			}
 		} break;
 		case B_QUIT_REQUESTED:
@@ -211,8 +204,22 @@ void
 CalendarDaemon::RefreshEventList()
 {
 	delete(fEventList);
+	delete(fMessageRunner);
 	fEventList = fDBManager.GetEventsToNotify(BDateTime::CurrentDateTime(B_LOCAL_TIME));
 	fEventList->SortItems(_CompareFunction);
+
+	if (fEventList->CountItems() > 0) {
+		Event* event = fEventList->ItemAt(0);
+		bigtime_t timeout;		
+		timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
+
+		BMessage* notifyMessage = new BMessage(kEventNotify);
+		notifyMessage->AddString("name", event->GetName());
+		notifyMessage->AddString("place", event->GetPlace());
+		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+
+		fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
+	}
 }
 
 
