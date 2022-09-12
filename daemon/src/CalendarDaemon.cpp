@@ -76,13 +76,12 @@ CalendarDaemon::ReadyToRun()
 		bigtime_t timeout;		
 		timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 		
-		BMessage* notifyMessage = new BMessage(kEventNotify);
-		notifyMessage->AddString("name", event->GetName());
-		notifyMessage->AddString("place", event->GetPlace());
-		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+		BMessage notifyMessage(kEventNotify);
+		notifyMessage.AddString("name", event->GetName());
+		notifyMessage.AddString("place", event->GetPlace());
+		notifyMessage.AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-		fMessageRunner = new BMessageRunner(be_app_messenger, notifyMessage, timeout, 1);
-		delete(notifyMessage);
+		fMessageRunner = new BMessageRunner(be_app_messenger, &notifyMessage, timeout, 1);
 		if (fMessageRunner->InitCheck() != B_OK)
 			std::cout << "MessageRunner Not Initialized!\n";
 
@@ -141,13 +140,12 @@ CalendarDaemon::MessageReceived(BMessage *message)
 				bigtime_t timeout;		
 				timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 
-				BMessage* notifyMessage = new BMessage(kEventNotify);
-				notifyMessage->AddString("name", event->GetName());
-				notifyMessage->AddString("place", event->GetPlace());
-				notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+				BMessage notifyMessage(kEventNotify);
+				notifyMessage.AddString("name", event->GetName());
+				notifyMessage.AddString("place", event->GetPlace());
+				notifyMessage.AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-				fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
-				delete(notifyMessage);
+				fMessageRunner->StartSending(be_app_messenger, &notifyMessage, timeout, 1);
 
 				std::cout << "Reminder is set for: " << event->GetName() << std::endl;
 				std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
@@ -220,13 +218,12 @@ CalendarDaemon::RefreshEventList()
 		bigtime_t timeout;		
 		timeout = (event->GetReminderTime() - real_time_clock()) * 1000000;
 
-		BMessage* notifyMessage = new BMessage(kEventNotify);
-		notifyMessage->AddString("name", event->GetName());
-		notifyMessage->AddString("place", event->GetPlace());
-		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
+		BMessage notifyMessage(kEventNotify);
+		notifyMessage.AddString("name", event->GetName());
+		notifyMessage.AddString("place", event->GetPlace());
+		notifyMessage.AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
-		fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
-		delete(notifyMessage);
+		fMessageRunner->StartSending(be_app_messenger, &notifyMessage, timeout, 1);
 
 		std::cout << "Reminder is set for: " << event->GetName() << std::endl;
 		std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
