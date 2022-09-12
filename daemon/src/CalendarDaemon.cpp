@@ -82,8 +82,12 @@ CalendarDaemon::ReadyToRun()
 		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
 		fMessageRunner = new BMessageRunner(be_app_messenger, notifyMessage, timeout, 1);
+		delete(notifyMessage);
 		if (fMessageRunner->InitCheck() != B_OK)
 			std::cout << "MessageRunner Not Initialized!\n";
+
+		std::cout << "Reminder is set for: " << event->GetName() << std::endl;
+		std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
 	}
 }
 
@@ -107,7 +111,6 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			int32 opCode;
 			ino_t node;
 			message->FindInt32("opcode", &opCode);
-			message->FindInt64("node", &node);
 
 			switch (opCode) {
 				case B_ENTRY_CREATED:
@@ -144,6 +147,10 @@ CalendarDaemon::MessageReceived(BMessage *message)
 				notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
 				fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
+				delete(notifyMessage);
+
+				std::cout << "Reminder is set for: " << event->GetName() << std::endl;
+				std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
 			}
 		} break;
 		case B_QUIT_REQUESTED:
@@ -219,6 +226,10 @@ CalendarDaemon::RefreshEventList()
 		notifyMessage->AddInt64("deltaTime", event->GetStartDateTime() - event->GetReminderTime());
 
 		fMessageRunner->StartSending(be_app_messenger, notifyMessage, timeout, 1);
+		delete(notifyMessage);
+
+		std::cout << "Reminder is set for: " << event->GetName() << std::endl;
+		std::cout << "And is going off in " << timeout/1000000 << " seconds" << std::endl;
 	}
 }
 
