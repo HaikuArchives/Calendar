@@ -7,6 +7,7 @@
 #define CALENDAR_DAEMON_H
 
 #include <Application.h>
+#include <MessageRunner.h>
 #include <OS.h>
 #include <Volume.h>
 
@@ -25,11 +26,13 @@ public:
 
 	void			MessageReceived(BMessage* message);
 	bool			QuitRequested();
+	void			ReadyToRun();
 
 	void			WatchEvent(entry_ref* ref);
 	void			UnwatchEvent(entry_ref* ref);
 	void			ShowEvents();
 	void			RefreshEventList();
+	void			SendAlert(const char* name, const char* place, time_t deltaTime);
 
 private:
 
@@ -39,7 +42,7 @@ private:
 	BVolume				fQueryVolume;
 	EventList*			fEventList;
 	QueryDBManager		fDBManager;
-	
+	BMessageRunner*		fMessageRunner;
 };
 
 #endif
