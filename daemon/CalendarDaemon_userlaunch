@@ -1,5 +1,5 @@
 service x-vnd.CalendarDaemon { 
-	if setting ~/config/settings/Calendar/Daemon/Daemon_settings autostart
+	launch /system/servers/CalendarDaemon
 	no_safemode
 	legacy
 }
