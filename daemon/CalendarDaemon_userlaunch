@@ -1,0 +1,5 @@
+service x-vnd.CalendarDaemon { 
+	launch /system/servers/CalendarDaemon
+	no_safemode
+	legacy
+}
