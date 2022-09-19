@@ -130,7 +130,7 @@ ul {
 <img src="./images/calendar_icon_64.png" alt="Calendar icon" /></a>
 <p><span style="font-size: 1.5em; font-weight:bold">Calendar's User Documentation</span></p>
 <hr />
-<p id="index"><a href="#eventmanager">Event manager</a> — <a href="#categorymanager">Category manager</a> — <a href="#settings">Settings</a> — <a href="#help">Help</a></p>
+<p id="index"><a href="#eventmanager">Event manager</a> — <a href="#categorymanager">Category manager</a> — <a href="#settings">Settings</a> — <a href="#daemon">Daemon</a> — <a href="#help">Help</a></p>
 </div>
 <hr />
 <p><br /></p>
@@ -165,6 +165,7 @@ Hidden and deleted events can remain visible by activating <span class="menu">Vi
 <li>Define as an <span class="menu">All day</span> event or set <span class="menu">Start/End date and time</span> (click the "▼" button for a pop-up calendar for the date, the time setting is HH:mm (24-hour format)).</li>
 <li>Optionally choose a monthly or yearly <span class="menu">Recurrence</span> (not implemented yet).</li>
 <li>Set the <span class="menu">Status</span> to <span class="menu">Cancelled</span> or <span class="menu">Hidden</span> (also done with the context menu of the main window).</li>
+<li>Optionally give it a Reminder.</li>
 </ul></p>
 
 <h2>
@@ -201,6 +202,14 @@ cannot be deleted but can be modified. Click on <span class="button">New...</spa
 <li>Have the <span class="menu">First day of the week</span> either to whatever the system locale says, or choose a specific day.</li>
 <li>Choose to <span class="menu">Show week numbers in calendar</span>.</li>
 </ul></p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="daemon" name="daemon">Daemon</a></h2>
+
+<p><span class="menu">Calendar Daemon</span> runs in the background traking the events to give off reminder alerts for the events at specified time (as set by the user).</p>
+
+<p>It was developed under Google Summer of Code 2022 by Harshit Sharma, see his <a href="https://www.haiku-os.org/blog/harshitsharma/2022-09-12_gsoc_2022_final_report_improving_the_calendar_application/">wrap up blog post</a> about it.</p>
 
 <h2>
 <a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
