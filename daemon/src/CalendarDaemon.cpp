@@ -128,7 +128,7 @@ CalendarDaemon::MessageReceived(BMessage *message)
 			time_t deltaTime;
 			message->FindString("name", &name);
 			message->FindString("place", &place);
-			message->FindInt64("deltaTime", &deltaTime);
+			message->FindInt64("deltaTime", (time_t)&deltaTime);
 
 			SendAlert(name, place, deltaTime);
 
