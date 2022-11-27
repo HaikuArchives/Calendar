@@ -9,9 +9,7 @@ You can create, edit and delete events, and cancel or hide them, categorize even
 
 Requirements
 -------
-To build Calendar you need some development libraries:
-
-* sqlite3   
+To build Calendar you need the sqlite3 development library: 
 
   For 32 bit version of Haiku   -- ```$ pkgman install sqlite_x86_devel```
   
@@ -20,7 +18,7 @@ To build Calendar you need some development libraries:
 
 Note
 -------
-Before invoking 'make' (for 32 bit version of Haiku), do a 'setarch x86' to change the build environment to use gcc11.
+When building on 32bit Haiku, you need to change the build environment to use gcc11 with `setarch x86` before invoking `make`.
 
 
 For more information, please see the [Calendar documentation](http://htmlpreview.github.io/?https://github.com/HaikuArchives/Calendar/master/documentation/Documentation.html).
