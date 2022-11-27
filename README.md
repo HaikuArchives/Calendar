@@ -11,8 +11,12 @@ Requirements
 -------
 To build Calendar you need some development libraries:
 
-* sqlite3   -- ```$ pkgman install sqlite_devel```  (For 64 bit version of Haiku)
-* sqlite3   -- ```$ pkgman install sqlite_x86_devel```  (For 32 bit version of Haiku)
+* sqlite3   
+
+  For 32 bit version of Haiku   -- ```$ pkgman install sqlite_x86_devel```
+  
+  For 64 bit version of Haiku   -- ```$ pkgman install sqlite_devel```  
+   
 
 Note
 -------
