@@ -25,12 +25,12 @@ jobs:
           version: ${{ matrix.config.version }}
           architecture: ${{ matrix.config.architecture }}
           run: |
-            ssh user@localhost "pkgman update -y haiku_devel cmd:gcc makefile_engine" &&
+            ssh user@localhost "pkgman update -y cmd:gcc makefile_engine" &&
             if [[ `uname -m` == BePC ]]; then
-              ssh user@localhost "pkgman update -y devel:libsqlite3_x86" &&
+              ssh user@localhost "pkgman update -y haiku_x86_devel devel:libsqlite3_x86" &&
               setarch x86 cd src && make && make bindcatalogs
             else
-              ssh user@localhost "pkgman update -y devel:libsqlite3" &&
+              ssh user@localhost "pkgman update -y haiku_devel devel:libsqlite3" &&
               cd src && make && make bindcatalogs
             fi
            
