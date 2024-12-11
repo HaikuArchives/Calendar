@@ -27,10 +27,10 @@ jobs:
           run: |
             ssh user@localhost "pkgman update -y cmd:gcc makefile_engine" &&
             if [[ `uname -m` == BePC ]]; then
-              ssh user@localhost "pkgman update -y haiku_x86_devel devel:libsqlite3_x86" &&
+              ssh user@localhost "pkgman update -y haiku_x86_devel devel:libsqlite3_x86 gcc_x86_syslibs_devel" &&
               cd main && setarch x86 make && setarch x86 make bindcatalogs
             else
-              ssh user@localhost "pkgman update -y haiku_devel devel:libsqlite3" &&
+              ssh user@localhost "pkgman update -y haiku_devel devel:libsqlite3 gcc_syslibs_devel" &&
               cd main && make && make bindcatalogs
             fi
            
