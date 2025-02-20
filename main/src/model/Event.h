@@ -81,7 +81,11 @@ private:
 	Category*	fCategory;
 };
 
-
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+typedef BObjectList<Event, true> EventList;
+#else
 typedef BObjectList<Event> EventList;
+#endif
+
 
 #endif

@@ -30,7 +30,12 @@ private:
 	rgb_color	fColor;
 };
 
-
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+typedef BObjectList<Category, true> CategoryList;
+#else
 typedef BObjectList<Category> CategoryList;
+#endif
+
+
 
 #endif
