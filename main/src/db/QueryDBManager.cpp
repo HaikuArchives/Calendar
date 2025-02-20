@@ -273,7 +273,11 @@ QueryDBManager::GetEventsOfMonth(BDate date, bool ignoreHidden)
 EventList*
 QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 {
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+	EventList* events = new EventList(20);
+#else
 	EventList* events = new EventList(20, true);
+#endif
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -305,7 +309,11 @@ QueryDBManager::GetEventsInInterval(time_t start, time_t end, bool ignoreHidden)
 EventList*
 QueryDBManager::GetEventsOfCategory(Category* category)
 {
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+	EventList* events = new EventList(20);
+#else
 	EventList* events = new EventList(20, true);
+#endif
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -332,7 +340,11 @@ QueryDBManager::GetEventsOfCategory(Category* category)
 EventList*
 QueryDBManager::GetEventsToNotify(BDateTime dateTime)
 {
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+	EventList* events = new EventList(20);
+#else
 	EventList* events = new EventList(20, true);
+#endif
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
@@ -436,7 +448,12 @@ QueryDBManager::EnsureCategory(const char* name)
 CategoryList*
 QueryDBManager::GetAllCategories(BString defaultCategory)
 {
+#if B_HAIKU_VERSION > B_HAIKU_VERSION_1_BETA_5
+	CategoryList* categories = new CategoryList(20);
+#else
 	CategoryList* categories = new CategoryList(20, true);
+#endif
+
 	BQuery query;
 	query.SetVolume(&fQueryVolume);
 
